@@ -7,15 +7,17 @@ namespace FourLines.Api.DataModels;
 
 [Index(nameof(Slug), IsUnique = true)]
 [Table("Users")]
-public class User : IUser
+public class User
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
+    [MaxLength(200)]
     public string Name { get; set; } = default!;
 
     [Required]
+    [MaxLength(200)]
     public string Email { get; set; } = default!;
 
     [Required]
@@ -31,5 +33,5 @@ public class User : IUser
     public int RoleId { get; set; }
 
     [ForeignKey(nameof(RoleId))]
-    public IRole Role { get; set; } = default!;
+    public Role Role { get; set; } = default!;
 }

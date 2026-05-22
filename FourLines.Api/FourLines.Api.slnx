@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
-    <File Path="docker-compose.yml" />
+    <File Path="Collections/FourLines/.gitignore" />
   </Folder>
   <Project Path="FourLines.Api/FourLines.Api.csproj" />
 </Solution>

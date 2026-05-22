@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "Collections"
+  type: workspace
+
+collections:
+  - name: "FourLines"
+    path: "collections/FourLines"
+
+specs:
+
+docs: ''

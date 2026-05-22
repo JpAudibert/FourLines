@@ -1,4 +1,4 @@
-﻿using FourLines.Api.DataModels;
+﻿ using FourLines.Api.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace FourLines.Api.Contexts;
@@ -11,8 +11,6 @@ public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbCo
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found"));
-
         base.OnConfiguring(optionsBuilder);
     }
 
