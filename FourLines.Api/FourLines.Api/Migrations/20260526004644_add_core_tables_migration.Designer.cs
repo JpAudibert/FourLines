@@ -3,6 +3,7 @@ using System;
 using FourLines.Api.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Api.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    partial class FourLinesContextModelSnapshot : ModelSnapshot
+    [Migration("20260526004644_add_core_tables_migration")]
+    partial class add_core_tables_migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
