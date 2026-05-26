@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FourLines.Api.DataModels;
 
-[Table("users")]
-public class User
+[Table("facilities")]
+public class Facility
 {
     [Key]
     public int Id { get; init; }
 
     [Required]
-    public int RoleId { get; init; }
+    public int OwnerId { get; init; }
 
     [Required]
     [MaxLength(200)]
@@ -18,24 +18,23 @@ public class User
 
     [Required]
     [MaxLength(200)]
-    public string Email { get; init; } = default!;
+    public string Address { get; init; } = default!;
 
     [Required]
-    public string PasswordHash { get; init; } = default!;
+    [MaxLength(100)]
+    public string City { get; init; } = default!;
 
     [Required]
-    public DateOnly Birthday { get; init; }
+    [MaxLength(100)]
+    public string State { get; init; } = default!;
 
     [Required]
     [MaxLength(20)]
-    public string Phone { get; init; } = default!;
+    public string ZipCode { get; init; } = default!;
 
     [Required]
     [MaxLength(20)]
     public string RegistrationNumber { get; init; } = default!;
-
-    [Required]
-    public bool IsActive { get; init; } = default!;
 
     [Required]
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
@@ -43,9 +42,8 @@ public class User
     [Required]
     public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;
 
-    [ForeignKey(nameof(RoleId))]
-    public Role Role { get; init; } = default!;
+    [ForeignKey(nameof(OwnerId))]
+    public User Owner { get; init; } = default!;
 
-    public IEnumerable<Facility> Facilities { get; init; } = [];
-
+    public IEnumerable<Court> Courts { get; init; } = [];
 }
