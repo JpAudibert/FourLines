@@ -1,18 +1,26 @@
-﻿using FourLines.Api.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FourLines.Api.DataModels;
 
-[Table("roles")]
-public class Role
+[Table("courts")]
+public class Court
 {
     [Key]
     public int Id { get; init; }
 
     [Required]
+    public int FacilityId { get; init; }
+
+    [Required]
+    public int SportId { get; init; } = default!;
+
+    [Required]
     [MaxLength(200)]
     public string Name { get; init; } = default!;
+
+    [Required]
+    public bool IsActive { get; init; } = default!;
 
     [Required]
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
@@ -20,5 +28,10 @@ public class Role
     [Required]
     public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;
 
-    public IEnumerable<User> Users { get; init; } = [];
+    [ForeignKey(nameof(SportId))]
+    public Sport Sport { get; init; } = default!;
+
+    [ForeignKey(nameof(FacilityId))]
+    public Facility Facility { get; init; } = default!;
+
 }
