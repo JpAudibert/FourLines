@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Api.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    [Migration("20260526004644_add_core_tables_migration")]
-    partial class add_core_tables_migration
+    [Migration("20260527234106_database_remodeling")]
+    partial class database_remodeling
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace FourLines.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Court", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Court", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,10 +59,10 @@ namespace FourLines.Api.Migrations
 
                     b.HasIndex("SportId");
 
-                    b.ToTable("courts");
+                    b.ToTable("courts", (string)null);
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Facility", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Facility", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,10 +113,10 @@ namespace FourLines.Api.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("facilities");
+                    b.ToTable("facilities", (string)null);
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Role", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,10 +137,10 @@ namespace FourLines.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("roles");
+                    b.ToTable("roles", (string)null);
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Sport", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Sport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -170,10 +170,10 @@ namespace FourLines.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("sports");
+                    b.ToTable("sports", (string)null);
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.User", b =>
+            modelBuilder.Entity("FourLines.Api.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -224,18 +224,18 @@ namespace FourLines.Api.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Court", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Court", b =>
                 {
-                    b.HasOne("FourLines.Api.DataModels.Facility", "Facility")
+                    b.HasOne("FourLines.Api.Models.Facility", "Facility")
                         .WithMany("Courts")
                         .HasForeignKey("FacilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FourLines.Api.DataModels.Sport", "Sport")
+                    b.HasOne("FourLines.Api.Models.Sport", "Sport")
                         .WithMany("Courts")
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -246,9 +246,9 @@ namespace FourLines.Api.Migrations
                     b.Navigation("Sport");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Facility", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Facility", b =>
                 {
-                    b.HasOne("FourLines.Api.DataModels.User", "Owner")
+                    b.HasOne("FourLines.Api.Models.User", "Owner")
                         .WithMany("Facilities")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -257,9 +257,9 @@ namespace FourLines.Api.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.User", b =>
+            modelBuilder.Entity("FourLines.Api.Models.User", b =>
                 {
-                    b.HasOne("FourLines.Api.DataModels.Role", "Role")
+                    b.HasOne("FourLines.Api.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -268,22 +268,22 @@ namespace FourLines.Api.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Facility", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Facility", b =>
                 {
                     b.Navigation("Courts");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Role", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Role", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.Sport", b =>
+            modelBuilder.Entity("FourLines.Api.Models.Sport", b =>
                 {
                     b.Navigation("Courts");
                 });
 
-            modelBuilder.Entity("FourLines.Api.DataModels.User", b =>
+            modelBuilder.Entity("FourLines.Api.Models.User", b =>
                 {
                     b.Navigation("Facilities");
                 });
