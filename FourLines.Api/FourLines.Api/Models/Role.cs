@@ -1,10 +1,12 @@
-﻿using FourLines.Api.Interfaces;
+﻿namespace FourLines.Api.Models;
 
-namespace FourLines.Api.Models;
-
-public class Role : IRole
+public class Role
 {
     public int Id { get; set; }
     public string Name { get; set; } = default!;
-    public IEnumerable<IUser> Users { get; set; } = [];
+
+    public IEnumerable<User> Users { get; set; } = [];
+
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }

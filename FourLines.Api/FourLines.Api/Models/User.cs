@@ -1,15 +1,20 @@
-﻿using FourLines.Api.Interfaces;
+﻿namespace FourLines.Api.Models;
 
-namespace FourLines.Api.Models;
-
-public class User : IUser
+public class User
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = default!;
-    public string Email { get; set; } = default!;
-    public string PasswordHash { get; set; } = default!;
-    public string Slug { get; set; } = default!;
-    public DateTime Birthday { get; set; }
-    public int RoleId { get; set; }
-    public IRole Role { get; set; } = default!;
+    public int Id { get; init; }
+    public int RoleId { get; init; }
+    public string Name { get; init; } = default!;
+    public string Email { get; init; } = default!;
+    public string PasswordHash { get; init; } = default!;
+    public DateOnly Birthday { get; init; }
+    public string Phone { get; init; } = default!;
+    public string RegistrationNumber { get; init; } = default!;
+    public bool IsActive { get; init; } = default!;
+
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;
+
+    public Role Role { get; init; } = default!;
+    public IEnumerable<Facility> Facilities { get; init; } = [];
 }
