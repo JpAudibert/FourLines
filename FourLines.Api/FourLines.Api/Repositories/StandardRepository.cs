@@ -38,7 +38,12 @@ public class StandardRepository<TEntity>(FourLinesContext context, ILogger<Stand
     {
         _logger.LogInformation("Updating entity of type {EntityType} with ID {EntityId}", typeof(TEntity).Name, entity.Id);
 
-        _dbSet.Update(entity);
+        var trackedEntity = await _dbSet.FindAsync(entity.Id) ?? throw new Exception("Entity not found");
+
+        _context.Entry(trackedEntity)
+            .CurrentValues
+            .SetValues(entity);
+
         await _context.SaveChangesAsync();
     }
 
