@@ -1,8 +1,7 @@
 namespace FourLines.Api.Models;
 
-public class Facility
+public class Facility : BaseEntity
 {
-    public int Id { get; set; }
     public int OwnerId { get; set; }
     public string Name { get; set; } = default!;
     public string Address { get; set; } = default!;

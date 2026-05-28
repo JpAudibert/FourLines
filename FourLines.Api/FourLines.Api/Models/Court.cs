@@ -1,8 +1,7 @@
 namespace FourLines.Api.Models;
 
-public class Court
+public class Court : BaseEntity
 {
-    public int Id { get; set; }
     public int FacilityId { get; set; }
     public int SportId { get; set; }
     public string Name { get; set; } = default!;

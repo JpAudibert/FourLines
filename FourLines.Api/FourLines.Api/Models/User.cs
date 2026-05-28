@@ -1,8 +1,7 @@
 ﻿namespace FourLines.Api.Models;
 
-public class User
+public class User : BaseEntity
 {
-    public int Id { get; init; }
     public int RoleId { get; init; }
     public string Name { get; init; } = default!;
     public string Email { get; init; } = default!;
