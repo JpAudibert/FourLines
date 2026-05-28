@@ -1,4 +1,6 @@
 using FourLines.Api.Contexts;
+using FourLines.Api.Interfaces;
+using FourLines.Api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<FourLinesContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
 
 var app = builder.Build();
 

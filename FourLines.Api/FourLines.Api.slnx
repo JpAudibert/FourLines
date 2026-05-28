@@ -4,4 +4,5 @@
     <File Path="Collections/FourLines/.gitignore" />
   </Folder>
   <Project Path="FourLines.Api/FourLines.Api.csproj" />
+  <Project Path="FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
 </Solution>
