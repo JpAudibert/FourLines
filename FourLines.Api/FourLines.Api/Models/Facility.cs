@@ -10,9 +10,6 @@ public class Facility : BaseEntity
     public string ZipCode { get; set; } = default!;
     public string RegistrationNumber { get; set; } = default!;
 
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-
     public User Owner { get; init; } = default!;
     public IEnumerable<Court> Courts { get; set; } = [];
 }

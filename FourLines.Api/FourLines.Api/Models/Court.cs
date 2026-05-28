@@ -7,9 +7,6 @@ public class Court : BaseEntity
     public string Name { get; set; } = default!;
     public bool IsActive { get; set; }
 
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-
     public Sport Sport { get; init; } = default!;
     public Facility Facility { get; init; } = default!;
 }

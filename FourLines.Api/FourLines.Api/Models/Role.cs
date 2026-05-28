@@ -6,6 +6,4 @@ public class Role : BaseEntity
 
     public IEnumerable<User> Users { get; set; } = [];
 
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
 }

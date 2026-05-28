@@ -7,8 +7,5 @@ public class Sport : BaseEntity
     public int StartingPlayersCount { get; set; }
     public int MaxPlayersCount { get; set; }
 
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-
     public IEnumerable<Court> Courts { get; set; } = [];
 }

@@ -11,9 +11,6 @@ public class User : BaseEntity
     public string RegistrationNumber { get; init; } = default!;
     public bool IsActive { get; init; } = default!;
 
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;
-
     public Role Role { get; init; } = default!;
     public IEnumerable<Facility> Facilities { get; init; } = [];
 }
