@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ./FourLines.Api/FourLines.Api
     - name: Test
-      run: dotnet test --no-build --verbosity normal ./FourLines.Api/FourLines.Api
+      run: dotnet test --no-build --verbosity normal ./FourLines.Api/FourLines.Tests
