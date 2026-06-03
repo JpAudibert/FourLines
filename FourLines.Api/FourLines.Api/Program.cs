@@ -1,7 +1,6 @@
 using FourLines.Api.Contexts;
 using FourLines.Api.Interfaces;
 using FourLines.Api.Repositories;
-using FourLines.Api.Seeders;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
