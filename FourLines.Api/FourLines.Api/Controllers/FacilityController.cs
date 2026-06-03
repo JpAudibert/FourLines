@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FourLines.Api.Controllers;
 
+[ApiVersion("1")]
 [ApiController]
-[Route("[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class FacilityController : Controller
 {
     private readonly IStandardRepository<Facility> _repository;
@@ -15,52 +16,59 @@ public class FacilityController : Controller
         _repository = repository;
     }
 
-    [HttpPost("insert")]
-    public async Task<IActionResult> Insert([FromBody] Facility facility)
+    [HttpGet()]
+    public async Task<IActionResult> GetAll()
     {
-        facility.CreatedAt = DateTimeOffset.UtcNow;
-        facility.UpdatedAt = facility.CreatedAt;
+        IEnumerable<Facility> facilities = await _repository.GetAllAsync();
 
-        await _repository.AddAsync(facility);
+        return Ok(facilities);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        Facility? facility = await _repository.GetEntityAsync(id);
+
+        if (facility is null)
+            return NotFound();
 
         return Ok(facility);
     }
 
-    [HttpPut("update/{id:int}")]
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] Facility facility)
+    {
+        await _repository.AddAsync(facility);
+
+        return Created();
+    }
+
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Facility facility)
     {
         if (id != facility.Id)
-        {
             return BadRequest();
-        }
 
         Facility? existingFacility = await _repository.GetEntityAsync(id);
 
         if (existingFacility is null)
-        {
-            return NotFound();
-        }
-
-        facility.CreatedAt = existingFacility.CreatedAt;
-        facility.UpdatedAt = DateTimeOffset.UtcNow;
+            return NotFound(id);
 
         await _repository.UpdateAsync(facility);
 
-        return NoContent();
+        return Ok(id);
     }
 
-    [HttpDelete("delete/{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         Facility? existingFacility = await _repository.GetEntityAsync(id);
 
         if (existingFacility is null)
-        {
-            return NotFound();
-        }
+            return NotFound(id);
 
         await _repository.DeleteAsync(id);
 
-        return NoContent();
+        return Ok(id);
     }
 }

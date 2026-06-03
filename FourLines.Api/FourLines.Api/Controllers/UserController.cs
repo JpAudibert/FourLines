@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FourLines.Api.Controllers;
 
+[ApiVersion("1")]
 [ApiController]
-[Route("[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class UserController : Controller
 {
     private readonly IStandardRepository<User> _repository;
@@ -15,52 +16,59 @@ public class UserController : Controller
         _repository = repository;
     }
 
-    [HttpPost("insert")]
-    public async Task<IActionResult> Insert([FromBody] User user)
+    [HttpGet()]
+    public async Task<IActionResult> GetAll()
     {
-        user.CreatedAt = DateTimeOffset.UtcNow;
-        user.UpdatedAt = user.CreatedAt;
+        IEnumerable<User> users = await _repository.GetAllAsync();
 
-        await _repository.AddAsync(user);
+        return Ok(users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        User? user = await _repository.GetEntityAsync(id);
+
+        if (user is null)
+            return NotFound();
 
         return Ok(user);
     }
 
-    [HttpPut("update/{id:int}")]
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] User user)
+    {
+        await _repository.AddAsync(user);
+
+        return Created();
+    }
+
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] User user)
     {
         if (id != user.Id)
-        {
             return BadRequest();
-        }
 
         User? existingUser = await _repository.GetEntityAsync(id);
 
         if (existingUser is null)
-        {
-            return NotFound();
-        }
-
-        user.CreatedAt = existingUser.CreatedAt;
-        user.UpdatedAt = DateTimeOffset.UtcNow;
+            return NotFound(id);
 
         await _repository.UpdateAsync(user);
 
-        return NoContent();
+        return Ok(id);
     }
 
-    [HttpDelete("delete/{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         User? existingUser = await _repository.GetEntityAsync(id);
 
         if (existingUser is null)
-        {
-            return NotFound();
-        }
+            return NotFound(id);
 
         await _repository.DeleteAsync(id);
 
-        return NoContent();
+        return Ok(id);
     }
 }

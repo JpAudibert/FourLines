@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FourLines.Api.Controllers;
 
+[ApiVersion("1")]
 [ApiController]
-[Route("[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class RoleController : Controller
 {
     private readonly IStandardRepository<Role> _repository;
@@ -15,52 +16,59 @@ public class RoleController : Controller
         _repository = repository;
     }
 
-    [HttpPost("insert")]
-    public async Task<IActionResult> Insert([FromBody] Role role)
+    [HttpGet()]
+    public async Task<IActionResult> GetAll()
     {
-        role.CreatedAt = DateTimeOffset.UtcNow;
-        role.UpdatedAt = role.CreatedAt;
+        IEnumerable<Role> roles = await _repository.GetAllAsync();
 
-        await _repository.AddAsync(role);
+        return Ok(roles);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        Role? role = await _repository.GetEntityAsync(id);
+
+        if (role is null)
+            return NotFound();
 
         return Ok(role);
     }
 
-    [HttpPut("update/{id:int}")]
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] Role role)
+    {
+        await _repository.AddAsync(role);
+
+        return Created();
+    }
+
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Role role)
     {
         if (id != role.Id)
-        {
             return BadRequest();
-        }
 
         Role? existingRole = await _repository.GetEntityAsync(id);
 
         if (existingRole is null)
-        {
-            return NotFound();
-        }
-
-        role.CreatedAt = existingRole.CreatedAt;
-        role.UpdatedAt = DateTimeOffset.UtcNow;
+            return NotFound(id);
 
         await _repository.UpdateAsync(role);
 
-        return NoContent();
+        return Ok(id);
     }
 
-    [HttpDelete("delete/{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         Role? existingRole = await _repository.GetEntityAsync(id);
 
         if (existingRole is null)
-        {
-            return NotFound();
-        }
+            return NotFound(id);
 
         await _repository.DeleteAsync(id);
 
-        return NoContent();
+        return Ok(id);
     }
 }
