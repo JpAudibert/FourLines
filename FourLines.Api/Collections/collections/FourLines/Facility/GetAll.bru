@@ -1,0 +1,19 @@
+meta {
+  name: "Facility - Get All"
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{BaseUrl}}/api/v1/Facility
+  auth: inherit
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

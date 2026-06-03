@@ -1,0 +1,19 @@
+meta {
+  name: "Role - Delete"
+  type: http
+  seq: 15
+}
+
+delete {
+  url: {{BaseUrl}}/api/v1/Role/1
+  auth: inherit
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,19 @@
+meta {
+  name: "Sport - Get All"
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{BaseUrl}}/api/v1/Sport
+  auth: inherit
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

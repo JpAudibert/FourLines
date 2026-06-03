@@ -1,0 +1,29 @@
+meta {
+  name: "Role - Create"
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{BaseUrl}}/api/v1/Role
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Administrator"
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

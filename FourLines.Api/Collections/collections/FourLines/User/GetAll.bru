@@ -1,0 +1,19 @@
+meta {
+  name: "User - Get All"
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{BaseUrl}}/api/v1/User
+  auth: inherit
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

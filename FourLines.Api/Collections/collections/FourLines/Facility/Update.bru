@@ -1,0 +1,36 @@
+meta {
+  name: "Facility - Update"
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{BaseUrl}}/api/v1/Facility/1
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "id": 1,
+    "ownerId": 1,
+    "name": "Main Facility - Updated",
+    "address": "123 Main Street",
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01000-000",
+    "registrationNumber": "REG-001"
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

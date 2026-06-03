@@ -1,0 +1,35 @@
+meta {
+  name: "Facility - Create"
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{BaseUrl}}/api/v1/Facility
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "ownerId": 1,
+    "name": "Main Facility",
+    "address": "123 Main Street",
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01000-000",
+    "registrationNumber": "REG-001"
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

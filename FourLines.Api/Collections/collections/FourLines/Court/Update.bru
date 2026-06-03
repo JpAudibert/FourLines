@@ -1,0 +1,33 @@
+meta {
+  name: "Court - Update"
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{BaseUrl}}/api/v1/Court/1
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "id": 1,
+    "facilityId": 1,
+    "sportId": 1,
+    "name": "Court 1 - Updated",
+    "isActive": true
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
