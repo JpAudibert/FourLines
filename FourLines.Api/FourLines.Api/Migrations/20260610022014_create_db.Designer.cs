@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Api.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    [Migration("20260610021655_create_db")]
+    [Migration("20260610022014_create_db")]
     partial class create_db
     {
         /// <inheritdoc />
