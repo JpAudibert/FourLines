@@ -25,7 +25,7 @@ public class UserController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         User? user = await _repository.GetEntityAsync(id);
 
@@ -44,7 +44,7 @@ public class UserController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] User user)
+    public async Task<IActionResult> Update(Guid id, [FromBody] User user)
     {
         if (id != user.Id)
             return BadRequest();
@@ -60,7 +60,7 @@ public class UserController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         User? existingUser = await _repository.GetEntityAsync(id);
 

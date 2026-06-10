@@ -19,7 +19,7 @@ public class StandardRepository<TEntity>(FourLinesContext context, ILogger<Stand
         return await _dbSet.ToListAsync();
     }
 
-    public async Task<TEntity?> GetEntityAsync(int id)
+    public async Task<TEntity?> GetEntityAsync(Guid id)
     {
         _logger.LogInformation("Retrieving entity of type {EntityType} with ID {EntityId}", typeof(TEntity).Name, id);
 
@@ -47,7 +47,7 @@ public class StandardRepository<TEntity>(FourLinesContext context, ILogger<Stand
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         _logger.LogInformation("Deleting entity of type {EntityType} with ID {EntityId}", typeof(TEntity).Name, id);
 

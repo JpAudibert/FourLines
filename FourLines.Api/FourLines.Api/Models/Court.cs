@@ -2,10 +2,10 @@ namespace FourLines.Api.Models;
 
 public class Court : BaseEntity
 {
-    public int FacilityId { get; set; }
-    public int SportId { get; set; }
-    public string Name { get; set; } = default!;
-    public bool IsActive { get; set; }
+    public Guid FacilityId { get; init; }
+    public Guid SportId { get; init; }
+    public string Name { get; init; } = default!;
+    public bool IsActive { get; init; }
 
     public Sport Sport { get; init; } = default!;
     public Facility Facility { get; init; } = default!;

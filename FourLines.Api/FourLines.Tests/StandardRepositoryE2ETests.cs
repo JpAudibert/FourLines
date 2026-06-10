@@ -9,9 +9,9 @@ namespace FourLines.Tests;
 
 public class StandardRepositoryE2ETests
 {
-    private FourLinesContext CreateInMemoryContext(string dbName)
+    private static FourLinesContext CreateInMemoryContext(string dbName)
     {
-        var options = new DbContextOptionsBuilder<FourLinesContext>()
+        DbContextOptions<FourLinesContext> options = new DbContextOptionsBuilder<FourLinesContext>()
             .UseInMemoryDatabase(dbName)
             .Options;
 
@@ -25,6 +25,7 @@ public class StandardRepositoryE2ETests
         FourLinesContext context = CreateInMemoryContext("StandardRepoDb");
         NullLogger<StandardRepository<User>> logger = new();
         StandardRepository<User> repo = new(context, logger);
+        Guid id = Guid.NewGuid();
 
         // Act & Assert
         // Add
@@ -37,7 +38,7 @@ public class StandardRepositoryE2ETests
             Phone = "123",
             RegistrationNumber = "R1",
             IsActive = true,
-            RoleId = 0
+            RoleId = id
         };
         await repo.AddAsync(user);
 
@@ -69,12 +70,12 @@ public class StandardRepositoryE2ETests
 
         await repo.UpdateAsync(updatedUser);
 
-        var updated = await repo.GetEntityAsync(fetched.Id);
+        User? updated = await repo.GetEntityAsync(fetched.Id);
         Assert.Equal("Alice Updated", updated!.Name);
 
         // Delete
         await repo.DeleteAsync(fetched.Id);
-        var afterDelete = await repo.GetEntityAsync(fetched.Id);
+        User? afterDelete = await repo.GetEntityAsync(fetched.Id);
         Assert.Null(afterDelete);
     }
 }
