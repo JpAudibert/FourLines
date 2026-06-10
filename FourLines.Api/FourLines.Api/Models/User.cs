@@ -2,7 +2,7 @@
 
 public class User : BaseEntity
 {
-    public int RoleId { get; init; }
+    public Guid RoleId { get; init; }
     public string Name { get; init; } = default!;
     public string Email { get; init; } = default!;
     public string PasswordHash { get; init; } = default!;

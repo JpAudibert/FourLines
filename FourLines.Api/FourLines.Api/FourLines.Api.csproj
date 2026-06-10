@@ -22,4 +22,8 @@
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.8" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
 </Project>
