@@ -1,0 +1,32 @@
+meta {
+  name: "Court - Create"
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BaseUrl}}/api/v1/Court
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "facilityId": 1,
+    "sportId": 1,
+    "name": "Court 1",
+    "isActive": true
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,6 +1,7 @@
 using FourLines.Api.Contexts;
 using FourLines.Api.Interfaces;
 using FourLines.Api.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,12 +17,20 @@ builder.Services.AddDbContext<FourLinesContext>(options =>
 
 builder.Services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
 }
 
 app.UseAuthorization();

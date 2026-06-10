@@ -1,0 +1,30 @@
+meta {
+  name: "Role - Update"
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{BaseUrl}}/api/v1/Role/1
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "id": 1,
+    "name": "Administrator"
+  }
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

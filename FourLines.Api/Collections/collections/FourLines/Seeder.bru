@@ -1,0 +1,20 @@
+meta {
+  name: Seeder
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BaseUrl}}/seeder
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  BaseUrl: http://localhost:5210
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
