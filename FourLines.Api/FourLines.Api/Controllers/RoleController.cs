@@ -25,7 +25,7 @@ public class RoleController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         Role? role = await _repository.GetEntityAsync(id);
 
@@ -44,7 +44,7 @@ public class RoleController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Role role)
+    public async Task<IActionResult> Update(Guid id, [FromBody] Role role)
     {
         if (id != role.Id)
             return BadRequest();
@@ -60,7 +60,7 @@ public class RoleController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         Role? existingRole = await _repository.GetEntityAsync(id);
 

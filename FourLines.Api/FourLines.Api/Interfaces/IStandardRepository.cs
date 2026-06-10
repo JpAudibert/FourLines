@@ -7,8 +7,8 @@ public interface IStandardRepository<TEntity>
 {
     Task AddAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);
-    Task DeleteAsync(int id);
-    Task<TEntity?> GetEntityAsync(int id);
+    Task DeleteAsync(Guid id);
+    Task<TEntity?> GetEntityAsync(Guid id);
     Task<IEnumerable<TEntity>> GetAllAsync();
     Task SaveChangesAsync();
 }

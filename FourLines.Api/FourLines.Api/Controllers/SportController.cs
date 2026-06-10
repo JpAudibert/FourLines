@@ -25,7 +25,7 @@ public class SportController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         Sport? sport = await _repository.GetEntityAsync(id);
 
@@ -44,7 +44,7 @@ public class SportController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Sport sport)
+    public async Task<IActionResult> Update(Guid id, [FromBody] Sport sport)
     {
         if (id != sport.Id)
             return BadRequest();
@@ -60,7 +60,7 @@ public class SportController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         Sport? existingSport = await _repository.GetEntityAsync(id);
 

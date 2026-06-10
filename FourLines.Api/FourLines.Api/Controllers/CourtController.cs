@@ -25,7 +25,7 @@ public class CourtController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         Court? court = await _repository.GetEntityAsync(id);
 
@@ -44,7 +44,7 @@ public class CourtController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Court court)
+    public async Task<IActionResult> Update(Guid id, [FromBody] Court court)
     {
         if (id != court.Id)
             return BadRequest();
@@ -60,7 +60,7 @@ public class CourtController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         Court? existingCourt = await _repository.GetEntityAsync(id);
 

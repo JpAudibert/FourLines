@@ -25,7 +25,7 @@ public class FacilityController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         Facility? facility = await _repository.GetEntityAsync(id);
 
@@ -44,7 +44,7 @@ public class FacilityController : Controller
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Facility facility)
+    public async Task<IActionResult> Update(Guid id, [FromBody] Facility facility)
     {
         if (id != facility.Id)
             return BadRequest();
@@ -60,7 +60,7 @@ public class FacilityController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         Facility? existingFacility = await _repository.GetEntityAsync(id);
 
