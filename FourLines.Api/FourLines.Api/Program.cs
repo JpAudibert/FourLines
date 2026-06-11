@@ -1,3 +1,5 @@
+using FourLines.Application.DependencyInjection;
+using FourLines.Domain.DependencyInjection;
 using FourLines.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +11,10 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services
+    .AddDomain()
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApiVersioning(options =>
 {
