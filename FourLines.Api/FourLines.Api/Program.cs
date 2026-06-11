@@ -1,8 +1,5 @@
-using FourLines.Api.Contexts;
-using FourLines.Api.Interfaces;
-using FourLines.Api.Repositories;
+using FourLines.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +9,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<FourLinesContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-        .UseSnakeCaseNamingConvention());
-
-builder.Services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApiVersioning(options =>
 {
