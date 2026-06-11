@@ -1,8 +1,4 @@
-﻿using FourLines.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
-namespace FourLines.Infrastructure.Contexts;
+﻿namespace FourLines.Infrastructure.Contexts;
 
 public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbContext(options)
 {

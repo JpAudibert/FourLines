@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FourLines.Api.Migrations
+namespace FourLines.Infrastructure.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
     [Migration("20260610022014_create_db")]

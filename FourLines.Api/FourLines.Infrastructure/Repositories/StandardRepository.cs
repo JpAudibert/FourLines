@@ -1,7 +1,4 @@
-﻿using FourLines.Domain.Interfaces;
-using FourLines.Domain.Models;
-using FourLines.Infrastructure.Contexts;
-using Microsoft.EntityFrameworkCore;
+﻿using FourLines.Infrastructure.Contexts;
 using Microsoft.Extensions.Logging;
 
 namespace FourLines.Infrastructure.Repositories;

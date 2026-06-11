@@ -1,5 +1,3 @@
-using FourLines.Domain.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FourLines.Infrastructure.DataMaps;

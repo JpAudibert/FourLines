@@ -1,8 +1,5 @@
-﻿using FourLines.Domain.Interfaces;
-using FourLines.Infrastructure.Contexts;
+﻿using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Infrastructure.DependencyInjection;
