@@ -19,6 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FourLines.Api\FourLines.Api.csproj" />
+    <ProjectReference Include="..\FourLines.Application\FourLines.Application.csproj" />
+    <ProjectReference Include="..\FourLines.Domain\FourLines.Domain.csproj" />
+    <ProjectReference Include="..\FourLines.Infrastructure\FourLines.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
