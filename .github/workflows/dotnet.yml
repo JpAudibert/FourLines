@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 10.0.x
     - name: Restore dependencies
-      run: dotnet restore ./FourLines.Api/FourLines.Api
+      run: dotnet restore ./FourLines.Api
     - name: Build
-      run: dotnet build --no-restore ./FourLines.Api/FourLines.Api
+      run: dotnet build --no-restore ./FourLines.Api
     - name: Test
-      run: dotnet test --no-build --verbosity normal ./FourLines.Api/FourLines.Tests
+      run: dotnet test
