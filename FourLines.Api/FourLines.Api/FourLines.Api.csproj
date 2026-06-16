@@ -12,14 +12,18 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
-		<PackageReference Include="Scalar.AspNetCore" Version="2.16.2" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.16.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\FourLines.Application\FourLines.Application.csproj" />
-	  <ProjectReference Include="..\FourLines.Domain\FourLines.Domain.csproj" />
-	  <ProjectReference Include="..\FourLines.Infrastructure\FourLines.Infrastructure.csproj" />
+		<ProjectReference Include="..\FourLines.Application\FourLines.Application.csproj" />
+		<ProjectReference Include="..\FourLines.Domain\FourLines.Domain.csproj" />
+		<ProjectReference Include="..\FourLines.Infrastructure\FourLines.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>
