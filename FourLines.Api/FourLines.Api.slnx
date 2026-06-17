@@ -1,8 +1,16 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
     <File Path=".editorconfig" />
     <File Path="Collections/FourLines/.gitignore" />
   </Folder>
-  <Project Path="FourLines.Api/FourLines.Api.csproj" />
-  <Project Path="FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
+  <Folder Name="/src/">
+    <Project Path="FourLines.Api/FourLines.Api.csproj" />
+    <Project Path="FourLines.Application/FourLines.Application.csproj" Id="a6a01a71-f7e1-4e3a-990a-fcdd635c1b24" />
+    <Project Path="FourLines.Domain/FourLines.Domain.csproj" Id="0581e236-5138-4ef6-a01a-499c517a7d9f" />
+    <Project Path="FourLines.Infrastructure/FourLines.Infrastructure.csproj" Id="d1873149-8356-4762-9819-5db09c96b7a0" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
+  </Folder>
 </Solution>

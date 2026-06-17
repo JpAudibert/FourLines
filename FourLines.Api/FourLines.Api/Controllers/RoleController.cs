@@ -1,5 +1,3 @@
-using FourLines.Api.Interfaces;
-using FourLines.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FourLines.Api.Controllers;

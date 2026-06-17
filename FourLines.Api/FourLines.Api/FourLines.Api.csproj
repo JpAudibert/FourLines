@@ -11,20 +11,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.16.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
 			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
-        <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.8" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Migrations\" />
+		<ProjectReference Include="..\FourLines.Application\FourLines.Application.csproj" />
+		<ProjectReference Include="..\FourLines.Domain\FourLines.Domain.csproj" />
+		<ProjectReference Include="..\FourLines.Infrastructure\FourLines.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

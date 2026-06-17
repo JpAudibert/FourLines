@@ -1,9 +1,9 @@
-﻿using FourLines.Api.Contexts;
-using FourLines.Api.Models;
-using FourLines.Api.Repositories;
+﻿using FourLines.Domain.Models;
+using FourLines.Infrastructure.Contexts;
+using FourLines.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FourLines.Tests;
 
