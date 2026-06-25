@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Infrastructure.Contexts;
 
-public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbContext(options)
+public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbContext(options), IAppContext
 {
     public required IConfigurationRoot Configuration;
 
@@ -9,6 +9,12 @@ public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbCo
     public DbSet<Facility> Facilities { get; set; } = default!;
     public DbSet<Sport> Sports { get; set; } = default!;
     public DbSet<Court> Courts { get; set; } = default!;
+
+    public async Task SaveChangesAsync()
+    {
+        await base.SaveChangesAsync();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
