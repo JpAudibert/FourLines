@@ -2,15 +2,15 @@
 
 public class User : BaseEntity
 {
-    public Guid RoleId { get; init; }
-    public string Name { get; init; } = default!;
-    public string Email { get; init; } = default!;
-    public string PasswordHash { get; init; } = default!;
-    public DateOnly Birthday { get; init; }
-    public string Phone { get; init; } = default!;
-    public string RegistrationNumber { get; init; } = default!;
-    public bool IsActive { get; init; } = default!;
+    public Guid RoleId { get; set; }
+    public string Name { get; set; } = default!;
+    public string Email { get; set; } = default!;
+    public string PasswordHash { get; set; } = default!;
+    public DateOnly Birthday { get; set; }
+    public string Phone { get; set; } = default!;
+    public string RegistrationNumber { get; set; } = default!;
+    public bool IsActive { get; set; } = default!;
 
-    public Role Role { get; init; } = default!;
-    public IEnumerable<Facility> Facilities { get; init; } = [];
+    public Role Role { get; set; } = default!;
+    public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
 }

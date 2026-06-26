@@ -1,5 +1,4 @@
 ﻿using FourLines.Infrastructure.Contexts;
-using FourLines.Infrastructure.Providers;
 using FourLines.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,8 +14,6 @@ public static class DependencyInjection
                 .UseSnakeCaseNamingConvention());
 
         services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
-
-        services.AddSingleton<ITokenProvider, JwtTokenProvider>();
 
         return services;
     }
