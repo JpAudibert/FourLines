@@ -1,5 +1,5 @@
-﻿using FourLines.Application.Providers;
-using FourLines.Application.Services;
+﻿using FourLines.Application.Handlers;
+using FourLines.Application.Providers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +14,8 @@ public static class DependencyInjection
         services.AddSingleton<PasswordHasher<User>>();
 
         services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
-        services.AddScoped<UserService>();
+        services.AddScoped<UserHandler>();
+        services.AddScoped<SeederHandler>();
 
         return services;
     }

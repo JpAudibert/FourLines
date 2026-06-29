@@ -3,6 +3,8 @@
     <File Path="../README.md" />
     <File Path=".editorconfig" />
     <File Path="Collections/FourLines/.gitignore" />
+    <File Path="Helpers/docker-compose.yml" />
+    <File Path="Helpers/seeding.sql" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="FourLines.Api/FourLines.Api.csproj" />

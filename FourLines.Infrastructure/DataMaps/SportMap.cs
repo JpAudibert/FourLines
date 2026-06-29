@@ -14,6 +14,9 @@ public class SportMap : IEntityTypeConfiguration<Sport>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.HasIndex(s => s.Name)
+            .IsUnique();
+
         builder.Property(s => s.Indoor)
             .IsRequired();
 

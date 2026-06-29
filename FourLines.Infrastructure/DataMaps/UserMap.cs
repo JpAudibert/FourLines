@@ -18,6 +18,9 @@ public class UserMap : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.HasIndex(u => u.Email)
+            .IsUnique();
+
         builder.Property(u => u.PasswordHash)
             .IsRequired();
 
@@ -31,6 +34,9 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(u => u.RegistrationNumber)
             .IsRequired()
             .HasMaxLength(20);
+
+        builder.HasIndex(u => u.RegistrationNumber)
+            .IsUnique();
 
         builder.Property(u => u.IsActive)
             .IsRequired();
