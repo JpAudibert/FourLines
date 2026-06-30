@@ -26,4 +26,6 @@ public record UserRegisterViewModel
     public string RegistrationNumber { get; init; } = default!;
 
     public string RoleName { get; init; } = RoleConstants.Player;
+
+    public bool isActive { get; init; } = default!;
 }

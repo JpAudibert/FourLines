@@ -11,7 +11,6 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
     public async Task<User> Create(UserRegisterDTO request)
     {
         using (_context)
-        using (var transaction = await _context.Database.BeginTransactionAsync())
         {
             var role = _context.Roles.FirstOrDefault(r => r.Name == request.RoleName) ?? throw new Exception("Role not found");
 
@@ -29,8 +28,6 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-
-            await transaction.CommitAsync();
 
             return user;
         }

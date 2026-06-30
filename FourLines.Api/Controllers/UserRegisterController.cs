@@ -16,7 +16,7 @@ public class UserRegisterController(FourLinesContext context, UserHandler userHa
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] UserRegisterViewModel request)
+    public async Task<ActionResult<User>> Register([FromBody] UserRegisterViewModel request)
     {
         using (_context)
         {
@@ -34,7 +34,8 @@ public class UserRegisterController(FourLinesContext context, UserHandler userHa
                 Phone = request.Phone,
                 RegistrationNumber = request.RegistrationNumber,
                 RoleName = request.RoleName,
-                Password = request.Password
+                Password = request.Password,
+                isActive = request.isActive
             });
 
             return Ok(user);
