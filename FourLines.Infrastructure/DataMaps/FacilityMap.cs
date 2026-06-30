@@ -37,6 +37,9 @@ public class FacilityMap : IEntityTypeConfiguration<Facility>
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.HasIndex(f => f.RegistrationNumber)
+            .IsUnique();
+
         builder.Property(f => f.CreatedAt)
             .IsRequired();
 

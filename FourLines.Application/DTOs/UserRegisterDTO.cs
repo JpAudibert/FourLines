@@ -1,8 +1,8 @@
 ﻿using FourLines.Domain.Constants;
 
-namespace FourLines.Application.ServiceModels;
+namespace FourLines.Application.DTOs;
 
-public record UserRegisterServiceModel
+public record UserRegisterDTO
 {
     public string Name { get; set; } = default!;
     public string Email { get; set; } = default!;

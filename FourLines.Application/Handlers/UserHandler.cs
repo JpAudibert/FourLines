@@ -1,14 +1,14 @@
-﻿using FourLines.Application.ServiceModels;
+﻿using FourLines.Application.DTOs;
 using FourLines.Infrastructure.Contexts;
 
-namespace FourLines.Application.Services;
+namespace FourLines.Application.Handlers;
 
-public class UserService(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
+public class UserHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
 {
     private readonly FourLinesContext _context = context;
     private readonly IPasswordHashProvider _passwordHashProvider = passwordHashProvider;
 
-    public async Task<User> Create(UserRegisterServiceModel request)
+    public async Task<User> Create(UserRegisterDTO request)
     {
         using (_context)
         using (var transaction = await _context.Database.BeginTransactionAsync())

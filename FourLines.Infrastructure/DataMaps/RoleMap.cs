@@ -14,6 +14,9 @@ public class RoleMap : IEntityTypeConfiguration<Role>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.HasIndex(r => r.Name)
+            .IsUnique();
+
         builder.Property(r => r.CreatedAt)
             .IsRequired();
 
