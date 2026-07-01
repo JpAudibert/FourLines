@@ -1,10 +1,4 @@
-﻿using FourLines.Application.DTOs;
-using FourLines.Domain.Results;
-using FourLines.Domain.Results.Authentication;
-using FourLines.Infrastructure.Contexts;
-using Microsoft.EntityFrameworkCore;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class AuthenticationHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider, ITokenProvider tokenProvider)
 {

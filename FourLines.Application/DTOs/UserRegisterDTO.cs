@@ -1,6 +1,4 @@
-﻿using FourLines.Domain.Constants;
-
-namespace FourLines.Application.DTOs;
+﻿namespace FourLines.Application.DTOs;
 
 public record UserRegisterDTO
 {

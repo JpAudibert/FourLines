@@ -1,8 +1,4 @@
-﻿using FourLines.Application.DTOs;
-using FourLines.Domain.Results;
-using FourLines.Domain.Results.User;
-using FourLines.Infrastructure.Contexts;
-using Microsoft.EntityFrameworkCore;
+﻿
 
 namespace FourLines.Application.Handlers;
 
