@@ -6,6 +6,7 @@ using FourLines.Domain.Constants;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,20 +31,18 @@ public class UsersRegisterAndAuthTests
     {
         // Arrange
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        JwtTokenProvider jwtTokenProvider = new(configuration);
-
         FourLinesContext context = CreateInMemoryContext("StandardRepoDb");
-        PasswordHashProvider passwordHashProvider = new(new PasswordHasher<User>());
-
-        AuthController authController = new(context, jwtTokenProvider, passwordHashProvider);
-
-        UserHandler userHandler = new(context, passwordHashProvider);
-        UserRegisterController userRegisterController = new(context, userHandler);
-
+        
         StandardRepository<Role> roleRepository = new(context, new NullLogger<StandardRepository<Role>>());
-
         await roleRepository.AddAsync(new Role { Name = RoleConstants.Player });
         await roleRepository.AddAsync(new Role { Name = RoleConstants.Admin });
+        await roleRepository.SaveChangesAsync();
+
+        PasswordHashProvider passwordHashProvider = new(new PasswordHasher<User>());
+        UserHandler userHandler = new(context, passwordHashProvider);
+        JwtTokenProvider jwtTokenProvider = new(configuration);
+
+        AuthenticationHandler authenticationHandler = new(context, passwordHashProvider, jwtTokenProvider);
 
         UserRegisterViewModel newUser = new()
         {
@@ -63,9 +62,12 @@ public class UsersRegisterAndAuthTests
             Password = "Password123!"
         };
 
+        UserRegisterController userRegisterController = new(userHandler);
+        AuthController authController = new(authenticationHandler);
+
         // Act 
-        ActionResult<User> userRegisterResult = await userRegisterController.Register(newUser);
-        ActionResult<string> authResult = await authController.Authenticate(loginRequest);
+        IActionResult userRegisterResult = await userRegisterController.Register(newUser);
+        IActionResult authResult = await authController.Authenticate(loginRequest);
 
         // Assert
         Assert.IsType<OkObjectResult>(userRegisterResult.Result);
