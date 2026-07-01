@@ -12,6 +12,7 @@ public static class DependencyInjection
         services.AddScoped<AuthenticationHandler>();
 
         services.AddScoped<UserHandler>();
+        services.AddScoped<FacilityHandler>();
         services.AddScoped<SeederHandler>();
 
         return services;

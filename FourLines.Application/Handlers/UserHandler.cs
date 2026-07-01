@@ -1,5 +1,7 @@
 ﻿
 
+using FourLines.Domain.Results.Users;
+
 namespace FourLines.Application.Handlers;
 
 public class UserHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
