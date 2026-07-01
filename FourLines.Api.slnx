@@ -3,6 +3,7 @@
     <File Path="../README.md" />
     <File Path=".editorconfig" />
     <File Path="Collections/FourLines/.gitignore" />
+    <File Path="Directory.Packages.props" />
     <File Path="Helpers/docker-compose.yml" />
     <File Path="Helpers/seeding.sql" />
   </Folder>
