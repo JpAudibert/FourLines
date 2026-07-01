@@ -1,4 +1,4 @@
-﻿using FourLines.Domain.Constants;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace FourLines.Api.ViewModels;

@@ -1,8 +1,4 @@
-﻿using FourLines.Api.ViewModels;
-using FourLines.Application.DTOs;
-using FourLines.Application.Handlers;
-using FourLines.Domain.Results;
-using Microsoft.AspNetCore.Mvc;
+﻿
 
 namespace FourLines.Api.Controllers;
 
