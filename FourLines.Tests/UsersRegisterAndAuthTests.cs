@@ -70,11 +70,12 @@ public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
         AuthController authController = new(authenticationHandler);
 
         // Act 
-        IActionResult userRegisterResult = await userRegisterController.Register(newUser);
-        IActionResult authResult = await authController.Authenticate(loginRequest);
+        ActionResult<User> userRegisterResult = await userRegisterController.Register(newUser);
+        ActionResult<string> authResult = await authController.Authenticate(loginRequest);
 
         // Assert
-        OkObjectResult? registerOk = Assert.IsType<OkObjectResult>(userRegisterResult);
-        Assert.IsType<OkObjectResult>(authResult);
+        Assert.NotNull(userRegisterResult.Value);
+        Assert.IsType<User>(userRegisterResult.Value);
+        Assert.IsType<string>(authResult.Value);
     }
 }

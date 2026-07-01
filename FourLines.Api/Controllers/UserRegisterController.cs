@@ -14,9 +14,9 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] UserRegisterViewModel request)
+    public async Task<ActionResult<User>> Register([FromBody] UserRegisterViewModel request)
     {
-        Result<User> user = await _userHandler.Create(new UserRegisterDTO
+        Result<User> result = await _userHandler.Create(new UserRegisterDTO
         {
             Name = request.Name,
             Email = request.Email,
@@ -28,9 +28,9 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
             isActive = request.isActive
         });
 
-        if(user.IsFailure)
-            return BadRequest(user.Error);
+        if(result.IsFailure)
+            return BadRequest(result.Error);
 
-        return Ok(user);
+        return result.Value;
     }
 }
