@@ -4,6 +4,7 @@ using FourLines.Application.Handlers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
+using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -75,5 +76,15 @@ public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
         // Assert
         OkObjectResult? registerOk = Assert.IsType<OkObjectResult>(userRegisterResult);
         Assert.IsType<OkObjectResult>(authResult);
+
+        // Cleanup
+        Result? cleanupResult = registerOk.Value as Result;
+        User? createdUser = cleanupResult?.Value as User;
+        if(createdUser is not null)
+        {
+            context.Users.Remove(createdUser);
+            await context.SaveChangesAsync();
+        }
+
     }
 }
