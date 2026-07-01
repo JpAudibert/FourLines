@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FourLines.Domain.Results.User;
+﻿namespace FourLines.Domain.Results.User;
 
 public static class UserCreationErrorResults
 {

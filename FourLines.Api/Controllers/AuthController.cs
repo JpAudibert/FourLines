@@ -18,7 +18,7 @@ public class AuthController(AuthenticationHandler authenticationHandler) : Contr
             Password = request.Password,
         });
 
-        if(result.IsFailure)
+        if (result.IsFailure)
             return Unauthorized(result.Error);
 
         return result.Value;

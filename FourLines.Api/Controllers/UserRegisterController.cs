@@ -24,7 +24,7 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
             isActive = request.isActive
         });
 
-        if(result.IsFailure)
+        if (result.IsFailure)
             return BadRequest(result.Error);
 
         return result.Value;

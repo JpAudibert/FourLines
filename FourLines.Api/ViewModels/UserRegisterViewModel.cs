@@ -1,7 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-
-namespace FourLines.Api.ViewModels;
+﻿namespace FourLines.Api.ViewModels;
 
 public record UserRegisterViewModel
 {
