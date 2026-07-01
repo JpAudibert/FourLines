@@ -14,6 +14,8 @@ public static class DependencyInjection
         services.AddSingleton<PasswordHasher<User>>();
 
         services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
+        services.AddScoped<AuthenticationHandler>();
+        
         services.AddScoped<UserHandler>();
         services.AddScoped<SeederHandler>();
 

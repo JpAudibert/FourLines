@@ -3,47 +3,31 @@ using FourLines.Api.ViewModels;
 using FourLines.Application.Handlers;
 using FourLines.Application.Providers;
 using FourLines.Domain.Constants;
+using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FourLines.Tests;
 
-public class UsersRegisterAndAuthTests
+public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
 {
-    private static FourLinesContext CreateInMemoryContext(string dbName)
+    private readonly InMemoryFixtures _fixtures;
+    public UsersRegisterAndAuthTests(InMemoryFixtures fixtures)
     {
-        DbContextOptions<FourLinesContext> options = new DbContextOptionsBuilder<FourLinesContext>()
-            .UseInMemoryDatabase(dbName)
-            .Options;
-
-        return new FourLinesContext(options) { Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build() };
+        _fixtures = fixtures;
     }
 
     [Fact]
     public async Task UsersRegisterAndAuthTests_CRUD_Workflow()
     {
         // Arrange
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        FourLinesContext context = CreateInMemoryContext("StandardRepoDb");
-        
-        StandardRepository<Role> roleRepository = new(context, new NullLogger<StandardRepository<Role>>());
-        await roleRepository.AddAsync(new Role { Name = RoleConstants.Player });
-        await roleRepository.AddAsync(new Role { Name = RoleConstants.Admin });
-        await roleRepository.SaveChangesAsync();
-
-        PasswordHashProvider passwordHashProvider = new(new PasswordHasher<User>());
-        UserHandler userHandler = new(context, passwordHashProvider);
-        JwtTokenProvider jwtTokenProvider = new(configuration);
-
-        AuthenticationHandler authenticationHandler = new(context, passwordHashProvider, jwtTokenProvider);
-
         UserRegisterViewModel newUser = new()
         {
             Name = "John Doe",
@@ -62,6 +46,25 @@ public class UsersRegisterAndAuthTests
             Password = "Password123!"
         };
 
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        FourLinesContext context = _fixtures.CreateInMemoryContext("StandardRepoDb");
+
+        StandardRepository<User> userRepository = new(context, new NullLogger<StandardRepository<User>>());
+        IEnumerable<User> users = await userRepository.GetAllAsync();
+        users.Where(u => u.Email == newUser.Email).ToList().ForEach(async u => await userRepository.DeleteAsync(u.Id));
+        await userRepository.SaveChangesAsync();
+        
+        StandardRepository<Role> roleRepository = new(context, new NullLogger<StandardRepository<Role>>());
+        await roleRepository.AddAsync(new Role { Name = RoleConstants.Player });
+        await roleRepository.AddAsync(new Role { Name = RoleConstants.Admin });
+        await roleRepository.SaveChangesAsync();
+
+        IPasswordHashProvider passwordHashProvider = _fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
+        UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        ITokenProvider jwtTokenProvider = _fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
+
+        AuthenticationHandler authenticationHandler = new(context, passwordHashProvider, jwtTokenProvider);
+
         UserRegisterController userRegisterController = new(userHandler);
         AuthController authController = new(authenticationHandler);
 
@@ -70,9 +73,8 @@ public class UsersRegisterAndAuthTests
         IActionResult authResult = await authController.Authenticate(loginRequest);
 
         // Assert
-        Assert.IsType<OkObjectResult>(userRegisterResult.Result);
-        Assert.IsType<OkObjectResult>(authResult.Result);
-        
+        Assert.IsType<OkObjectResult>(userRegisterResult);
+        Assert.IsType<OkObjectResult>(authResult);
         
 
     }
