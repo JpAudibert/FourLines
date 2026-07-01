@@ -4,26 +4,19 @@ using FourLines.Application.Handlers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
-using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
-using FourLines.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FourLines.Tests;
 
-public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
+public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures;
-    public UsersRegisterAndAuthTests(InMemoryFixtures fixtures)
-    {
-        _fixtures = fixtures;
-    }
+    private readonly InMemoryFixtures _fixtures = fixtures;
 
     [Fact]
-    public async Task UsersRegisterAndAuthTests_CRUD_Workflow()
+    public async Task Should_RegisterAndAuthenticateUser()
     {
         // Arrange
         UserRegisterViewModel newUser = new()

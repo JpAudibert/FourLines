@@ -1,9 +1,6 @@
 using FourLines.Application.DependencyInjection;
 using FourLines.Domain.DependencyInjection;
-using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
