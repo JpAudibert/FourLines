@@ -1,6 +1,4 @@
-﻿using FourLines.Domain.Constants;
-
-namespace FourLines.Application.DTOs;
+﻿namespace FourLines.Application.DTOs;
 
 public record UserRegisterDTO
 {
@@ -11,4 +9,5 @@ public record UserRegisterDTO
     public string Phone { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
     public string RoleName { get; init; } = RoleConstants.Player;
+    public bool isActive { get; init; } = default!;
 }

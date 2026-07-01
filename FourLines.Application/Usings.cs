@@ -1,2 +1,13 @@
-﻿global using FourLines.Domain.Interfaces;
+﻿global using FourLines.Application.DTOs;
+global using FourLines.Application.Handlers;
+global using FourLines.Application.Providers;
+global using FourLines.Domain.Constants;
+global using FourLines.Domain.Interfaces;
 global using FourLines.Domain.Models;
+global using FourLines.Domain.Results;
+global using FourLines.Domain.Results.Authentication;
+global using FourLines.Domain.Results.User;
+global using FourLines.Infrastructure.Contexts;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.DependencyInjection;

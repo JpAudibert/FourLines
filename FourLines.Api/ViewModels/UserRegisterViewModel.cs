@@ -1,7 +1,4 @@
-﻿using FourLines.Domain.Constants;
-using System.ComponentModel.DataAnnotations;
-
-namespace FourLines.Api.ViewModels;
+﻿namespace FourLines.Api.ViewModels;
 
 public record UserRegisterViewModel
 {
@@ -26,4 +23,6 @@ public record UserRegisterViewModel
     public string RegistrationNumber { get; init; } = default!;
 
     public string RoleName { get; init; } = RoleConstants.Player;
+
+    public bool isActive { get; init; } = default!;
 }

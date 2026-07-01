@@ -1,7 +1,4 @@
-﻿using FourLines.Application.Handlers;
-using Microsoft.AspNetCore.Mvc;
-
-namespace FourLines.Api.Controllers;
+﻿namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]

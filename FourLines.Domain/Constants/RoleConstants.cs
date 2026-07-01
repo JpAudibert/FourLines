@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FourLines.Domain.Constants;
+﻿namespace FourLines.Domain.Constants;
 
 public class RoleConstants
 {

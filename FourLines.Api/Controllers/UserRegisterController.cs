@@ -1,43 +1,32 @@
-﻿using FourLines.Api.ViewModels;
-using FourLines.Application.DTOs;
-using FourLines.Application.Handlers;
-using FourLines.Infrastructure.Contexts;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿
 
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UserRegisterController(FourLinesContext context, UserHandler userHandler) : ControllerBase
+public class UserRegisterController(UserHandler userHandler) : ControllerBase
 {
-    private readonly FourLinesContext _context = context;
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] UserRegisterViewModel request)
+    public async Task<ActionResult<User>> Register([FromBody] UserRegisterViewModel request)
     {
-        using (_context)
+        Result<User> result = await _userHandler.Create(new UserRegisterDTO
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (existingUser is not null)
-            {
-                return Conflict("User with this email already exists.");
-            }
+            Name = request.Name,
+            Email = request.Email,
+            Birthday = request.Birthday,
+            Phone = request.Phone,
+            RegistrationNumber = request.RegistrationNumber,
+            RoleName = request.RoleName,
+            Password = request.Password,
+            isActive = request.isActive
+        });
 
-            User user = await _userHandler.Create(new UserRegisterDTO
-            {
-                Name = request.Name,
-                Email = request.Email,
-                Birthday = request.Birthday,
-                Phone = request.Phone,
-                RegistrationNumber = request.RegistrationNumber,
-                RoleName = request.RoleName,
-                Password = request.Password
-            });
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-            return Ok(user);
-        }
+        return result.Value;
     }
 }

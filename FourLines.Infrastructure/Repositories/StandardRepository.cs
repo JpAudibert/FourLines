@@ -1,7 +1,4 @@
-﻿using FourLines.Infrastructure.Contexts;
-using Microsoft.Extensions.Logging;
-
-namespace FourLines.Infrastructure.Repositories;
+﻿namespace FourLines.Infrastructure.Repositories;
 
 public class StandardRepository<TEntity>(FourLinesContext context, ILogger<StandardRepository<TEntity>> logger)
     : IStandardRepository<TEntity> where TEntity : BaseEntity

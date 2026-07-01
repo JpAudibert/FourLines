@@ -2,7 +2,7 @@
 
 namespace FourLines.Domain.Interfaces;
 
-public interface IStandardRepository<TEntity> 
+public interface IStandardRepository<TEntity>
     where TEntity : BaseEntity
 {
     Task AddAsync(TEntity entity);

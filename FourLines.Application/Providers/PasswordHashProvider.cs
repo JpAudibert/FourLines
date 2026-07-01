@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace FourLines.Application.Providers;
+﻿namespace FourLines.Application.Providers;
 
 public class PasswordHashProvider(PasswordHasher<User> passwordHasher) : IPasswordHashProvider
 {

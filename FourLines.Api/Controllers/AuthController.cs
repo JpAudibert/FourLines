@@ -1,36 +1,26 @@
-﻿using FourLines.Api.ViewModels;
-using FourLines.Infrastructure.Contexts;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿
 
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class AuthController(FourLinesContext fourLinesContext, ITokenProvider tokenProvider, IPasswordHashProvider passwordHashProvider) : ControllerBase
+public class AuthController(AuthenticationHandler authenticationHandler) : ControllerBase
 {
-    private readonly FourLinesContext _fourLinesContext = fourLinesContext;
-    private readonly ITokenProvider _tokenProvider = tokenProvider;
-    private readonly IPasswordHashProvider _passwordHashProvider = passwordHashProvider;
+    private readonly AuthenticationHandler _authenticationHandler = authenticationHandler;
 
     [HttpPost]
     public async Task<ActionResult<string>> Authenticate(LoginViewModel request)
     {
-        using (_fourLinesContext)
+        Result<string> result = await _authenticationHandler.Authenticate(new AuthenticationDTO()
         {
-            User? user = await _fourLinesContext.Users.FirstOrDefaultAsync(user => user.Email == request.Email);
+            Email = request.Email,
+            Password = request.Password,
+        });
 
-            if (user is null)
-                return Unauthorized("Action cannot be proceeded");
+        if (result.IsFailure)
+            return Unauthorized(result.Error);
 
-            bool arePasswordsEqual = _passwordHashProvider.VerifyHashedPassword(user, user.PasswordHash, request.Password);
-
-            if (!arePasswordsEqual)
-                return Unauthorized("Action cannot be proceeded");
-
-            return _tokenProvider.Create(user);
-        }
+        return result.Value;
     }
-
 }
