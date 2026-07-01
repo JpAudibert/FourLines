@@ -12,20 +12,20 @@ public class AuthenticationHandler(FourLinesContext context, IPasswordHashProvid
     private readonly IPasswordHashProvider _passwordHashProvider = passwordHashProvider;
     private readonly ITokenProvider _tokenProvider = tokenProvider;
 
-    public async Task<Result> Authenticate(AuthenticationDTO request)
+    public async Task<Result<string>> Authenticate(AuthenticationDTO request)
     {
         User? user = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.Email);
 
         if (user is null)
-            return AuthenticationErrorResults.UnknownUser;
+            return Result<string>.Failure(AuthenticationErrorResults.UnknownUser);
 
         bool arePasswordsEqual = _passwordHashProvider.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
         if (!arePasswordsEqual)
-            return AuthenticationErrorResults.InvalidPassword;
+            return Result<string>.Failure(AuthenticationErrorResults.InvalidPassword);
 
         string token = _tokenProvider.Create(user);
 
-        return Result.Success(new { Token = token});
+        return Result<string>.Success(token);
     }
 }

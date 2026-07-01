@@ -11,15 +11,15 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
     private readonly FourLinesContext _context = context;
     private readonly IPasswordHashProvider _passwordHashProvider = passwordHashProvider;
 
-    public async Task<Result> Create(UserRegisterDTO request)
+    public async Task<Result<User>> Create(UserRegisterDTO request)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         if (existingUser is not null)
-            return UserCreationErrorResults.EmailAlreadyExists;
+            return Result<User>.Failure(UserCreationErrorResults.EmailAlreadyExists);
 
         var role = _context.Roles.FirstOrDefault(r => r.Name == request.RoleName);
         if (role is null)
-            return UserCreationErrorResults.InvalidRole;
+            return Result<User>.Failure(UserCreationErrorResults.InvalidRole);
 
         User user = new()
         {
@@ -36,6 +36,6 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return Result.Success(user);
+        return Result<User>.Success(user);
     }
 }

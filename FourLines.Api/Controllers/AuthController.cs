@@ -14,9 +14,9 @@ public class AuthController(AuthenticationHandler authenticationHandler) : Contr
     private readonly AuthenticationHandler _authenticationHandler = authenticationHandler;
 
     [HttpPost]
-    public async Task<IActionResult> Authenticate(LoginViewModel request)
+    public async Task<ActionResult<string>> Authenticate(LoginViewModel request)
     {
-        Result result = await _authenticationHandler.Authenticate(new AuthenticationDTO()
+        Result<string> result = await _authenticationHandler.Authenticate(new AuthenticationDTO()
         {
             Email = request.Email,
             Password = request.Password,
@@ -25,6 +25,6 @@ public class AuthController(AuthenticationHandler authenticationHandler) : Contr
         if(result.IsFailure)
             return Unauthorized(result.Error);
 
-        return Ok(result.Value);
+        return result.Value;
     }
 }

@@ -2,9 +2,7 @@
 using FourLines.Application.DTOs;
 using FourLines.Application.Handlers;
 using FourLines.Domain.Results;
-using FourLines.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FourLines.Api.Controllers;
 
@@ -18,7 +16,7 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] UserRegisterViewModel request)
     {
-        Result user = await _userHandler.Create(new UserRegisterDTO
+        Result<User> user = await _userHandler.Create(new UserRegisterDTO
         {
             Name = request.Name,
             Email = request.Email,
