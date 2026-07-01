@@ -1,16 +1,13 @@
 using FourLines.Api.Controllers;
 using FourLines.Api.ViewModels;
 using FourLines.Application.Handlers;
-using FourLines.Application.Providers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -46,18 +43,21 @@ public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
             Password = "Password123!"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        FourLinesContext context = _fixtures.CreateInMemoryContext("StandardRepoDb");
+        FourLinesContext context = _fixtures.ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        StandardRepository<User> userRepository = new(context, new NullLogger<StandardRepository<User>>());
-        IEnumerable<User> users = await userRepository.GetAllAsync();
-        users.Where(u => u.Email == newUser.Email).ToList().ForEach(async u => await userRepository.DeleteAsync(u.Id));
-        await userRepository.SaveChangesAsync();
-        
-        StandardRepository<Role> roleRepository = new(context, new NullLogger<StandardRepository<Role>>());
-        await roleRepository.AddAsync(new Role { Name = RoleConstants.Player });
-        await roleRepository.AddAsync(new Role { Name = RoleConstants.Admin });
-        await roleRepository.SaveChangesAsync();
+        User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
+        if(testUser is not null)
+        {
+            context.Users.Remove(testUser);
+            await context.SaveChangesAsync();
+        }
+
+        Role? testRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleConstants.Player);
+        if (testRole is null)
+        {
+            await context.Roles.AddAsync(new() { Name = RoleConstants.Player });
+            await context.SaveChangesAsync();
+        }
 
         IPasswordHashProvider passwordHashProvider = _fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
         UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
@@ -73,10 +73,7 @@ public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
         IActionResult authResult = await authController.Authenticate(loginRequest);
 
         // Assert
-        Assert.IsType<OkObjectResult>(userRegisterResult);
+        OkObjectResult? registerOk = Assert.IsType<OkObjectResult>(userRegisterResult);
         Assert.IsType<OkObjectResult>(authResult);
-        
-
     }
-
 }
