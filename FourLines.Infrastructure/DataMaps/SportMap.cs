@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace FourLines.Infrastructure.DataMaps;
 
 public class SportMap : IEntityTypeConfiguration<Sport>

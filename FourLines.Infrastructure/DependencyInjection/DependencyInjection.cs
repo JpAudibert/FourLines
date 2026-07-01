@@ -1,10 +1,4 @@
-﻿using FourLines.Infrastructure.Contexts;
-using FourLines.Infrastructure.Repositories;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-
-namespace FourLines.Infrastructure.DependencyInjection;
+﻿namespace FourLines.Infrastructure.DependencyInjection;
 
 public static class DependencyInjection
 {
