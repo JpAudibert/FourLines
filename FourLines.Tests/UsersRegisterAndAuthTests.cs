@@ -7,6 +7,7 @@ using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests;
@@ -27,8 +28,6 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
             RegistrationNumber = "383.975.210-89",
-            RoleName = RoleConstants.Player,
-            isActive = true
         };
 
         LoginViewModel loginRequest = new()
@@ -40,16 +39,21 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
         FourLinesContext context = _fixtures.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
-        if(testUser is not null)
+        if (testUser is not null)
         {
             context.Users.Remove(testUser);
             await context.SaveChangesAsync();
         }
 
         Role? testRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == RoleConstants.Player);
+        Guid roleGuid = Guid.NewGuid();
         if (testRole is null)
         {
-            await context.Roles.AddAsync(new() { Name = RoleConstants.Player });
+            await context.Roles.AddAsync(new()
+            {
+                Id = roleGuid,
+                Name = RoleConstants.Player
+            });
             await context.SaveChangesAsync();
         }
 
@@ -63,7 +67,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
         AuthController authController = new(authenticationHandler);
 
         // Act 
-        ActionResult<User> userRegisterResult = await userRegisterController.Register(newUser);
+        ActionResult<User> userRegisterResult = await userRegisterController.Register(roleGuid, newUser);
         ActionResult<string> authResult = await authController.Authenticate(loginRequest);
 
         // Assert
