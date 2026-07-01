@@ -76,15 +76,5 @@ public class UsersRegisterAndAuthTests : IClassFixture<InMemoryFixtures>
         // Assert
         OkObjectResult? registerOk = Assert.IsType<OkObjectResult>(userRegisterResult);
         Assert.IsType<OkObjectResult>(authResult);
-
-        // Cleanup
-        Result? cleanupResult = registerOk.Value as Result;
-        User? createdUser = cleanupResult?.Value as User;
-        if(createdUser is not null)
-        {
-            context.Users.Remove(createdUser);
-            await context.SaveChangesAsync();
-        }
-
     }
 }
