@@ -8,6 +8,6 @@ public record UserRegisterDTO
     public DateOnly Birthday { get; init; }
     public string Phone { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
-    public string RoleName { get; init; } = RoleConstants.Player;
-    public bool isActive { get; init; } = default!;
+    public Guid RoleId { get; init; } = default!;
+    public bool IsActive { get; init; } = default!;
 }

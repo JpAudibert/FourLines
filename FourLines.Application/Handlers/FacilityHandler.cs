@@ -10,7 +10,7 @@ public class FacilityHandler(FourLinesContext context)
     public async Task<Result<Facility>> Create(CreateFacilityDTO newFacility)
     {
         User? owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == newFacility.OwnerId);
-        if(owner is null)
+        if (owner is null)
             return Result<Facility>.Failure(FacilityCreationErrorResults.OwnerDoesNotExists);
 
         Facility facility = new()
