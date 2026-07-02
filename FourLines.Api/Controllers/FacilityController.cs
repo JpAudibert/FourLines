@@ -1,18 +1,18 @@
+using FourLines.Api.ViewModels.Facilities;
+using FourLines.Application.DTOs.Facilities;
+
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class FacilityController : Controller
+public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : Controller
 {
-    private readonly IStandardRepository<Facility> _repository;
-
-    public FacilityController(IStandardRepository<Facility> repository)
-    {
-        _repository = repository;
-    }
+    private readonly FacilityHandler _facilityHandler = facilityHandler;
+    private readonly IStandardRepository<Facility> _repository = repository;
 
     [HttpGet()]
+    [EndpointName("GetAll")]
     public async Task<IActionResult> GetAll()
     {
         IEnumerable<Facility> facilities = await _repository.GetAllAsync();
@@ -20,51 +20,83 @@ public class FacilityController : Controller
         return Ok(facilities);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("owner/{ownerId}")]
+    [EndpointName("GetAllFromOwner")]
+    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
     {
-        Facility? facility = await _repository.GetEntityAsync(id);
+        Result<IEnumerable<Facility>> result = await _facilityHandler.GetFacilitiesFromOwner(ownerId);
 
-        if (facility is null)
-            return NotFound();
+        if (result.IsFailure)
+            BadRequest(result.Error);
 
-        return Ok(facility);
+        return Ok(result.Value);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Facility facility)
+    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("GetFacilityFromOwner")]
+    public async Task<IActionResult> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
-        await _repository.AddAsync(facility);
+        Result<Facility> result = await _facilityHandler.GetFacilityFromOwner(ownerId, facilityId);
 
-        return Created();
+        if (result.IsFailure)
+            BadRequest(result.Error);
+
+        return Ok(result.Value);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Facility facility)
+    [HttpPost("owner/{ownerId}")]
+    [EndpointName("Create")]
+    public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
     {
-        if (id != facility.Id)
-            return BadRequest();
+        Result<Facility> result = await _facilityHandler.Create(new CreateFacilityDTO()
+        {
+            OwnerId = ownerId,
+            Name = request.Name,
+            Address = request.Address,
+            City = request.City,
+            State = request.State,
+            ZipCode = request.ZipCode,
+            RegistrationNumber = request.RegistrationNumber,
+        });
 
-        Facility? existingFacility = await _repository.GetEntityAsync(id);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+
+    [HttpPut("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("Update")]
+    public async Task<IActionResult> Update([FromRoute] Guid ownerId, [FromRoute] Guid facilityId, [FromBody] UpdateFacilityViewModel facility)
+    {
+        Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
+        {
+            Id = facilityId,
+            Name = facility.Name,
+            Address = facility.Address,
+            City = facility.City,
+            State = facility.State,
+            ZipCode = facility.ZipCode,
+            RegistrationNumber = facility.RegistrationNumber
+        });
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+
+    [HttpDelete("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("Delete")]
+    public async Task<IActionResult> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
+    {
+        Facility? existingFacility = await _repository.GetEntityAsync(facilityId);
 
         if (existingFacility is null)
-            return NotFound(id);
+            return NotFound(facilityId);
 
-        await _repository.UpdateAsync(facility);
+        await _repository.DeleteAsync(facilityId);
 
-        return Ok(id);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        Facility? existingFacility = await _repository.GetEntityAsync(id);
-
-        if (existingFacility is null)
-            return NotFound(id);
-
-        await _repository.DeleteAsync(id);
-
-        return Ok(id);
+        return Ok(facilityId);
     }
 }

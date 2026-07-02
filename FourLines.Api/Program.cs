@@ -56,7 +56,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options => options.AddDocument("v1", "API Version 1", isDefault: true));
 }
 
 app.UseAuthorization();

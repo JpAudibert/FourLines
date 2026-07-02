@@ -1,4 +1,4 @@
-﻿namespace FourLines.Api.ViewModels;
+﻿namespace FourLines.Api.ViewModels.Users;
 
 public record UserRegisterViewModel
 {
@@ -22,7 +22,5 @@ public record UserRegisterViewModel
     [RegularExpression("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", ErrorMessage = "Invalid registration number format.")]
     public string RegistrationNumber { get; init; } = default!;
 
-    public string RoleName { get; init; } = RoleConstants.Player;
-
-    public bool isActive { get; init; } = default!;
+    public bool IsActive { get; init; } = default!;
 }

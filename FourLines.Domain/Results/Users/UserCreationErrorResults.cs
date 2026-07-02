@@ -1,4 +1,4 @@
-﻿namespace FourLines.Domain.Results.User;
+﻿namespace FourLines.Domain.Results.Users;
 
 public static class UserCreationErrorResults
 {

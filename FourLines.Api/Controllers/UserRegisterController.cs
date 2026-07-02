@@ -1,6 +1,4 @@
-﻿
-
-namespace FourLines.Api.Controllers;
+﻿namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
@@ -9,8 +7,8 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
 {
     private readonly UserHandler _userHandler = userHandler;
 
-    [HttpPost]
-    public async Task<ActionResult<User>> Register([FromBody] UserRegisterViewModel request)
+    [HttpPost("{roleId}")]
+    public async Task<ActionResult<User>> Register([FromRoute] Guid roleId, [FromBody] UserRegisterViewModel request)
     {
         Result<User> result = await _userHandler.Create(new UserRegisterDTO
         {
@@ -19,9 +17,9 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
             Birthday = request.Birthday,
             Phone = request.Phone,
             RegistrationNumber = request.RegistrationNumber,
-            RoleName = request.RoleName,
+            RoleId = roleId,
             Password = request.Password,
-            isActive = request.isActive
+            IsActive = request.IsActive
         });
 
         if (result.IsFailure)
