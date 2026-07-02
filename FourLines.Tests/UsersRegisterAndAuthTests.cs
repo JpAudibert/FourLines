@@ -1,5 +1,5 @@
 using FourLines.Api.Controllers;
-using FourLines.Api.ViewModels;
+using FourLines.Api.ViewModels.Users;
 using FourLines.Application.Handlers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
