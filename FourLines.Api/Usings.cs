@@ -1,8 +1,7 @@
-﻿global using FourLines.Api.ViewModels;
+﻿global using FourLines.Api.ViewModels.Users;
 global using FourLines.Application.DependencyInjection;
 global using FourLines.Application.DTOs;
 global using FourLines.Application.Handlers;
-global using FourLines.Domain.Constants;
 global using FourLines.Domain.DependencyInjection;
 global using FourLines.Domain.Interfaces;
 global using FourLines.Domain.Models;

@@ -1,6 +1,4 @@
-﻿
-
-namespace FourLines.Api.ViewModels;
+﻿namespace FourLines.Api.ViewModels.Users;
 
 public class LoginViewModel
 {
