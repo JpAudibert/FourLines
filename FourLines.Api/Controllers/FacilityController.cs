@@ -12,6 +12,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
     private readonly IStandardRepository<Facility> _repository = repository;
 
     [HttpGet()]
+    [EndpointName("GetAll")]
     public async Task<IActionResult> GetAll()
     {
         IEnumerable<Facility> facilities = await _repository.GetAllAsync();
@@ -19,18 +20,32 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(facilities);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("owner/{ownerId}")]
+    [EndpointName("GetAllFromOwner")]
+    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
     {
-        Facility? facility = await _repository.GetEntityAsync(id);
+        Result<IEnumerable<Facility>> result = await _facilityHandler.GetFacilitiesFromOwner(ownerId);
 
-        if (facility is null)
-            return NotFound();
+        if (result.IsFailure)
+            BadRequest(result.Error);
 
-        return Ok(facility);
+        return Ok(result.Value);
     }
 
-    [HttpPost("{ownerId}")]
+    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("GetFacilityFromOwner")]
+    public async Task<IActionResult> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
+    {
+        Result<Facility> result = await _facilityHandler.GetFacilityFromOwner(ownerId, facilityId);
+
+        if (result.IsFailure)
+            BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+
+    [HttpPost("owner/{ownerId}")]
+    [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
     {
         Result<Facility> result = await _facilityHandler.Create(new CreateFacilityDTO()
@@ -50,32 +65,38 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> Update(Guid id, [FromBody] Facility facility)
-    //{
-    //    if (id != facility.Id)
-    //        return BadRequest();
+    [HttpPut("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("Update")]
+    public async Task<IActionResult> Update([FromRoute] Guid ownerId, [FromRoute] Guid facilityId, [FromBody] UpdateFacilityViewModel facility)
+    {
+        Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
+        {
+            Id = facilityId,
+            Name = facility.Name,
+            Address = facility.Address,
+            City = facility.City,
+            State = facility.State,
+            ZipCode = facility.ZipCode,
+            RegistrationNumber = facility.RegistrationNumber
+        });
 
-    //    Facility? existingFacility = await _repository.GetEntityAsync(id);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-    //    if (existingFacility is null)
-    //        return NotFound(id);
+        return Ok(result.Value);
+    }
 
-    //    await _repository.UpdateAsync(facility);
+    [HttpDelete("owner/{ownerId}/facility/{facilityId}")]
+    [EndpointName("Delete")]
+    public async Task<IActionResult> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
+    {
+        Facility? existingFacility = await _repository.GetEntityAsync(facilityId);
 
-    //    return Ok(id);
-    //}
+        if (existingFacility is null)
+            return NotFound(facilityId);
 
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> Delete(Guid id)
-    //{
-    //    Facility? existingFacility = await _repository.GetEntityAsync(id);
+        await _repository.DeleteAsync(facilityId);
 
-    //    if (existingFacility is null)
-    //        return NotFound(id);
-
-    //    await _repository.DeleteAsync(id);
-
-    //    return Ok(id);
-    //}
+        return Ok(facilityId);
+    }
 }
