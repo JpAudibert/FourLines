@@ -29,8 +29,10 @@ public class FacilitiesRegisterAndOwnershipTests(InMemoryFixtures fixtures)
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(_testRole);
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRole),
+            _fixtures.CreateEntityInMemory<User>(_testUser)
+        );
 
         CreateFacilityDTO createFacilityTest = new()
         {
