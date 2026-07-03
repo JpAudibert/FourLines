@@ -1,15 +1,9 @@
-﻿
+﻿namespace FourLines.Application.Handlers;
 
-namespace FourLines.Application.Handlers;
-
-public class SeederHandler
+[ExcludeFromCodeCoverage]
+public class SeederHandler(FourLinesContext context)
 {
-    private readonly FourLinesContext _context;
-
-    public SeederHandler(FourLinesContext context)
-    {
-        _context = context;
-    }
+    private readonly FourLinesContext _context = context;
 
     public async Task Seed()
     {

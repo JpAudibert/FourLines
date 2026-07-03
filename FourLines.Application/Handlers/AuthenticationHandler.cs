@@ -1,4 +1,6 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Domain.Results.ErrorResults;
+
+namespace FourLines.Application.Handlers;
 
 public class AuthenticationHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider, ITokenProvider tokenProvider)
 {

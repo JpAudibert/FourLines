@@ -1,4 +1,4 @@
-﻿namespace FourLines.Domain.Results.Authentication;
+﻿namespace FourLines.Domain.Results.ErrorResults;
 
 public static class AuthenticationErrorResults
 {

@@ -1,4 +1,6 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Domain.Results.ErrorResults;
+
+namespace FourLines.Application.Handlers;
 
 public class UserHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
 {
@@ -9,11 +11,11 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
     {
         User? existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         if (existingUser is not null)
-            return Result<User>.Failure(UserCreationErrorResults.EmailAlreadyExists);
+            return Result<User>.Failure(UsersErrorResults.EmailAlreadyExists);
 
         Role? role = _context.Roles.FirstOrDefault(r => r.Id == request.RoleId);
         if (role is null)
-            return Result<User>.Failure(UserCreationErrorResults.InvalidRole);
+            return Result<User>.Failure(UsersErrorResults.InvalidRole);
 
         User user = new()
         {

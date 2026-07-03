@@ -1,70 +1,97 @@
+using FourLines.Api.ViewModels.Courts;
+using FourLines.Application.DTOs.Courts;
+
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
-public class CourtController : Controller
+[Route("api/v{version:apiVersion}")]
+public class CourtController(CourtHandler courtHandler) : Controller
 {
-    private readonly IStandardRepository<Court> _repository;
+    private readonly CourtHandler _courtHandler = courtHandler;
 
-    public CourtController(IStandardRepository<Court> repository)
+    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    public async Task<IActionResult> GetAll(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId)
     {
-        _repository = repository;
+        Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(ownerId, facilityId);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
     }
 
-    [HttpGet()]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    public async Task<IActionResult> GetById(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        [FromRoute] Guid courtId)
     {
-        IEnumerable<Court> courts = await _repository.GetAllAsync();
+        Result<Court> result = await _courtHandler.GetFacility(ownerId, facilityId, courtId);
 
-        return Ok(courts);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpPost("owner/{ownerId}/facility/{facilityId}")]
+    public async Task<ActionResult<Court>> Create(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        [FromBody] CreateCourtViewModel newCourt)
     {
-        Court? court = await _repository.GetEntityAsync(id);
+        Result<Court> result = await _courtHandler.Create(new CreateCourtDTO()
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId,
+            SportId = newCourt.SportId,
+            Name = newCourt.Name,
+            IsActive = newCourt.IsActive,
+        });
 
-        if (court is null)
-            return NotFound();
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-        return Ok(court);
+        return Ok(result.Value);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Court court)
+    [HttpPut("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    public async Task<ActionResult<Court>> Update(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        [FromRoute] Guid courtId,
+        [FromBody] UpdateCourtViewModel updateCourt)
     {
-        await _repository.AddAsync(court);
+        Result<Court> result = await _courtHandler.Update(new UpdateCourtDTO()
+        {
+            Id = courtId,
+            OwnerId = ownerId,
+            FacilityId = facilityId,
+            SportId = updateCourt.SportId,
+            Name = updateCourt.Name,
+            IsActive = updateCourt.IsActive,
+        });
 
-        return Created();
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Court court)
+    [HttpDelete("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    public async Task<ActionResult<bool>> Delete(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        [FromRoute] Guid courtId)
     {
-        if (id != court.Id)
-            return BadRequest();
+        Result<bool> result = await _courtHandler.Delete(ownerId, facilityId, courtId);
 
-        Court? existingCourt = await _repository.GetEntityAsync(id);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-        if (existingCourt is null)
-            return NotFound(id);
-
-        await _repository.UpdateAsync(court);
-
-        return Ok(id);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        Court? existingCourt = await _repository.GetEntityAsync(id);
-
-        if (existingCourt is null)
-            return NotFound(id);
-
-        await _repository.DeleteAsync(id);
-
-        return Ok(id);
+        return Ok(result.Value);
     }
 }
