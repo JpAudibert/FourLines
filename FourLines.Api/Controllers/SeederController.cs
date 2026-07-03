@@ -1,8 +1,11 @@
-﻿namespace FourLines.Api.Controllers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
+[ExcludeFromCodeCoverage]
 public class SeederController(SeederHandler seederHandler) : ControllerBase
 {
     private readonly SeederHandler _seederHandler = seederHandler;

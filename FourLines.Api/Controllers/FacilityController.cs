@@ -5,13 +5,13 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}")]
 public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : Controller
 {
     private readonly FacilityHandler _facilityHandler = facilityHandler;
     private readonly IStandardRepository<Facility> _repository = repository;
 
-    [HttpGet()]
+    [HttpGet("facilities")]
     [EndpointName("GetAll")]
     public async Task<IActionResult> GetAll()
     {
@@ -67,11 +67,15 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
 
     [HttpPut("owner/{ownerId}/facility/{facilityId}")]
     [EndpointName("Update")]
-    public async Task<IActionResult> Update([FromRoute] Guid ownerId, [FromRoute] Guid facilityId, [FromBody] UpdateFacilityViewModel facility)
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid ownerId, 
+        [FromRoute] Guid facilityId, 
+        [FromBody] UpdateFacilityViewModel facility)
     {
         Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
         {
             Id = facilityId,
+            OwnerId = ownerId,
             Name = facility.Name,
             Address = facility.Address,
             City = facility.City,
@@ -90,13 +94,11 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
     [EndpointName("Delete")]
     public async Task<IActionResult> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
-        Facility? existingFacility = await _repository.GetEntityAsync(facilityId);
+        Result<bool> result = await _facilityHandler.Delete(ownerId, facilityId);
 
-        if (existingFacility is null)
-            return NotFound(facilityId);
+        if (result.IsFailure)
+            return BadRequest(result.Error);
 
-        await _repository.DeleteAsync(facilityId);
-
-        return Ok(facilityId);
+        return Ok(result.Value);
     }
 }
