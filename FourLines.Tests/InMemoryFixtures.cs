@@ -41,6 +41,17 @@ public class InMemoryFixtures
         Builder.Build();
     }
 
+    public async Task RemoveDataFromMemory<T>(Guid id)
+        where T : BaseEntity
+    {
+        FourLinesContext context = ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        T entity = await context.Set<T>().FindAsync(id);
+
+        context.Set<T>().Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
     public async Task<T> CreateEntityInMemory<T>(T entity)
         where T : BaseEntity
     {
