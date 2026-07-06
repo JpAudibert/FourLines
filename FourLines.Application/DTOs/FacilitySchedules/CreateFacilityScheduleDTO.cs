@@ -1,11 +1,10 @@
-﻿namespace FourLines.Domain.Models;
+﻿namespace FourLines.Application.DTOs.FacilitySchedules;
 
-public class FacilitySchedule : BaseEntity
+public record CreateFacilityScheduleDTO
 {
     public Guid FacilityId { get; init; }
+    public Guid OwnerId { get; init; }
     public DayOfWeek DayOfWeek { get; init; }
     public TimeOnly OpensAt { get; init; }
     public TimeOnly ClosesAt { get; init; }
-
-    public Facility Facility { get; init; } = default!;
 }
