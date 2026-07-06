@@ -11,14 +11,14 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
     private readonly FacilityHandler _facilityHandler = facilityHandler;
     private readonly IStandardRepository<Facility> _repository = repository;
 
-    [HttpGet("facilities")]
-    [EndpointName("GetAll")]
-    public async Task<IActionResult> GetAll()
-    {
-        IEnumerable<Facility> facilities = await _repository.GetAllAsync();
+    //[HttpGet("facilities")]
+    //[EndpointName("GetAll")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    IEnumerable<Facility> facilities = await _repository.GetAllAsync();
 
-        return Ok(facilities);
-    }
+    //    return Ok(facilities);
+    //}
 
     [HttpGet("owner/{ownerId}")]
     [EndpointName("GetAllFromOwner")]
@@ -68,8 +68,8 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
     [HttpPut("owner/{ownerId}/facility/{facilityId}")]
     [EndpointName("Update")]
     public async Task<IActionResult> Update(
-        [FromRoute] Guid ownerId, 
-        [FromRoute] Guid facilityId, 
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
         [FromBody] UpdateFacilityViewModel facility)
     {
         Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()

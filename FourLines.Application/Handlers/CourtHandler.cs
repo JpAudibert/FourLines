@@ -85,7 +85,7 @@ public class CourtHandler(FourLinesContext context)
 
     public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(Guid ownerId, Guid facilityId)
     {
-        IEnumerable<Court?> courts = await _context.Courts
+        IEnumerable<Court>? courts = await _context.Courts
             .Where(c => c.Facility.Id == facilityId && c.Facility.OwnerId == ownerId)
             .ToListAsync();
 

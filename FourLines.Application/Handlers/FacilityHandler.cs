@@ -1,6 +1,5 @@
 ﻿using FourLines.Application.DTOs.Facilities;
 using FourLines.Domain.Constants;
-using FourLines.Domain.Results.ErrorResults;
 
 namespace FourLines.Application.Handlers;
 
