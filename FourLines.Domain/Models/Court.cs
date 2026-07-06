@@ -9,4 +9,6 @@ public class Court : BaseEntity
 
     public Sport Sport { get; init; } = default!;
     public Facility Facility { get; init; } = default!;
+
+    public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }

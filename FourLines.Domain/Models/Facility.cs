@@ -12,4 +12,5 @@ public class Facility : BaseEntity
 
     public User Owner { get; init; } = default!;
     public ICollection<Court> Courts { get; set; } = new List<Court>();
+    public ICollection<FacilitySchedule> Schedules { get; set; } = new List<FacilitySchedule>();
 }
