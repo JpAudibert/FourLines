@@ -5,13 +5,13 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}")]
+[Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
 public class FacilityScheduleController(FacilityScheduleHandler facilityScheduleHandler) : Controller
 {
     private readonly FacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
 
-    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
-    public async Task<IActionResult> GetScheduleFromFacility(
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<FacilitySchedule>>> GetScheduleFromFacility(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
     {
@@ -23,7 +23,7 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         return Ok(result.Value);
     }
 
-    [HttpPost("owner/{ownerId}/facility/{facilityId}")]
+    [HttpPost]
     public async Task<ActionResult<Court>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
@@ -65,8 +65,8 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
     //    return Ok(result.Value);
     //}
 
-    [HttpPut("owner/{ownerId}/facility/{facilityId}/court/{scheduleId}")]
-    public async Task<ActionResult<Court>> Update(
+    [HttpPut("{scheduleId}")]
+    public async Task<ActionResult<FacilitySchedule>> Update(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId,
@@ -88,7 +88,7 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         return Ok(result.Value);
     }
 
-    [HttpDelete("owner/{ownerId}/facility/{facilityId}/court/{scheduleId}")]
+    [HttpDelete("{scheduleId}")]
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,

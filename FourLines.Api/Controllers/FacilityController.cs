@@ -5,7 +5,7 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}")]
+[Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
 public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : Controller
 {
     private readonly FacilityHandler _facilityHandler = facilityHandler;
@@ -20,7 +20,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
     //    return Ok(facilities);
     //}
 
-    [HttpGet("owner/{ownerId}")]
+    [HttpGet]
     [EndpointName("GetAllFromOwner")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
     {
@@ -32,7 +32,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    [HttpGet("{facilityId}")]
     [EndpointName("GetFacilityFromOwner")]
     public async Task<IActionResult> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
@@ -44,7 +44,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpPost("owner/{ownerId}")]
+    [HttpPost]
     [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
     {
@@ -65,7 +65,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpPut("owner/{ownerId}/facility/{facilityId}")]
+    [HttpPut("{facilityId}")]
     [EndpointName("Update")]
     public async Task<IActionResult> Update(
         [FromRoute] Guid ownerId,
@@ -90,7 +90,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpDelete("owner/{ownerId}/facility/{facilityId}")]
+    [HttpDelete("{facilityId}")]
     [EndpointName("Delete")]
     public async Task<IActionResult> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
