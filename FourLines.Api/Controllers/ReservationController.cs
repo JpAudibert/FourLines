@@ -14,16 +14,24 @@ namespace FourLines.Api.Controllers
         public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(
             [FromRoute] Guid userId)
         {
-            // Logic to retrieve all reservations for the authenticated user
-            return Ok();
+            Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromUser(userId);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
 
         [HttpGet("~/api/v{version:apiVersion}/court/{courtId}/[controller]")]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
             [FromRoute] Guid courtId)
         {
-            // Logic to retrieve all reservations for the authenticated user
-            return Ok();
+            Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromCourt(courtId);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
 
         [HttpGet("{reservationId}")]
@@ -31,8 +39,12 @@ namespace FourLines.Api.Controllers
             [FromRoute] Guid userId,
             [FromRoute] Guid reservationId)
         {
-            // Logic to retrieve all reservations for the authenticated user
-            return Ok();
+            Result<Reservation> result = await _reservationHandler.GetOneReservationFromUser(userId, reservationId);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
 
         [HttpPost]
@@ -59,8 +71,12 @@ namespace FourLines.Api.Controllers
             [FromRoute] Guid userId,
             [FromRoute] Guid reservationId)
         {
-            // Logic to retrieve all reservations for the authenticated user
-            return Ok();
+            Result<bool> result = await _reservationHandler.Delete(userId, reservationId);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
         }
     }
 }

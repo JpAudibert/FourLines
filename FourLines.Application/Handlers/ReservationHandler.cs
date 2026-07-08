@@ -1,13 +1,24 @@
 ﻿using FourLines.Application.DTOs.Reservations;
+using FourLines.Application.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace FourLines.Application.Handlers;
 
-public class ReservationHandler(FourLinesContext context)
+public class ReservationHandler(FourLinesContext context, IReservationValidator reservationValidator)
 {
     private readonly FourLinesContext _context = context;
+    private readonly IReservationValidator _reservationValidator = reservationValidator;
 
     public async Task<Result<Reservation>> Create(CreateReservationDTO newReservation)
     {
+        Result<Reservation> validationResult = await _reservationValidator.ValidateAsync(newReservation);
+
+        if (validationResult.IsFailure)
+            return validationResult;
+
+        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
         Court? court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == newReservation.CourtId);
         if (court is null)
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationUnknownCourt);
@@ -16,16 +27,42 @@ public class ReservationHandler(FourLinesContext context)
         if (user is null)
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationUnknownUser);
 
+        DayOfWeek dayOfWeek = newReservation.Period.Start.DayOfWeek;
+        TimeOnly reservationStartTime = TimeOnly.FromDateTime(newReservation.Period.Start.DateTime);
+        TimeOnly reservationEndTime = TimeOnly.FromDateTime(newReservation.Period.End.DateTime);
+
+        FacilitySchedule? schedule = await _context.FacilitySchedules
+            .FirstOrDefaultAsync(s => s.FacilityId == court.FacilityId &&
+                s.DayOfWeek == dayOfWeek &&
+                s.OpensAt <= reservationStartTime &&
+                s.ClosesAt >= reservationEndTime);
+
+        if (schedule is null)
+            return Result<Reservation>.Failure(ReservationsErrorResults.CreationOutsideFacilitySchedule);
+
         Reservation reservation = new()
         {
             CourtId = newReservation.CourtId,
             UserId = newReservation.UserId,
             Period = newReservation.Period,
-            Status = ReservationStatus.Pending
+            Status = ReservationStatus.Pending,
+            Court = court,
+            User = user
         };
+
+        bool overlappingReservation = await _context.Reservations
+            .AnyAsync(r => r.CourtId == newReservation.CourtId &&
+                r.Period.Start < newReservation.Period.End &&
+                r.Period.End > newReservation.Period.Start &&
+                r.Status != ReservationStatus.Cancelled);
+
+        if (overlappingReservation)
+            return Result<Reservation>.Failure(ReservationsErrorResults.CreationOverlappingReservation);
 
         await _context.Reservations.AddAsync(reservation);
         await _context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
 
         return Result<Reservation>.Success(reservation);
     }
@@ -58,7 +95,7 @@ public class ReservationHandler(FourLinesContext context)
             })
             .ToListAsync();
 
-        if(!reservations.Any())
+        if (!reservations.Any())
             return Result<IEnumerable<Reservation>>.Failure(ReservationsErrorResults.GetAllNoReservationsForUser);
 
         return Result<IEnumerable<Reservation>>.Success(reservations);
