@@ -6,7 +6,7 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : Controller
+public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : ControllerBase
 {
     private readonly FacilityHandler _facilityHandler = facilityHandler;
     private readonly IStandardRepository<Facility> _repository = repository;

@@ -6,7 +6,7 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class FacilityScheduleController(FacilityScheduleHandler facilityScheduleHandler) : Controller
+public class FacilityScheduleController(FacilityScheduleHandler facilityScheduleHandler) : ControllerBase
 {
     private readonly FacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
 

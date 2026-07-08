@@ -6,7 +6,7 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class CourtController(CourtHandler courtHandler) : Controller
+public class CourtController(CourtHandler courtHandler) : ControllerBase
 {
     private readonly CourtHandler _courtHandler = courtHandler;
 
