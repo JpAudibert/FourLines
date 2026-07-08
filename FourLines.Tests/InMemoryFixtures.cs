@@ -10,6 +10,7 @@ using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ public class InMemoryFixtures
     public IConfiguration Configuration { get; set; }
     public HostApplicationBuilder Builder { get; set; }
     public IServiceProvider ServiceProvider { get; set; }
+    private readonly SqliteConnection _connection;
 
     public InMemoryFixtures()
     {
@@ -32,6 +34,12 @@ public class InMemoryFixtures
 
         Builder = new HostApplicationBuilder();
 
+        _connection = new SqliteConnection(Configuration.GetConnectionString("DefaultConnection"));
+
+        _connection.Open();
+
+        Builder.Services.AddSingleton(_connection);
+
         Builder.Services.AddInfrastructure(Configuration).AddApplication().AddDomain();
 
         Builder.Configuration.AddConfiguration(Configuration);
@@ -39,6 +47,18 @@ public class InMemoryFixtures
         ServiceProvider = Builder.Services.BuildServiceProvider();
 
         Builder.Build();
+
+        using var scope = ServiceProvider.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+    }
+
+    public void Dispose()
+    {
+        _connection.Dispose();
     }
 
     public async Task RemoveDataFromMemory<T>(Guid id)
@@ -61,64 +81,5 @@ public class InMemoryFixtures
         await context.SaveChangesAsync();
 
         return entity;
-    }
-
-    public UserRegisterDTO CreateUserRegisterDTO()
-    {
-        return new UserRegisterDTO
-        {
-            Name = "John Doe",
-            Email = "john.doe@example.com",
-            Password = "Password123!",
-            Birthday = new DateOnly(1970, 1, 1),
-            Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "383.975.210-89",
-            RoleId = Guid.NewGuid(),
-        };
-    }
-
-    public CreateFacilityDTO CreateCreateFacilityDTO()
-    {
-        return new CreateFacilityDTO
-        {
-            OwnerId = Guid.NewGuid(),
-            Name = "Test Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "12.345.678/0001-90",
-        };
-    }
-
-    public UpdateFacilityDTO CreateUpdateFacilityDTO()
-    {
-        return new UpdateFacilityDTO
-        {
-            Name = "Test Facility Updated",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "12.345.678/0001-90",
-        };
-    }
-
-    public UserRegisterViewModel CreateUserRegisterViewModel()
-    {
-        return new()
-        {
-            Name = "John Doe",
-            Email = "john.doe@example.com",
-            Password = "Password123!",
-            Birthday = new DateOnly(1970, 1, 1),
-            Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "383.975.210-89",
-        };
-    }
-
-    public LoginViewModel CreateUserLoginViewModel()
-    {
-        return new() { Email = "john.doe@example.com", Password = "Password123!" };
     }
 }

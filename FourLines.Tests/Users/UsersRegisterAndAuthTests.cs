@@ -7,10 +7,9 @@ using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FourLines.Tests;
+namespace FourLines.Tests.Users;
 
 public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {

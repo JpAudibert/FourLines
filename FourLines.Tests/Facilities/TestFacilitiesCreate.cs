@@ -3,20 +3,21 @@ using FourLines.Application.Handlers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
+using FourLines.Domain.Results.ErrorResults;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FourLines.Tests;
+namespace FourLines.Tests.Facilities;
 
-public class FacilitiesRegisterAndOwnershipTests(InMemoryFixtures fixtures)
-    : IClassFixture<InMemoryFixtures>
+public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
     private readonly InMemoryFixtures _fixtures = fixtures;
 
-    private static Role _testRole = new() { Name = RoleConstants.FacilityOwner };
+    private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
+    private static Role _testRolePlayer = new() { Name = RoleConstants.Player };
 
     private static User _testUser = new()
     {
-        RoleId = _testRole.Id,
+        RoleId = _testRoleOwner.Id,
         Name = "John Doe",
         Email = "john.doe@example.com",
         PasswordHash = "Password123!",
@@ -30,7 +31,7 @@ public class FacilitiesRegisterAndOwnershipTests(InMemoryFixtures fixtures)
     {
         // Arrange
         await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRole),
+            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
             _fixtures.CreateEntityInMemory<User>(_testUser)
         );
 
@@ -61,5 +62,39 @@ public class FacilitiesRegisterAndOwnershipTests(InMemoryFixtures fixtures)
         Assert.Equal(createFacilityTest.ZipCode, result.Value.ZipCode);
         Assert.Equal(createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(createFacilityTest.OwnerId, result.Value.OwnerId);
+    }
+
+    [Fact]
+    public async Task Should_Not_CreateFacility()
+    {
+        // Arrange
+        User userPlayer = _testUser;
+        userPlayer.RoleId = _testRolePlayer.Id;
+
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRolePlayer),
+            _fixtures.CreateEntityInMemory<User>(userPlayer)
+        );
+
+        CreateFacilityDTO createFacilityTest = new()
+        {
+            Name = "Test Facility",
+            Address = "123 Test St",
+            City = "Test City",
+            State = "TS",
+            ZipCode = "12345",
+            RegistrationNumber = "1234567890",
+            OwnerId = _testUser.Id,
+        };
+
+        FacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+
+        // Act
+        Result<Facility> result = await facilityHandler.Create(createFacilityTest);
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(FacilitiesErrorResults.CreateOwnerDoesNotExists, result.Error);
     }
 }

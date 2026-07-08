@@ -10,7 +10,9 @@ public class FacilityHandler(FourLinesContext context)
 
     public async Task<Result<Facility>> Create(CreateFacilityDTO newFacility)
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == newFacility.OwnerId && u.Role.Name == RoleConstants.FacilityOwner);
+        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Id == newFacility.OwnerId && u.Role.Name == RoleConstants.FacilityOwner
+        );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.CreateOwnerDoesNotExists);
 
@@ -37,16 +39,17 @@ public class FacilityHandler(FourLinesContext context)
         if (facility.OwnerId == Guid.Empty)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);
 
-        int affectedRows = await _context.Facilities
-                .Where(f => f.Id == facility.Id && f.OwnerId == facility.OwnerId)
-                .ExecuteUpdateAsync(setters => setters
+        int affectedRows = await _context
+            .Facilities.Where(f => f.Id == facility.Id && f.OwnerId == facility.OwnerId)
+            .ExecuteUpdateAsync(setters =>
+                setters
                     .SetProperty(f => f.Name, facility.Name)
                     .SetProperty(f => f.Address, facility.Address)
                     .SetProperty(f => f.City, facility.City)
                     .SetProperty(f => f.State, facility.State)
                     .SetProperty(f => f.ZipCode, facility.ZipCode)
                     .SetProperty(f => f.RegistrationNumber, facility.RegistrationNumber)
-                );
+            );
         if (affectedRows <= 0)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateFacilityDoesNotExist);
 
@@ -60,8 +63,8 @@ public class FacilityHandler(FourLinesContext context)
     public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId)
     {
         bool deleted = false;
-        int facility = await _context.Facilities
-            .Where(f => f.Id == facilityId && f.OwnerId == ownerId)
+        int facility = await _context
+            .Facilities.Where(f => f.Id == facilityId && f.OwnerId == ownerId)
             .ExecuteDeleteAsync();
 
         if (facility <= 0)
@@ -75,12 +78,16 @@ public class FacilityHandler(FourLinesContext context)
 
     public async Task<Result<IEnumerable<Facility>>> GetFacilitiesFromOwner(Guid ownerId)
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner);
+        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner
+        );
         if (owner is null)
-            return Result<IEnumerable<Facility>>.Failure(FacilitiesErrorResults.RetrieveOwnerDoesNotExists);
+            return Result<IEnumerable<Facility>>.Failure(
+                FacilitiesErrorResults.RetrieveOwnerDoesNotExists
+            );
 
-        IEnumerable<Facility> facilities = await _context.Facilities
-            .Where(f => f.OwnerId == ownerId)
+        IEnumerable<Facility> facilities = await _context
+            .Facilities.Where(f => f.OwnerId == ownerId)
             .Select(f => new Facility
             {
                 Id = f.Id,
@@ -90,7 +97,7 @@ public class FacilityHandler(FourLinesContext context)
                 State = f.State,
                 ZipCode = f.ZipCode,
                 RegistrationNumber = f.RegistrationNumber,
-                OwnerId = f.OwnerId
+                OwnerId = f.OwnerId,
             })
             .ToListAsync();
 
@@ -99,11 +106,15 @@ public class FacilityHandler(FourLinesContext context)
 
     public async Task<Result<Facility>> GetFacilityFromOwner(Guid ownerId, Guid facilityId)
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner);
+        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner
+        );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.RetrieveOwnerDoesNotExists);
 
-        Facility? facility = await _context.Facilities.FirstOrDefaultAsync(f => f.Id == facilityId && f.OwnerId == ownerId);
+        Facility? facility = await _context.Facilities.FirstOrDefaultAsync(f =>
+            f.Id == facilityId && f.OwnerId == ownerId
+        );
         if (facility is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.RetrieveFacilityDoesNotExist);
 
