@@ -1,7 +1,4 @@
-﻿using FourLines.Api.ViewModels.FacilitySchedules;
-using FourLines.Application.DTOs.FacilitySchedules;
-
-namespace FourLines.Api.Controllers;
+﻿namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]

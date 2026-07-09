@@ -1,6 +1,3 @@
-using FourLines.Api.ViewModels.Courts;
-using FourLines.Application.DTOs.Courts;
-
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]

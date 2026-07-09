@@ -1,7 +1,4 @@
-﻿using FourLines.Api.ViewModels.Reservations;
-using FourLines.Application.DTOs.Reservations;
-
-namespace FourLines.Api.Controllers
+﻿namespace FourLines.Api.Controllers
 {
     [ApiVersion("1")]
     [ApiController]

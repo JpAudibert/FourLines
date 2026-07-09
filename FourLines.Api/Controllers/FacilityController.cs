@@ -1,6 +1,3 @@
-using FourLines.Api.ViewModels.Facilities;
-using FourLines.Application.DTOs.Facilities;
-
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
