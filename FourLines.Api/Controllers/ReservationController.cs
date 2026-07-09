@@ -66,6 +66,25 @@ namespace FourLines.Api.Controllers
             return Ok(result.Value);
         }
 
+        [HttpPatch("{reservationId}")]
+        public async Task<ActionResult<Reservation>> UpdateStatusFromReservation(
+            [FromRoute] Guid userId,
+            [FromRoute] Guid reservationId,
+            [FromBody] UpdateReservationStatusViewModel updateReservation)
+        {
+            Result<Reservation> result = await _reservationHandler.UpdateStatusFromReservation(new UpdateStatusFromReservationDTO()
+            {
+                Id = reservationId,
+                UserId = userId,
+                Status = updateReservation.Status,
+            });
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
+        }
+
         [HttpDelete("{reservationId}")]
         public async Task<ActionResult<bool>> DeleteAReservationFromUser(
             [FromRoute] Guid userId,

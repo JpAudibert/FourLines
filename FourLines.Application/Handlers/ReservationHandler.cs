@@ -67,6 +67,24 @@ public class ReservationHandler(FourLinesContext context, IReservationValidator 
         return Result<Reservation>.Success(reservation);
     }
 
+    public async Task<Result<Reservation>> UpdateStatusFromReservation(UpdateStatusFromReservationDTO reservation)
+    {
+        int affectedRows = await _context.Reservations
+            .Where(r => r.Id == reservation.Id && r.UserId == reservation.UserId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(r => r.Status, reservation.Status)
+            );
+
+        if (affectedRows <= 0)
+            return Result<Reservation>.Failure(ReservationsErrorResults.UpdateReservationDoesNotExist);
+
+        await _context.SaveChangesAsync();
+
+        Reservation? updatedReservation = await _context.Reservations.FindAsync(reservation.Id);
+
+        return Result<Reservation>.Success(updatedReservation!);
+    }
+
     public async Task<Result<bool>> Delete(Guid userId, Guid reservationId)
     {
         int affectedRows = await _context.Reservations
