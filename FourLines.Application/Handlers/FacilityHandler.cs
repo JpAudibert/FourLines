@@ -1,7 +1,4 @@
-﻿using FourLines.Application.DTOs.Facilities;
-using FourLines.Domain.Constants;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class FacilityHandler(FourLinesContext context)
 {

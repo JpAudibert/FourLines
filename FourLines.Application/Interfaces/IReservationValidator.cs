@@ -1,6 +1,4 @@
-﻿using FourLines.Application.DTOs.Reservations;
-
-namespace FourLines.Application.Interfaces;
+﻿namespace FourLines.Application.Interfaces;
 
 public interface IReservationValidator
 {

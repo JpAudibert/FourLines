@@ -1,6 +1,4 @@
-﻿using FourLines.Application.DTOs.FacilitySchedules;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class FacilityScheduleHandler(FourLinesContext context)
 {

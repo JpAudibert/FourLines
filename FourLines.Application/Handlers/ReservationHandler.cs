@@ -1,9 +1,4 @@
-﻿using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Data;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class ReservationHandler(FourLinesContext context, IReservationValidator reservationValidator)
 {

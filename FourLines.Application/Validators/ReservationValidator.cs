@@ -1,7 +1,4 @@
-﻿using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.Interfaces;
-
-namespace FourLines.Application.Validators;
+﻿namespace FourLines.Application.Validators;
 
 public class ReservationValidator(FourLinesContext context) : IReservationValidator
 {

@@ -1,6 +1,4 @@
-﻿using FourLines.Application.DTOs.Courts;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class CourtHandler(FourLinesContext context)
 {
