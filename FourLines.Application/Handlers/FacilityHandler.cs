@@ -105,4 +105,27 @@ public class FacilityHandler(FourLinesContext context)
 
         return Result<Facility>.Success(facility);
     }
+
+    public async Task<Result<IEnumerable<Facility>>> GetAllFacilities()
+    {
+        IEnumerable<Facility> facilities = await _context.Facilities
+            .Select(f => new Facility
+            {
+                Id = f.Id,
+                Name = f.Name,
+                Address = f.Address,
+                City = f.City,
+                State = f.State,
+                ZipCode = f.ZipCode,
+                RegistrationNumber = f.RegistrationNumber,
+                OwnerId = f.OwnerId
+            })
+            .ToListAsync();
+
+        if (!facilities.Any())
+            Result<IEnumerable<Facility>>.Failure(FacilitiesErrorResults.RetrieveNoFacilities);
+
+        return Result<IEnumerable<Facility>>.Success(facilities);
+
+    }
 }

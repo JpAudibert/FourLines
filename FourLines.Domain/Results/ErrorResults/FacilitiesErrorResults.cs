@@ -12,4 +12,6 @@ public class FacilitiesErrorResults
     public static readonly Error RetrieveOwnerDoesNotExists = new("FacilityRetrieval.OwnerDoesNotExists", "The specified owner does not exist.");
     public static readonly Error RetrieveFacilityDoesNotExist = new("FacilityRetrieval.FacilityDoesNotExist", "The specified facility does not exist.");
 
+    public static readonly Error RetrieveNoFacilities = new("FacilityRetrieval.NoFacilities", "There are no facilities.");
+
 }

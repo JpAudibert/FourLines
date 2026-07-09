@@ -3,19 +3,21 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : ControllerBase
+public class FacilityController(FacilityHandler facilityHandler) : ControllerBase
 {
     private readonly FacilityHandler _facilityHandler = facilityHandler;
-    private readonly IStandardRepository<Facility> _repository = repository;
 
-    //[HttpGet("facilities")]
-    //[EndpointName("GetAll")]
-    //public async Task<IActionResult> GetAll()
-    //{
-    //    IEnumerable<Facility> facilities = await _repository.GetAllAsync();
+    [HttpGet("~/api/v{version:apiVersion}/facilities")]
+    [EndpointName("GetAll")]
+    public async Task<IActionResult> GetAll()
+    {
+        Result<IEnumerable<Facility>> facilities = await _facilityHandler.GetAllFacilities();
 
-    //    return Ok(facilities);
-    //}
+        if (facilities.IsFailure)
+            return BadRequest(facilities.Error);
+
+        return Ok(facilities.Value);
+    }
 
     [HttpGet]
     [EndpointName("GetAllFromOwner")]
