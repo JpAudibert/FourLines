@@ -1,0 +1,29 @@
+meta {
+  name: Delete One
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/facility/{{facilityId}}/Court/:courtId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  courtId: 2ad9f97c-7c9e-4a2c-9ed2-a0bf9c9756ed
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,41 @@
+meta {
+  name: User Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v{{apiVersion}}/UserRegister/:roleId
+  body: json
+  auth: none
+}
+
+params:path {
+  roleId: 17d0058a-d6d8-48f7-b836-08018ebdfedd
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "João Audibert",
+    "email": "joao@email.com",
+    "password": "123",
+    "birthday": "2001-05-16",
+    "phone": "+5554999102414",
+    "registrationNumber": "026.890.330-11",
+    "isActive": true
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

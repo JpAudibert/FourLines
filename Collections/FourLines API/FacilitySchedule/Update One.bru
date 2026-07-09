@@ -1,0 +1,37 @@
+meta {
+  name: Update One
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/facility/{{facilityId}}/FacilitySchedule/:scheduleId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  scheduleId: 74fe3f86-de14-4702-91df-9cb0943bb04d
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "dayOfWeek": 1,
+    "opensAt": "10:30:00",
+    "closesAt": "21:30:00"
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

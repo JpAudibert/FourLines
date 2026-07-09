@@ -1,0 +1,35 @@
+meta {
+  name: Update Reservation Status
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v{{apiVersion}}/user/{{userId}}/Reservation/:reservationId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  reservationId: 0e25151c-e2bd-44f8-b2b9-90ca56f016f3
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "status": 1
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
