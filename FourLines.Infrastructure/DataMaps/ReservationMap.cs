@@ -35,14 +35,15 @@ public sealed class ReservationMap : IEntityTypeConfiguration<Reservation>
                 .IsRequired();
         });
 
-        builder.HasOne<Court>()
+        builder.HasOne(r => r.User)
+            .WithMany(u => u.Reservations)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.Court)
             .WithMany(c => c.Reservations)
             .HasForeignKey(r => r.CourtId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

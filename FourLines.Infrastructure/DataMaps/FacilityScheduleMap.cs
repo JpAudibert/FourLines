@@ -31,7 +31,7 @@ public class FacilityScheduleMap : IEntityTypeConfiguration<FacilitySchedule>
         builder.Property(c => c.UpdatedAt)
             .IsRequired();
 
-        builder.HasOne<Facility>()
+        builder.HasOne(f => f.Facility)
             .WithMany(f => f.Schedules)
             .HasForeignKey(fs => fs.FacilityId)
             .OnDelete(DeleteBehavior.Cascade);
