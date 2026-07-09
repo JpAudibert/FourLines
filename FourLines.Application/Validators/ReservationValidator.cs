@@ -21,6 +21,10 @@ public class ReservationValidator(FourLinesContext context) : IReservationValida
         if (reservation.Period.Duration != TimeSpan.FromMinutes(60))
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration);
 
+        ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
+        if(!statuses.Contains(reservation.Status))
+            return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidStatus);
+
         return Result<Reservation>.Success(new Reservation
         {
             CourtId = reservation.CourtId,

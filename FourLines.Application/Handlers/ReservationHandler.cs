@@ -64,6 +64,10 @@ public class ReservationHandler(FourLinesContext context, IReservationValidator 
 
     public async Task<Result<Reservation>> UpdateStatusFromReservation(UpdateStatusFromReservationDTO reservation)
     {
+        ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
+        if (!statuses.Contains(reservation.Status))
+            return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidStatus);
+
         int affectedRows = await _context.Reservations
             .Where(r => r.Id == reservation.Id && r.UserId == reservation.UserId)
             .ExecuteUpdateAsync(setters => setters

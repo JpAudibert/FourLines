@@ -12,8 +12,10 @@ public static class ReservationsErrorResults
     public static readonly Error CreationStartAndEndInThePast = new("ReservationsCreation.StartAndEndInThePast", "The reservation period is in the past.");
     public static readonly Error CreationStartAndEndNotInTheSameDay = new("ReservationsCreation.StartAndEndNotInTheSameDay", "The reservation period must start and end on the same day.");
     public static readonly Error CreationDurationTimeDifferentThanConfiguration = new("ReservationsCreation.DurationTimeDifferentThanConfiguration", "The reservation duration must be equal to the configured duration.");
+    public static readonly Error CreationInvalidStatus = new("ReservationsCreation.InvalidStatus", "The reservation status is invalid.");
 
     public static readonly Error UpdateReservationDoesNotExist = new("ReservationsUpdateStatus.ReservationDoesNotExist", "No reservation found for the specified reservation id and user id.");
+    public static readonly Error UpdateReservationInvalidStatus = new("ReservationsUpdateStatus.InvalidStatus", "The reservation status is invalid.");
 
     public static readonly Error DeletionReservationDoesNotExist = new("ReservationsDeletion.ReservationDoesNotExist", "No reservation found for the specified reservation id and user id.");
 
