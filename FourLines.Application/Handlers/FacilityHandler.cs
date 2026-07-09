@@ -55,7 +55,9 @@ public class FacilityHandler(FourLinesContext context)
 
         await _context.SaveChangesAsync();
 
-        Facility? updatedFacility = await _context.Facilities.FindAsync(facility.Id);
+        Facility? updatedFacility = await _context
+            .Facilities.AsNoTracking()
+            .FirstOrDefaultAsync(f => f.Id == facility.Id);
 
         return Result<Facility>.Success(updatedFacility!);
     }

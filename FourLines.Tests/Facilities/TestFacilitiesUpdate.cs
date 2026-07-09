@@ -64,7 +64,7 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
         };
 
         // Act
-        result = await facilityHandler.Update(updateFacilityTest); //TODO: UpdateFacilityDTO nao esta funcionado corretamente -> testar
+        result = await facilityHandler.Update(updateFacilityTest);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -79,36 +79,56 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     }
 
     [Fact]
-    public async Task Should_Not_UpdateFacility()
+    public async Task Should_Not_FindOwnerFacility()
     {
         // Arrange
-        User userPlayer = _testUser;
-        userPlayer.RoleId = _testRolePlayer.Id;
+        FacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRolePlayer),
-            _fixtures.CreateEntityInMemory<User>(userPlayer)
-        );
-
-        CreateFacilityDTO createFacilityTest = new()
+        UpdateFacilityDTO updateFacilityTest = new()
         {
-            Name = "Test Facility",
+            Id = Guid.NewGuid(),
+            Name = "Test Updated Facility",
             Address = "123 Test St",
             City = "Test City",
             State = "TS",
             ZipCode = "12345",
             RegistrationNumber = "1234567890",
-            OwnerId = _testUser.Id,
+            OwnerId = Guid.Empty,
         };
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
         // Act
-        Result<Facility> result = await facilityHandler.Create(createFacilityTest);
+        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
 
         // Assert
         Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.CreateOwnerDoesNotExists, result.Error);
+        Assert.Equal(FacilitiesErrorResults.UpdateEmptyOwnerId, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_AffectAnyRowFacility()
+    {
+        // Arrange
+        FacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+
+        UpdateFacilityDTO updateFacilityTest = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Updated Facility",
+            Address = "123 Test St",
+            City = "Test City",
+            State = "TS",
+            ZipCode = "12345",
+            RegistrationNumber = "1234567890",
+            OwnerId = Guid.NewGuid(),
+        };
+
+        // Act
+        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(FacilitiesErrorResults.UpdateFacilityDoesNotExist, result.Error);
     }
 }
