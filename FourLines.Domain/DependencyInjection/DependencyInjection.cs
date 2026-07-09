@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace FourLines.Domain.DependencyInjection;
+﻿namespace FourLines.Domain.DependencyInjection;
 
 public static class DependencyInjection
 {

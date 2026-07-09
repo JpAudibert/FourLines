@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace FourLines.Domain.Results.ErrorResults;
+﻿namespace FourLines.Domain.Results.ErrorResults;
 
 public static class ReservationsErrorResults
 {
