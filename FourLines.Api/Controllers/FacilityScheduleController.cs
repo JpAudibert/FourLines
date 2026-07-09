@@ -41,26 +41,35 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         return Ok(result.Value);
     }
 
-    //[HttpPost("owner/{ownerId}/facility/{facilityId}/multiple")]
-    //public async Task<ActionResult<Court>> CreateMultiple(
-    //    [FromRoute] Guid ownerId,
-    //    [FromRoute] Guid facilityId,
-    //    [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules)
-    //{
-    //    Result<FacilitySchedule> result = await _facilityScheduleHandler.Create(new CreateFacilityScheduleDTO()
-    //    {
-    //        OwnerId = ownerId,
-    //        FacilityId = facilityId,
-    //        DayOfWeek = newFacilitySchedule.DayOfWeek,
-    //        OpensAt = newFacilitySchedule.OpensAt,
-    //        ClosesAt = newFacilitySchedule.ClosesAt,
-    //    });
+    [HttpPost("multiple")]
+    public async Task<ActionResult<Court>> CreateMultiple(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules)
+    {
+        List<CreateFacilityScheduleDTO> schedules = [];
 
-    //    if (result.IsFailure)
-    //        return BadRequest(result.Error);
+        foreach (var schedule in newFacilitySchedules)
+        {
+            CreateFacilityScheduleDTO facilityScheduleDTO = new()
+            {
+                OwnerId = ownerId,
+                FacilityId = facilityId,
+                DayOfWeek = schedule.DayOfWeek,
+                OpensAt = schedule.OpensAt,
+                ClosesAt = schedule.ClosesAt,
+            };
 
-    //    return Ok(result.Value);
-    //}
+            schedules.Add(facilityScheduleDTO);
+        }
+
+        Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.CreateMultiple(schedules);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
 
     [HttpPut("{scheduleId}")]
     public async Task<ActionResult<FacilitySchedule>> Update(

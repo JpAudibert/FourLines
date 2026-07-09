@@ -26,6 +26,33 @@ public class FacilityScheduleHandler(FourLinesContext context)
         return Result<FacilitySchedule>.Success(schedule);
     }
 
+    public async Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(List<CreateFacilityScheduleDTO> newSchedules)
+    {
+        Facility? facility = await _context.Facilities
+            .FirstOrDefaultAsync(f => f.Id == newSchedules[0].FacilityId && f.OwnerId == newSchedules[0].OwnerId);
+        if (facility is null)
+            return Result<IEnumerable<FacilitySchedule>>.Failure(FacilitySchedulesErrorResults.CreateFacilitySchedules);
+
+        List<FacilitySchedule> schedules = [];
+        foreach (var schedule in newSchedules)
+        {
+            schedules.Add(new()
+            {
+                FacilityId = schedule.FacilityId,
+                DayOfWeek = schedule.DayOfWeek,
+                OpensAt = schedule.OpensAt,
+                ClosesAt = schedule.ClosesAt,
+                Facility = facility,
+            });
+        }
+
+        await _context.FacilitySchedules.AddRangeAsync(schedules);
+        await _context.SaveChangesAsync();
+
+        return Result<IEnumerable<FacilitySchedule>>.Success(schedules);
+    }
+
+
     public async Task<Result<FacilitySchedule>> Update(UpdateFacilityScheduleDTO schedule)
     {
         Facility? facility = await _context.Facilities
