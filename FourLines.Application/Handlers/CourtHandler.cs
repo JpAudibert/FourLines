@@ -40,6 +40,7 @@ public class CourtHandler(FourLinesContext context)
         int affectedRows = await _context.Courts
                 .Where(c => c.Id == court.Id && c.Facility.Id == court.FacilityId && c.Facility.OwnerId == court.OwnerId)
                 .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(c => c.SportId, court.SportId)
                     .SetProperty(c => c.Name, court.Name)
                     .SetProperty(c => c.IsActive, court.IsActive)
                 );
@@ -54,7 +55,7 @@ public class CourtHandler(FourLinesContext context)
         return Result<Court>.Success(updatedCourt!);
     }
 
-    public async Task<Result<bool>> Delete(Guid courtId, Guid facilityId, Guid ownerId)
+    public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId, Guid courtId)
     {
         bool deleted = false;
         int affectedRows = await _context.Courts
