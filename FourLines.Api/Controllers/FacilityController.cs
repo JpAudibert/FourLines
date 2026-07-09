@@ -2,6 +2,7 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
+[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
 public class FacilityController(FacilityHandler facilityHandler) : ControllerBase
 {

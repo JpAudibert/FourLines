@@ -2,6 +2,8 @@
 
 public sealed class JwtTokenProvider(IConfiguration configuration) : ITokenProvider
 {
+    const string RoleClaimType = "role";
+
     public string Create(User user)
     {
         string secretKey = configuration["Jwt:Secret"]!;
@@ -15,6 +17,7 @@ public sealed class JwtTokenProvider(IConfiguration configuration) : ITokenProvi
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(RoleClaimType, user.Role.Name),
                 //TODO: add email verification
                 //new Claim(JwtRegisteredClaimNames.EmailVerified, user.IsActive.ToString()),
             ]

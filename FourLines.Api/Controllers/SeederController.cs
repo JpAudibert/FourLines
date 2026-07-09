@@ -3,6 +3,7 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
+[Authorize(Roles = $"{RoleConstants.Admin}")]
 [ExcludeFromCodeCoverage]
 public class SeederController(SeederHandler seederHandler) : ControllerBase
 {

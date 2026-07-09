@@ -2,6 +2,7 @@
 
 [ApiVersion("1")]
 [ApiController]
+[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
 public class FacilityScheduleController(FacilityScheduleHandler facilityScheduleHandler) : ControllerBase
 {

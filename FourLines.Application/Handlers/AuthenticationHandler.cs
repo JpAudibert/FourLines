@@ -8,7 +8,9 @@ public class AuthenticationHandler(FourLinesContext context, IPasswordHashProvid
 
     public async Task<Result<string>> Authenticate(AuthenticationDTO request)
     {
-        User? user = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.Email);
+        User? user = await _context.Users
+            .Include(user => user.Role)
+            .FirstOrDefaultAsync(user => user.Email == request.Email);
 
         if (user is null)
             return Result<string>.Failure(AuthenticationErrorResults.UnknownUser);
