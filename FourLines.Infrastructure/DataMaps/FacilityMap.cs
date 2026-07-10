@@ -53,5 +53,10 @@ public class FacilityMap : IEntityTypeConfiguration<Facility>
             .WithOne(c => c.Facility)
             .HasForeignKey(c => c.FacilityId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(f => f.Schedules)
+            .WithOne(s => s.Facility)
+            .HasForeignKey(s => s.FacilityId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

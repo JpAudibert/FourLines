@@ -1,0 +1,55 @@
+meta {
+  name: Create Multiple
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/facility/{{facilityId}}/FacilitySchedule/multiple
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  [
+    {
+      "dayOfWeek": 1,
+      "opensAt": "10:30:00",
+      "closesAt": "22:30:00"
+    },
+    {
+      "dayOfWeek": 2,
+      "opensAt": "10:30:00",
+      "closesAt": "22:30:00"
+    },
+    {
+      "dayOfWeek": 3,
+      "opensAt": "10:30:00",
+      "closesAt": "22:30:00"
+    },
+    {
+      "dayOfWeek": 4,
+      "opensAt": "10:30:00",
+      "closesAt": "22:30:00"
+    },
+    {
+      "dayOfWeek": 5,
+      "opensAt": "10:30:00",
+      "closesAt": "22:30:00"
+    }
+  ]
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

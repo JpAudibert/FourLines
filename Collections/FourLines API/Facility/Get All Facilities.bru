@@ -1,0 +1,25 @@
+meta {
+  name: Get All Facilities
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v{{apiVersion}}/facilities
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

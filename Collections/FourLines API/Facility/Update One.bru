@@ -1,0 +1,40 @@
+meta {
+  name: Update One
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/Facility/:facilityId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  facilityId: e9122825-fed8-4ddd-85c0-46bbbc477417
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "Jogo da bola",
+    "address": "endereço do jogo da bola",
+    "city": "Carlos Barbosa",
+    "state": "Rio Grande do Sul",
+    "zipCode": "95185-000",
+    "registrationNumber": "034272030001571"
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

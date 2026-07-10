@@ -1,0 +1,29 @@
+meta {
+  name: Delete One
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/Facility/:facilityId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  facilityId: e0bffb73-809d-46f7-ba2f-91b821b85b66
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,6 +1,4 @@
-﻿using FourLines.Application.DTOs.Courts;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class CourtHandler(FourLinesContext context)
 {
@@ -42,6 +40,7 @@ public class CourtHandler(FourLinesContext context)
         int affectedRows = await _context.Courts
                 .Where(c => c.Id == court.Id && c.Facility.Id == court.FacilityId && c.Facility.OwnerId == court.OwnerId)
                 .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(c => c.SportId, court.SportId)
                     .SetProperty(c => c.Name, court.Name)
                     .SetProperty(c => c.IsActive, court.IsActive)
                 );
@@ -56,7 +55,7 @@ public class CourtHandler(FourLinesContext context)
         return Result<Court>.Success(updatedCourt!);
     }
 
-    public async Task<Result<bool>> Delete(Guid courtId, Guid facilityId, Guid ownerId)
+    public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId, Guid courtId)
     {
         bool deleted = false;
         int affectedRows = await _context.Courts
@@ -85,7 +84,7 @@ public class CourtHandler(FourLinesContext context)
 
     public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(Guid ownerId, Guid facilityId)
     {
-        IEnumerable<Court?> courts = await _context.Courts
+        IEnumerable<Court>? courts = await _context.Courts
             .Where(c => c.Facility.Id == facilityId && c.Facility.OwnerId == ownerId)
             .ToListAsync();
 

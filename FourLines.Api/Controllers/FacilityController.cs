@@ -1,26 +1,26 @@
-using FourLines.Api.ViewModels.Facilities;
-using FourLines.Application.DTOs.Facilities;
-
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}")]
-public class FacilityController(FacilityHandler facilityHandler, IStandardRepository<Facility> repository) : Controller
+[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
+[Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
+public class FacilityController(FacilityHandler facilityHandler) : ControllerBase
 {
     private readonly FacilityHandler _facilityHandler = facilityHandler;
-    private readonly IStandardRepository<Facility> _repository = repository;
 
-    [HttpGet("facilities")]
+    [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
     public async Task<IActionResult> GetAll()
     {
-        IEnumerable<Facility> facilities = await _repository.GetAllAsync();
+        Result<IEnumerable<Facility>> facilities = await _facilityHandler.GetAllFacilities();
 
-        return Ok(facilities);
+        if (facilities.IsFailure)
+            return BadRequest(facilities.Error);
+
+        return Ok(facilities.Value);
     }
 
-    [HttpGet("owner/{ownerId}")]
+    [HttpGet]
     [EndpointName("GetAllFromOwner")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
     {
@@ -32,7 +32,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    [HttpGet("{facilityId}")]
     [EndpointName("GetFacilityFromOwner")]
     public async Task<IActionResult> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
@@ -44,7 +44,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpPost("owner/{ownerId}")]
+    [HttpPost]
     [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
     {
@@ -65,11 +65,11 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpPut("owner/{ownerId}/facility/{facilityId}")]
+    [HttpPut("{facilityId}")]
     [EndpointName("Update")]
     public async Task<IActionResult> Update(
-        [FromRoute] Guid ownerId, 
-        [FromRoute] Guid facilityId, 
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
         [FromBody] UpdateFacilityViewModel facility)
     {
         Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
@@ -90,7 +90,7 @@ public class FacilityController(FacilityHandler facilityHandler, IStandardReposi
         return Ok(result.Value);
     }
 
-    [HttpDelete("owner/{ownerId}/facility/{facilityId}")]
+    [HttpDelete("{facilityId}")]
     [EndpointName("Delete")]
     public async Task<IActionResult> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {

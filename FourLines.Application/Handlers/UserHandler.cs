@@ -1,6 +1,4 @@
-﻿using FourLines.Domain.Results.ErrorResults;
-
-namespace FourLines.Application.Handlers;
+﻿namespace FourLines.Application.Handlers;
 
 public class UserHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
 {

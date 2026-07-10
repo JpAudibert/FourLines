@@ -1,0 +1,29 @@
+meta {
+  name: Delete One
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/v{{apiVersion}}/user/{{userId}}/Reservation/:reservationId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  reservationId: 680bd7a5-fe18-483a-b8df-a21a1e4a3faf
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
