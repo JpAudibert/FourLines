@@ -16,7 +16,10 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(ownerId, facilityId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -30,7 +33,10 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         Result<Court> result = await _courtHandler.GetFacility(ownerId, facilityId, courtId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -51,7 +57,10 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -74,7 +83,10 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -88,7 +100,10 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         Result<bool> result = await _courtHandler.Delete(ownerId, facilityId, courtId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }

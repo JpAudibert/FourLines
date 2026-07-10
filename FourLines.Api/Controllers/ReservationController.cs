@@ -15,7 +15,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromUser(userId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -27,7 +30,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromCourt(courtId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -40,7 +46,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         Result<Reservation> result = await _reservationHandler.GetOneReservationFromUser(userId, reservationId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -59,7 +68,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -78,7 +90,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -91,7 +106,10 @@ public class ReservationController(ReservationHandler reservationHandler) : Cont
         Result<bool> result = await _reservationHandler.Delete(userId, reservationId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }

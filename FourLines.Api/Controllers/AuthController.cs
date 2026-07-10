@@ -17,7 +17,10 @@ public class AuthController(AuthenticationHandler authenticationHandler) : Contr
         });
 
         if (result.IsFailure)
-            return Unauthorized(result.Error);
+            Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status401Unauthorized);
 
         return result.Value;
     }

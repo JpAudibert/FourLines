@@ -16,7 +16,10 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(ownerId, facilityId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -37,7 +40,10 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -67,7 +73,10 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.CreateMultiple(schedules);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -90,7 +99,10 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -104,7 +116,10 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         Result<bool> result = await _facilityScheduleHandler.Delete(ownerId, facilityId, scheduleId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
