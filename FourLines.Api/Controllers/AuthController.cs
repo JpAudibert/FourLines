@@ -22,6 +22,6 @@ public class AuthController(AuthenticationHandler authenticationHandler) : Contr
                 detail: result.Error.Description,
                 statusCode: StatusCodes.Status401Unauthorized);
 
-        return Ok(result.Value);
+        return result.Value;
     }
 }
