@@ -12,12 +12,15 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
     [EndpointName("GetAll")]
     public async Task<IActionResult> GetAll()
     {
-        Result<IEnumerable<Facility>> facilities = await _facilityHandler.GetAllFacilities();
+        Result<IEnumerable<Facility>> result = await _facilityHandler.GetAllFacilities();
 
-        if (facilities.IsFailure)
-            return BadRequest(facilities.Error);
+        if (result.IsFailure)
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status401Unauthorized);
 
-        return Ok(facilities.Value);
+        return Ok(result.Value);
     }
 
     [HttpGet]
@@ -27,7 +30,10 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
         Result<IEnumerable<Facility>> result = await _facilityHandler.GetFacilitiesFromOwner(ownerId);
 
         if (result.IsFailure)
-            BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -39,7 +45,10 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
         Result<Facility> result = await _facilityHandler.GetFacilityFromOwner(ownerId, facilityId);
 
         if (result.IsFailure)
-            BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -60,7 +69,10 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -85,7 +97,10 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }
@@ -97,7 +112,10 @@ public class FacilityController(FacilityHandler facilityHandler) : ControllerBas
         Result<bool> result = await _facilityHandler.Delete(ownerId, facilityId);
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: StatusCodes.Status400BadRequest);
 
         return Ok(result.Value);
     }

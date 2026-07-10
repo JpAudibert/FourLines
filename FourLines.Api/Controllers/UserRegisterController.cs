@@ -23,7 +23,10 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
         });
 
         if (result.IsFailure)
-            return BadRequest(result.Error);
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description, 
+                statusCode: StatusCodes.Status400BadRequest);
 
         return result.Value;
     }
