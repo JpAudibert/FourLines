@@ -13,4 +13,5 @@ public class User : BaseEntity
 
     public Role Role { get; set; } = default!;
     public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
+    public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }

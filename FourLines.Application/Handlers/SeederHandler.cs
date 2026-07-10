@@ -17,6 +17,7 @@ public class SeederHandler(FourLinesContext context)
                 await SeedUsers();
                 await SeedFacilities();
                 await SeedCourts();
+                await SeedFacilitySchedules();
                 await transaction.CommitAsync();
             }
             catch
@@ -154,6 +155,32 @@ public class SeederHandler(FourLinesContext context)
             }
         }
         await _context.Courts.AddRangeAsync(courts);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task SeedFacilitySchedules()
+    {
+        if (!await ValidateIsEmpty<FacilitySchedule>())
+            return;
+
+        List<Facility> facilities = [.. _context.Facilities];
+        List<FacilitySchedule> schedules = [];
+
+        foreach (var facility in facilities)
+        {
+            for (int day = 1; day < 7; day++)
+            {
+                schedules.Add(new FacilitySchedule()
+                {
+                    FacilityId = facility.Id,
+                    DayOfWeek = (DayOfWeek)day,
+                    OpensAt = new TimeOnly(8, 0),
+                    ClosesAt = new TimeOnly(22, 0)
+                });
+            }
+        }
+
+        await _context.FacilitySchedules.AddRangeAsync(schedules);
         await _context.SaveChangesAsync();
     }
 

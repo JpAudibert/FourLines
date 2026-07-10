@@ -1,0 +1,37 @@
+meta {
+  name: Create One
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v{{apiVersion}}/user/{{userId}}/Reservation
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "courtId": "{{courtId}}",
+    "period": {
+      "start": "2026-07-09T19:00:00Z",
+      "end": "2026-07-09T20:00:00Z",
+      "duration": "60"
+    },
+    "status": 1
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

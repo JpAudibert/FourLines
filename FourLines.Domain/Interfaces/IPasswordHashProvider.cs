@@ -1,6 +1,4 @@
-﻿using FourLines.Domain.Models;
-
-namespace FourLines.Domain.Interfaces;
+﻿namespace FourLines.Domain.Interfaces;
 
 public interface IPasswordHashProvider
 {

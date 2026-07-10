@@ -1,10 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace FourLines.Api.Controllers;
+﻿namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
+[Authorize(Roles = $"{RoleConstants.Admin}")]
 [ExcludeFromCodeCoverage]
 public class SeederController(SeederHandler seederHandler) : ControllerBase
 {

@@ -1,0 +1,36 @@
+meta {
+  name: Create One
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v{{apiVersion}}/owner/{{ownerId}}/Facility
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "Jogo da bola",
+    "address": "jogo da bola endereco",
+    "city": "Carlos Barbosa",
+    "state": "Rio Grande do Sul",
+    "zipCode": "95185-000",
+    "registrationNumber": "034272030001571"
+  }
+}
+
+script:post-response {
+  test("Status 2xx",()=>expect(res.getStatus()).to.be.within(200,299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -60,7 +60,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-app.UseAuthorization();
 
 app.MapControllers();
 

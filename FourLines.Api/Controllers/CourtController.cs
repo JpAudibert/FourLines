@@ -1,16 +1,14 @@
-using FourLines.Api.ViewModels.Courts;
-using FourLines.Application.DTOs.Courts;
-
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}")]
-public class CourtController(CourtHandler courtHandler) : Controller
+[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
+[Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
+public class CourtController(CourtHandler courtHandler) : ControllerBase
 {
     private readonly CourtHandler _courtHandler = courtHandler;
 
-    [HttpGet("owner/{ownerId}/facility/{facilityId}")]
+    [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
@@ -23,7 +21,7 @@ public class CourtController(CourtHandler courtHandler) : Controller
         return Ok(result.Value);
     }
 
-    [HttpGet("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    [HttpGet("{courtId}")]
     public async Task<IActionResult> GetById(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
@@ -37,7 +35,7 @@ public class CourtController(CourtHandler courtHandler) : Controller
         return Ok(result.Value);
     }
 
-    [HttpPost("owner/{ownerId}/facility/{facilityId}")]
+    [HttpPost]
     public async Task<ActionResult<Court>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
@@ -58,7 +56,7 @@ public class CourtController(CourtHandler courtHandler) : Controller
         return Ok(result.Value);
     }
 
-    [HttpPut("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    [HttpPut("{courtId}")]
     public async Task<ActionResult<Court>> Update(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
@@ -81,7 +79,7 @@ public class CourtController(CourtHandler courtHandler) : Controller
         return Ok(result.Value);
     }
 
-    [HttpDelete("owner/{ownerId}/facility/{facilityId}/court/{courtId}")]
+    [HttpDelete("{courtId}")]
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
