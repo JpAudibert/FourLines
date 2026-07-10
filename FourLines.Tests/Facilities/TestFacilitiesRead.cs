@@ -13,11 +13,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     private readonly InMemoryFixtures _fixtures = fixtures;
 
     private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
-    private static Role _testRolePlayer = new() { Name = RoleConstants.Player };
 
     private static User _testUser = new()
     {
-        RoleId = Guid.Empty,
+        RoleId = _testRoleOwner.Id,
         Name = "John Doe",
         Email = "john.doe@example.com",
         PasswordHash = "Password123!",
@@ -26,42 +25,77 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         RegistrationNumber = "383.975.210-89",
     };
 
+    private static Facility _FacilityTest1 = new()
+    {
+        Name = "Test Facility 1",
+        Address = "123 Test St",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "1234567890",
+        OwnerId = _testUser.Id,
+    };
+
+    private static Facility _FacilityTest2 = new()
+    {
+        Name = "Test Facility 2",
+        Address = "456 Test Ave",
+        City = "Test City 2",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "0987654321",
+        OwnerId = _testUser.Id,
+    };
+
     [Fact]
-    public async Task Should_GetFacilities()
+    public async Task Should_GetAllFacilities()
     {
         // Arrange
-        Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-
-        _testUser.RoleId = roleOwner.Id;
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
-
-        CreateFacilityDTO createFacilityTest1 = new()
-        {
-            Name = "Test Facility 1",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = _testUser.Id,
-        };
-
-        CreateFacilityDTO createFacilityTest2 = new()
-        {
-            Name = "Test Facility 2",
-            Address = "456 Test Ave",
-            City = "Test City 2",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "0987654321",
-            OwnerId = _testUser.Id,
-        };
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
+            _fixtures.CreateEntityInMemory<User>(_testUser),
+            _fixtures.CreateEntityInMemory<Facility>(_FacilityTest1),
+            _fixtures.CreateEntityInMemory<Facility>(_FacilityTest2)
+        );
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
-        await facilityHandler.Create(createFacilityTest1);
-        await facilityHandler.Create(createFacilityTest2);
+        // Act
+        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+
+        // Assert
+        Assert.NotEmpty(result.Value);
+        Assert.Equal(2, result.Value.Count());
+    }
+
+    [Fact]
+    public async Task Should_Not_GetAllFacilities()
+    {
+        // Arrange
+        FacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        // Act
+        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_GetFacilities()
+    {
+        // Arrange
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
+            _fixtures.CreateEntityInMemory<User>(_testUser),
+            _fixtures.CreateEntityInMemory<Facility>(_FacilityTest1),
+            _fixtures.CreateEntityInMemory<Facility>(_FacilityTest2)
+        );
+
+        FacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
@@ -94,42 +128,30 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacility()
     {
         // Arrange
-        Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-
-        _testUser.RoleId = roleOwner.Id;
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
-
-        CreateFacilityDTO createFacilityTest = new()
-        {
-            Name = "Test Facility 1",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = _testUser.Id,
-        };
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
+            _fixtures.CreateEntityInMemory<User>(_testUser),
+            _fixtures.CreateEntityInMemory<Facility>(_FacilityTest1)
+        );
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
-        Result<Facility> resultCreate = await facilityHandler.Create(createFacilityTest);
-
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
             _testUser.Id,
-            resultCreate.Value.Id
+            _FacilityTest1.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(createFacilityTest.Name, result.Value.Name);
-        Assert.Equal(createFacilityTest.Address, result.Value.Address);
-        Assert.Equal(createFacilityTest.City, result.Value.City);
-        Assert.Equal(createFacilityTest.State, result.Value.State);
-        Assert.Equal(createFacilityTest.ZipCode, result.Value.ZipCode);
-        Assert.Equal(createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-        Assert.Equal(createFacilityTest.OwnerId, result.Value.OwnerId);
+        Assert.Equal(_FacilityTest1.Name, result.Value.Name);
+        Assert.Equal(_FacilityTest1.Address, result.Value.Address);
+        Assert.Equal(_FacilityTest1.City, result.Value.City);
+        Assert.Equal(_FacilityTest1.State, result.Value.State);
+        Assert.Equal(_FacilityTest1.ZipCode, result.Value.ZipCode);
+        Assert.Equal(_FacilityTest1.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(_FacilityTest1.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
@@ -154,10 +176,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-
-        _testUser.RoleId = roleOwner.Id;
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await Task.WhenAll(
+            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
+            _fixtures.CreateEntityInMemory<User>(_testUser)
+        );
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();

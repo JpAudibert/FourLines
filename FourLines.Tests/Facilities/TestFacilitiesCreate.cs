@@ -26,6 +26,17 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         RegistrationNumber = "383.975.210-89",
     };
 
+    private static CreateFacilityDTO _createFacilityTest = new()
+    {
+        Name = "Test Facility",
+        Address = "123 Test St",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "1234567890",
+        OwnerId = _testUser.Id,
+    };
+
     [Fact]
     public async Task Should_CreateFacility()
     {
@@ -35,33 +46,22 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
             _fixtures.CreateEntityInMemory<User>(_testUser)
         );
 
-        CreateFacilityDTO createFacilityTest = new()
-        {
-            Name = "Test Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = _testUser.Id,
-        };
-
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
         // Act
-        Result<Facility> result = await facilityHandler.Create(createFacilityTest);
+        Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<Facility>(result.Value);
-        Assert.Equal(createFacilityTest.Name, result.Value.Name);
-        Assert.Equal(createFacilityTest.Address, result.Value.Address);
-        Assert.Equal(createFacilityTest.City, result.Value.City);
-        Assert.Equal(createFacilityTest.State, result.Value.State);
-        Assert.Equal(createFacilityTest.ZipCode, result.Value.ZipCode);
-        Assert.Equal(createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-        Assert.Equal(createFacilityTest.OwnerId, result.Value.OwnerId);
+        Assert.Equal(_createFacilityTest.Name, result.Value.Name);
+        Assert.Equal(_createFacilityTest.Address, result.Value.Address);
+        Assert.Equal(_createFacilityTest.City, result.Value.City);
+        Assert.Equal(_createFacilityTest.State, result.Value.State);
+        Assert.Equal(_createFacilityTest.ZipCode, result.Value.ZipCode);
+        Assert.Equal(_createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(_createFacilityTest.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
@@ -76,22 +76,11 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
             _fixtures.CreateEntityInMemory<User>(userPlayer)
         );
 
-        CreateFacilityDTO createFacilityTest = new()
-        {
-            Name = "Test Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = _testUser.Id,
-        };
-
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
         // Act
-        Result<Facility> result = await facilityHandler.Create(createFacilityTest);
+        Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
 
         // Assert
         Assert.Null(result.Value);
