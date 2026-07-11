@@ -1,15 +1,8 @@
-using FourLines.Api.Controllers;
-using FourLines.Api.ViewModels.Users;
 using FourLines.Application.DependencyInjection;
-using FourLines.Application.DTOs;
-using FourLines.Application.DTOs.Facilities;
-using FourLines.Application.Handlers;
-using FourLines.Domain.Constants;
 using FourLines.Domain.DependencyInjection;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +27,11 @@ public class InMemoryFixtures
 
         Builder = new HostApplicationBuilder();
 
-        _connection = new SqliteConnection(Configuration.GetConnectionString("DefaultConnection"));
+        _connection = new SqliteConnection(
+            Configuration.GetConnectionString(
+                $"Data Source={Guid.NewGuid()};Mode=Memory;Cache=Shared"
+            )
+        );
 
         _connection.Open();
 
@@ -44,16 +41,24 @@ public class InMemoryFixtures
 
         Builder.Configuration.AddConfiguration(Configuration);
 
-        ServiceProvider = Builder.Services.BuildServiceProvider();
+        IHost host = Builder.Build();
 
-        Builder.Build();
+        ServiceProvider = host.Services;
 
         using var scope = ServiceProvider.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
+        try
+        {
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating in-memory database: {ex.Message}");
+            throw;
+        }
     }
 
     public void Dispose()
@@ -61,24 +66,41 @@ public class InMemoryFixtures
         _connection.Dispose();
     }
 
+    public async Task RemoveAllDataFromMemory<T>()
+        where T : BaseEntity
+    {
+        FourLinesContext context = ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        context.Set<T>().RemoveRange(context.Set<T>());
+        await context.SaveChangesAsync();
+    }
+
     public async Task RemoveDataFromMemory<T>(Guid id)
         where T : BaseEntity
     {
         FourLinesContext context = ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        T entity = await context.Set<T>().FindAsync(id);
+        T? entity = await context.Set<T>().FindAsync(id);
 
-        context.Set<T>().Remove(entity);
-        await context.SaveChangesAsync();
+        if (entity != null)
+        {
+            context.Set<T>().Remove(entity);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task<T> CreateEntityInMemory<T>(T entity)
         where T : BaseEntity
     {
-        FourLinesContext context = ServiceProvider.GetRequiredService<FourLinesContext>();
+        using IServiceScope scope = ServiceProvider.CreateScope();
 
-        await context.Set<T>().AddAsync(entity);
-        await context.SaveChangesAsync();
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        if (await context.FindAsync<T>(entity.Id) == null)
+        {
+            await context.Set<T>().AddAsync(entity);
+            await context.SaveChangesAsync();
+        }
 
         return entity;
     }

@@ -73,8 +73,11 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetAllFacilities()
     {
         // Arrange
+        await _fixtures.RemoveAllDataFromMemory<Facility>();
+
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
 
@@ -176,10 +179,8 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
-            _fixtures.CreateEntityInMemory<User>(_testUser)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();

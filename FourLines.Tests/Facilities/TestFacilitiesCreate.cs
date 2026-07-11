@@ -15,7 +15,7 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
     private static Role _testRolePlayer = new() { Name = RoleConstants.Player };
 
-    private static User _testUser = new()
+    private static User _testOwner = new()
     {
         RoleId = _testRoleOwner.Id,
         Name = "John Doe",
@@ -26,6 +26,17 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         RegistrationNumber = "383.975.210-89",
     };
 
+    private static User _testUser = new()
+    {
+        RoleId = _testRolePlayer.Id,
+        Name = "Jane Smith",
+        Email = "jane.smith@example.com",
+        PasswordHash = "Password123!",
+        Birthday = new DateOnly(1990, 1, 1),
+        Phone = "55 54 9 8888-8888",
+        RegistrationNumber = "123.456.789-00",
+    };
+
     private static CreateFacilityDTO _createFacilityTest = new()
     {
         Name = "Test Facility",
@@ -33,18 +44,16 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         City = "Test City",
         State = "TS",
         ZipCode = "12345",
-        RegistrationNumber = "1234567890",
-        OwnerId = _testUser.Id,
+        RegistrationNumber = "1234555555",
+        OwnerId = _testOwner.Id,
     };
 
     [Fact]
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
-            _fixtures.CreateEntityInMemory<User>(_testUser)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testOwner);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -68,13 +77,9 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_CreateFacility()
     {
         // Arrange
-        User userPlayer = _testUser;
-        userPlayer.RoleId = _testRolePlayer.Id;
 
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRolePlayer),
-            _fixtures.CreateEntityInMemory<User>(userPlayer)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(_testRolePlayer);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();

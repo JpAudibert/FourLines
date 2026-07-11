@@ -38,11 +38,9 @@ public class TestFacilitiesDelete(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_DeleteFacility()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
-            _fixtures.CreateEntityInMemory<User>(_testUser),
-            _fixtures.CreateEntityInMemory<Facility>(_testFacility)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
