@@ -6,7 +6,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FourLines.Tests.Court;
+namespace FourLines.Tests.Courts;
 
 public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
@@ -57,12 +57,11 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_CreateCourt()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
-            _fixtures.CreateEntityInMemory<User>(_testUser),
-            _fixtures.CreateEntityInMemory<Facility>(_testFacility),
-            _fixtures.CreateEntityInMemory<Sport>(_testSport)
-        );
+        
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
+        await _fixtures.CreateEntityInMemory<Sport>(_testSport);
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
@@ -71,7 +70,7 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.IsType<Domain.Models.Court>(result.Value);
+        Assert.IsType<Court>(result.Value);
         Assert.Equal(_createCourtTest.Name, result.Value.Name);
         Assert.Equal(_createCourtTest.FacilityId, result.Value.FacilityId);
         Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
@@ -82,16 +81,15 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_HaveFacilityToCreateCourt()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(_testRoleOwner),
-            _fixtures.CreateEntityInMemory<User>(_testUser),
-            _fixtures.CreateEntityInMemory<Sport>(_testSport)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Sport>(_testSport);
+        await _fixtures.RemoveDataFromMemory<Facility>(_testFacility.Id);
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         // Act
-        Result<Domain.Models.Court> result = await courtHandler.Create(_createCourtTest);
+        Result<Court> result = await courtHandler.Create(_createCourtTest);
 
         // Assert
         Assert.Null(result.Value);
