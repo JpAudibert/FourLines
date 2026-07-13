@@ -1,9 +1,7 @@
 ﻿namespace FourLines.Application.Validators;
 
-public class ReservationValidator(FourLinesContext context) : IReservationValidator
+public class ReservationValidator() : IReservationValidator
 {
-    private readonly FourLinesContext _context = context;
-
     public async Task<Result<Reservation>> ValidateAsync(CreateReservationDTO reservation, CancellationToken cancellationToken = default)
     {
         if (!reservation.Period.AreDatesValid())
