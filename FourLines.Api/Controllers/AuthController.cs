@@ -3,7 +3,7 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class AuthController(ILogger<AuthController> logger, AuthenticationHandler authenticationHandler) : ControllerBase
+public class AuthController(ILogger<AuthController> logger, AuthenticationHandler authenticationHandler) : ApiControllerBase
 {
     private readonly ILogger<AuthController> _logger = logger;
     private readonly AuthenticationHandler _authenticationHandler = authenticationHandler;
@@ -11,27 +11,24 @@ public class AuthController(ILogger<AuthController> logger, AuthenticationHandle
     [HttpPost]
     public async Task<ActionResult<string>> Authenticate(LoginViewModel request)
     {
-        _logger.LogInformation("Authentication for {identification}", request.Email);
+        const string operation = nameof(Authenticate);
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
+        _logger.LogInformation("{op} - Authentication for {identification}",
+            operation,
+            request.Email);
+
         Result<string> result = await _authenticationHandler.Authenticate(new AuthenticationDTO()
         {
             Email = request.Email,
             Password = request.Password,
         });
 
-        if (result.IsFailure)
-        {
-            _logger.LogInformation("{process} failed with this result: {code} - {description}",
-                nameof(AuthController),
-                result.Error.Code,
-                result.Error.Description);
-            Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status401Unauthorized);
-        }
-
-        _logger.LogInformation("{process} succeeded", nameof(AuthController));
-
-        return result.Value;
+        return HandleResult(result, _logger, operation, sw);
     }
 }

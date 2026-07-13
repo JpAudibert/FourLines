@@ -1,12 +1,4 @@
-﻿using OpenTelemetry.Exporter;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Json;
-using Serilog.Sinks.OpenTelemetry;
-
-namespace FourLines.Api.Extensions;
+﻿namespace FourLines.Api.DependencyInjection;
 
 public static class LoggingExtensions
 {
@@ -38,7 +30,7 @@ public static class LoggingExtensions
         return host;
     }
 
-    public static IServiceCollection ConfigureOpenTelemtryTracingAndMetrics(this IServiceCollection services, 
+    public static IServiceCollection ConfigureOpenTelemtryTracingAndMetrics(this IServiceCollection services,
         string openTelemetryEndpoint)
     {
         services

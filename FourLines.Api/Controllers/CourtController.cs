@@ -4,41 +4,51 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class CourtController(CourtHandler courtHandler) : ControllerBase
+public class CourtController(ILogger<CourtController> logger, CourtHandler courtHandler) : ApiControllerBase
 {
+    private readonly ILogger<CourtController> _logger = logger;
     private readonly CourtHandler _courtHandler = courtHandler;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
+    public async Task<ActionResult<IEnumerable<Court>>> GetAllCourtsFromFacility(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
     {
+        const string operation = $"{nameof(CourtController)}.{nameof(GetAllCourtsFromFacility)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(ownerId, facilityId);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpGet("{courtId}")]
-    public async Task<IActionResult> GetById(
+    public async Task<ActionResult<Court>> GetById(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId)
     {
+        const string operation = $"{nameof(CourtController)}.{nameof(GetById)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+            ["courtId"] = courtId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<Court> result = await _courtHandler.GetFacility(ownerId, facilityId, courtId);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpPost]
@@ -47,6 +57,16 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         [FromRoute] Guid facilityId,
         [FromBody] CreateCourtViewModel newCourt)
     {
+        const string operation = $"{nameof(CourtController)}.{nameof(Create)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<Court> result = await _courtHandler.Create(new CreateCourtDTO()
         {
             OwnerId = ownerId,
@@ -56,13 +76,7 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
             IsActive = newCourt.IsActive,
         });
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpPut("{courtId}")]
@@ -72,6 +86,17 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         [FromRoute] Guid courtId,
         [FromBody] UpdateCourtViewModel updateCourt)
     {
+        const string operation = $"{nameof(CourtController)}.{nameof(Update)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+            ["courtId"] = courtId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<Court> result = await _courtHandler.Update(new UpdateCourtDTO()
         {
             Id = courtId,
@@ -82,13 +107,7 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
             IsActive = updateCourt.IsActive,
         });
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpDelete("{courtId}")]
@@ -97,14 +116,19 @@ public class CourtController(CourtHandler courtHandler) : ControllerBase
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId)
     {
+        const string operation = $"{nameof(CourtController)}.{nameof(Delete)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+            ["courtId"] = courtId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<bool> result = await _courtHandler.Delete(ownerId, facilityId, courtId);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 }

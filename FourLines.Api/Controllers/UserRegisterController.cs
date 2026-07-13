@@ -3,13 +3,25 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UserRegisterController(UserHandler userHandler) : ControllerBase
+public class UserRegisterController(ILogger logger, UserHandler userHandler)
+    : ApiControllerBase
 {
+    private readonly ILogger _logger = logger;
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost("{roleId}")]
     public async Task<ActionResult<User>> Register([FromRoute] Guid roleId, [FromBody] UserRegisterViewModel request)
     {
+        const string operation = $"{nameof(UserRegisterController)}.{nameof(Register)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["roleId"] = roleId,
+            ["email"] = request.Email,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<User> result = await _userHandler.Create(new UserRegisterDTO
         {
             Name = request.Name,
@@ -22,12 +34,6 @@ public class UserRegisterController(UserHandler userHandler) : ControllerBase
             IsActive = request.IsActive
         });
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description, 
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return result.Value;
+        return HandleResult(result, _logger, operation, sw);
     }
 }

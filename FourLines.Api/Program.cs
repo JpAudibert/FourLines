@@ -1,7 +1,3 @@
-using FourLines.Api.DependencyInjection;
-using FourLines.Api.Extensions;
-using Serilog;
-
 const string appName = "FourLines";
 const string appVersion = "1.0.0";
 

@@ -22,7 +22,8 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_RegisterAndAuthenticateUser()
     {
         // Arrange
-        Mock<ILogger<AuthController>> mockLogger = new();
+        Mock<ILogger<AuthController>> mockAuthLogger = new();
+        Mock<ILogger<UserRegisterController>> mockUserRegisterLogger = new();
         UserRegisterViewModel newUser = new()
         {
             Name = "John Doe",
@@ -66,8 +67,8 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
 
         AuthenticationHandler authenticationHandler = new(context, passwordHashProvider, jwtTokenProvider);
 
-        UserRegisterController userRegisterController = new(userHandler);
-        AuthController authController = new(mockLogger.Object, authenticationHandler);
+        UserRegisterController userRegisterController = new(mockUserRegisterLogger.Object, userHandler);
+        AuthController authController = new(mockAuthLogger.Object, authenticationHandler);
 
         // Act 
         ActionResult<User> userRegisterResult = await userRegisterController.Register(roleGuid, newUser);

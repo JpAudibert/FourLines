@@ -4,8 +4,10 @@
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class FacilityScheduleController(FacilityScheduleHandler facilityScheduleHandler) : ControllerBase
+public class FacilityScheduleController(ILogger<FacilityScheduleController> logger, FacilityScheduleHandler facilityScheduleHandler)
+    : ApiControllerBase
 {
+    private readonly ILogger<FacilityScheduleController> _logger = logger;
     private readonly FacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
 
     [HttpGet]
@@ -13,23 +15,37 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
     {
+        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(GetScheduleFromFacility)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(ownerId, facilityId);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Court>> Create(
+    public async Task<ActionResult<FacilitySchedule>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleViewModel newFacilitySchedule)
     {
+        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Create)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Create(new CreateFacilityScheduleDTO()
         {
             OwnerId = ownerId,
@@ -39,21 +55,25 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
             ClosesAt = newFacilitySchedule.ClosesAt,
         });
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpPost("multiple")]
-    public async Task<ActionResult<Court>> CreateMultiple(
+    public async Task<ActionResult<IEnumerable<FacilitySchedule>>> CreateMultiple(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules)
     {
+        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(CreateMultiple)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         List<CreateFacilityScheduleDTO> schedules = [];
 
         foreach (var schedule in newFacilitySchedules)
@@ -72,13 +92,7 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
 
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.CreateMultiple(schedules);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpPut("{scheduleId}")]
@@ -88,6 +102,17 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         [FromRoute] Guid scheduleId,
         [FromBody] UpdateFacilityScheduleViewModel updateFacilitySchedule)
     {
+        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Update)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+            ["scheduleId"] = scheduleId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Update(new UpdateFacilityScheduleDTO()
         {
             Id = scheduleId,
@@ -98,13 +123,7 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
             ClosesAt = updateFacilitySchedule.ClosesAt,
         });
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 
     [HttpDelete("{scheduleId}")]
@@ -113,14 +132,19 @@ public class FacilityScheduleController(FacilityScheduleHandler facilitySchedule
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId)
     {
+        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Delete)}";
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["operation"] = operation,
+            ["ownerId"] = ownerId,
+            ["facilityId"] = facilityId,
+            ["scheduleId"] = scheduleId,
+        });
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         Result<bool> result = await _facilityScheduleHandler.Delete(ownerId, facilityId, scheduleId);
 
-        if (result.IsFailure)
-            return Problem(
-                title: result.Error.Code,
-                detail: result.Error.Description,
-                statusCode: StatusCodes.Status400BadRequest);
-
-        return Ok(result.Value);
+        return HandleResult(result, _logger, operation, sw);
     }
 }

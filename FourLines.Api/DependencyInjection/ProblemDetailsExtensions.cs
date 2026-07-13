@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Features;
-using System.Diagnostics;
-
-namespace FourLines.Api.DependencyInjection;
+﻿namespace FourLines.Api.DependencyInjection;
 
 public static class ProblemDetailsExtensions
 {

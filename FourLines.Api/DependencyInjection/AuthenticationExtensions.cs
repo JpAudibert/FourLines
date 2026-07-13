@@ -2,7 +2,7 @@
 
 public static class AuthenticationExtensions
 {
-    public static IServiceCollection ConfigureJwtAuthentication(this IServiceCollection services, 
+    public static IServiceCollection ConfigureJwtAuthentication(this IServiceCollection services,
         string issuer, string audience, string secretKey)
     {
         services
