@@ -6,7 +6,8 @@
             Result<T> result,
             ILogger logger,
             string operation,
-            Stopwatch sw)
+            Stopwatch sw,
+            int failingStatusCodes = StatusCodes.Status400BadRequest)
         {
             if (result.IsFailure)
             {
@@ -18,7 +19,7 @@
                 return Problem(
                     title: result.Error.Code,
                     detail: result.Error.Description,
-                    statusCode: StatusCodes.Status400BadRequest);
+                    statusCode: failingStatusCodes);
             }
 
             logger.LogInformation("{op} - executed in {ms}", operation, sw.ElapsedMilliseconds);

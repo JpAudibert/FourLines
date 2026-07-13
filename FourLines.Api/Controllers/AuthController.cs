@@ -29,6 +29,6 @@ public class AuthController(ILogger<AuthController> logger, AuthenticationHandle
             Password = request.Password,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result, _logger, operation, sw, StatusCodes.Status401Unauthorized);
     }
 }
