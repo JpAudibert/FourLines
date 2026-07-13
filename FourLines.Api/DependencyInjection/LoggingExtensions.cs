@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;

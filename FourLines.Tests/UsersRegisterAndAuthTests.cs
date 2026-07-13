@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace FourLines.Tests;
 
@@ -20,6 +22,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_RegisterAndAuthenticateUser()
     {
         // Arrange
+        Mock<ILogger<AuthController>> mockLogger = new();
         UserRegisterViewModel newUser = new()
         {
             Name = "John Doe",
@@ -64,7 +67,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
         AuthenticationHandler authenticationHandler = new(context, passwordHashProvider, jwtTokenProvider);
 
         UserRegisterController userRegisterController = new(userHandler);
-        AuthController authController = new(authenticationHandler);
+        AuthController authController = new(mockLogger.Object, authenticationHandler);
 
         // Act 
         ActionResult<User> userRegisterResult = await userRegisterController.Register(roleGuid, newUser);
