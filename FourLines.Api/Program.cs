@@ -12,6 +12,8 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.ConfigureSerilog(appName, appVersion, openTelemetryEndpoint);
+
+    builder.Services.ConfigureProblemDetails();
     builder.Services.ConfigureOpenTelemtryTracingAndMetrics(openTelemetryEndpoint);
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -40,7 +42,7 @@ try
     });
 
     builder.Services.ConfigureJwtAuthentication(jwtSettings["Issuer"]!, jwtSettings["Audience"]!, secretKey!);
-    builder.Services.ConfigureProblemDetails();
+    
     builder.Services.AddAuthorization();
 
     var app = builder.Build();
