@@ -23,7 +23,7 @@
 
             logger.LogInformation("{op} - executed in {ms}", operation, sw.ElapsedMilliseconds);
 
-            return Ok(result.Value);
+            return result.Value;
         }
     }
 }
