@@ -21,6 +21,7 @@ public static class LoggingExtensions
                 .Enrich.WithProperty("Application", appName)
                 .Enrich.WithProperty("Environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
                 .WriteTo.Console(new JsonFormatter())
+                .WriteTo.Seq("http://localhost:5341")
                 .WriteTo.OpenTelemetry(options =>
                 {
                     options.Endpoint = openTelemetryEndpoint;
