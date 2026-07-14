@@ -2,8 +2,11 @@
 
 namespace FourLines.Api.ExceptionHandlers;
 
-public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService) : IExceptionHandler
+public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IProblemDetailsService problemDetailsService) 
+    : IExceptionHandler
 {
+    private readonly ILogger<GlobalExceptionHandler> _logger = logger;
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         ProblemDetails problemDetails = new()
@@ -18,6 +21,8 @@ public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService
             Type = exception.GetType().Name,
             Detail = exception.Message,
         };
+
+        _logger.LogError("An error occured: {@error}", problemDetails);
 
         return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
