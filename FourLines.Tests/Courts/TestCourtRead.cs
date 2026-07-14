@@ -1,234 +1,148 @@
-// using FourLines.Application.DTOs.Court;
-// using FourLines.Application.Handlers;
-// using FourLines.Domain.Constants;
-// using FourLines.Domain.Models;
-// using FourLines.Domain.Results;
-// using FourLines.Domain.Results.ErrorResults;
-// using Microsoft.Extensions.DependencyInjection;
+using FourLines.Application.DTOs.Courts;
+using FourLines.Application.Handlers;
+using FourLines.Domain.Constants;
+using FourLines.Domain.Models;
+using FourLines.Domain.Results;
+using FourLines.Domain.Results.ErrorResults;
+using Microsoft.Extensions.DependencyInjection;
 
-// namespace FourLines.Tests.Court;
+namespace FourLines.Tests.Courts;
 
-// public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
-// {
-//     private readonly InMemoryFixtures _fixtures = fixtures;
+public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+{
+    private readonly InMemoryFixtures _fixtures = fixtures;
 
-//     private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
-//     private static Role _testRolePlayer = new() { Name = RoleConstants.Player };
+    private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
 
-//     private static User _testUser = new()
-//     {
-//         RoleId = Guid.Empty,
-//         Name = "John Doe",
-//         Email = "john.doe@example.com",
-//         PasswordHash = "Password123!",
-//         Birthday = new DateOnly(1970, 1, 1),
-//         Phone = "55 54 9 9999-9999",
-//         RegistrationNumber = "383.975.210-89",
-//     };
+    private static User _testUser = new()
+    {
+        RoleId = _testRoleOwner.Id,
+        Name = "John Doe",
+        Email = "john.doe@example.com",
+        PasswordHash = "Password123!",
+        Birthday = new DateOnly(1970, 1, 1),
+        Phone = "55 54 9 9999-9999",
+        RegistrationNumber = "383.975.210-89",
+    };
 
-//     [Fact]
-//     public async Task Should_GetAllCourt()
-//     {
-//         // Arrange
-//         Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+    private static Facility _testFacility = new()
+    {
+        Name = "Test Facility",
+        Address = "123 Test St",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "1234567890",
+        OwnerId = _testUser.Id,
+    };
 
-//         _testUser.RoleId = roleOwner.Id;
-//         await _fixtures.CreateEntityInMemory<User>(_testUser);
+    private static Sport _testSport = new()
+    {
+        Name = "Test Sport",
+        Indoor = true,
+        StartingPlayersCount = 5,
+        MaxPlayersCount = 10,
+    };
 
-//         CreateFacilityDTO createFacilityTest1 = new()
-//         {
-//             Name = "Test Facility 1",
-//             Address = "123 Test St",
-//             City = "Test City",
-//             State = "TS",
-//             ZipCode = "12345",
-//             RegistrationNumber = "1234567890",
-//             OwnerId = _testUser.Id,
-//         };
+    private static Court _testCourt1 = new()
+    {
+        FacilityId = _testFacility.Id,
+        SportId = _testSport.Id,
+        Name = "Test Court",
+        IsActive = true,
+    };
 
-//         CreateFacilityDTO createFacilityTest2 = new()
-//         {
-//             Name = "Test Facility 2",
-//             Address = "456 Test Ave",
-//             City = "Test City 2",
-//             State = "TS",
-//             ZipCode = "12345",
-//             RegistrationNumber = "0987654321",
-//             OwnerId = _testUser.Id,
-//         };
+    private static Court _testCourt2 = new()
+    {
+        FacilityId = _testFacility.Id,
+        SportId = _testSport.Id,
+        Name = "Test Court 2",
+        IsActive = true,
+    };
 
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+    [Fact]
+    public async Task Should_GetAllCourts()
+    {
+        // Arrange
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
+        await _fixtures.CreateEntityInMemory<Sport>(_testSport);
+        await _fixtures.CreateEntityInMemory<Court>(_testCourt1);
+        await _fixtures.CreateEntityInMemory<Court>(_testCourt2);
 
-//         await facilityHandler.Create(createFacilityTest1);
-//         await facilityHandler.Create(createFacilityTest2);
+        CourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
-//         // Act
-//         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllCourt();
+        // Act
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(_testFacility.OwnerId, _testFacility.Id);
 
-//         // Assert
-//         Assert.NotEmpty(result.Value);
-//         Assert.Equal(2, result.Value.Count());
-//     }
+        // Assert
+        Assert.NotEmpty(result.Value);
+        Assert.Equal(2, result.Value.Count());
+    }
 
-//     [Fact]
-//     public async Task Should_Not_GetAllCourt()
-//     {
-//         // Arrange
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-//         // Act
-//         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllCourt();
+    [Fact]
+    public async Task Should_Not_GetAllCourts()
+    {
+        // Arrange
+        CourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        // Act
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(_testFacility.OwnerId, _testFacility.Id);
 
-//         // Assert
-//         Assert.Null(result.Value);
-//         Assert.Equal(CourtErrorResults.RetrieveNoCourt, result.Error);
-//     }
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
+    }
 
-//     [Fact]
-//     public async Task Should_GetCourt()
-//     {
-//         // Arrange
-//         Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+    [Fact]
+    public async Task Should_GetFacility()
+    {
+        // Arrange
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
+        await _fixtures.CreateEntityInMemory<Sport>(_testSport);
+        await _fixtures.CreateEntityInMemory<Court>(_testCourt1);
+        await _fixtures.CreateEntityInMemory<Court>(_testCourt2);
 
-//         _testUser.RoleId = roleOwner.Id;
-//         await _fixtures.CreateEntityInMemory<User>(_testUser);
+        CourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
-//         CreateFacilityDTO createFacilityTest1 = new()
-//         {
-//             Name = "Test Facility 1",
-//             Address = "123 Test St",
-//             City = "Test City",
-//             State = "TS",
-//             ZipCode = "12345",
-//             RegistrationNumber = "1234567890",
-//             OwnerId = _testUser.Id,
-//         };
+        // Act
+        Result<Court> result = await courtHandler.GetFacility(
+            _testFacility.OwnerId, _testCourt1.FacilityId, _testCourt1.Id
+        );
 
-//         CreateFacilityDTO createFacilityTest2 = new()
-//         {
-//             Name = "Test Facility 2",
-//             Address = "456 Test Ave",
-//             City = "Test City 2",
-//             State = "TS",
-//             ZipCode = "12345",
-//             RegistrationNumber = "0987654321",
-//             OwnerId = _testUser.Id,
-//         };
+        // Assert
+        Assert.NotNull(result.Value);
+        Assert.Equal(result.Value.Id, _testCourt1.Id);
+        Assert.Equal(result.Value.Name, _testCourt1.Name);
+        Assert.Equal(result.Value.IsActive, _testCourt1.IsActive);
+        Assert.Equal(result.Value.FacilityId, _testCourt1.FacilityId);
+        Assert.Equal(result.Value.SportId, _testCourt1.SportId);
+    }
 
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+      [Fact]
+    public async Task Should_Not_GetFacility()
+    {
+        // Arrange
+        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.RemoveAllDataFromMemory<Facility>();
 
-//         await facilityHandler.Create(createFacilityTest1);
-//         await facilityHandler.Create(createFacilityTest2);
+        CourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
-//         // Act
-//         Result<IEnumerable<Facility>> result = await facilityHandler.GetCourtFromOwner(
-//             _testUser.Id
-//         );
+        // Act
+        Result<Court> result = await courtHandler.GetFacility(
+            _testFacility.OwnerId, _testFacility.Id, _testCourt1.Id
+        );
 
-//         // Assert
-//         Assert.NotEmpty(result.Value);
-//         Assert.Equal(2, result.Value.Count());
-//     }
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
+    }
 
-//     [Fact]
-//     public async Task Should_Not_GetCourt()
-//     {
-//         // Arrange
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
-//         // Act
-//         Result<IEnumerable<Facility>> result = await facilityHandler.GetCourtFromOwner(
-//             Guid.NewGuid()
-//         );
-
-//         // Assert
-//         Assert.Null(result.Value);
-//         Assert.Equal(CourtErrorResults.RetrieveOwnerDoesNotExists, result.Error);
-//     }
-
-//     [Fact]
-//     public async Task Should_GetFacility()
-//     {
-//         // Arrange
-//         Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-
-//         _testUser.RoleId = roleOwner.Id;
-//         await _fixtures.CreateEntityInMemory<User>(_testUser);
-
-//         CreateFacilityDTO createFacilityTest = new()
-//         {
-//             Name = "Test Facility 1",
-//             Address = "123 Test St",
-//             City = "Test City",
-//             State = "TS",
-//             ZipCode = "12345",
-//             RegistrationNumber = "1234567890",
-//             OwnerId = _testUser.Id,
-//         };
-
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
-//         Result<Facility> resultCreate = await facilityHandler.Create(createFacilityTest);
-
-//         // Act
-//         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-//             _testUser.Id,
-//             resultCreate.Value.Id
-//         );
-
-//         // Assert
-//         Assert.NotNull(result.Value);
-//         Assert.Equal(createFacilityTest.Name, result.Value.Name);
-//         Assert.Equal(createFacilityTest.Address, result.Value.Address);
-//         Assert.Equal(createFacilityTest.City, result.Value.City);
-//         Assert.Equal(createFacilityTest.State, result.Value.State);
-//         Assert.Equal(createFacilityTest.ZipCode, result.Value.ZipCode);
-//         Assert.Equal(createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-//         Assert.Equal(createFacilityTest.OwnerId, result.Value.OwnerId);
-//     }
-
-//     [Fact]
-//     public async Task Should_Not_GetOwnerFacility()
-//     {
-//         // Arrange
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
-//         // Act
-//         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-//             Guid.NewGuid(),
-//             Guid.NewGuid()
-//         );
-
-//         // Assert
-//         Assert.Null(result.Value);
-//         Assert.Equal(CourtErrorResults.RetrieveOwnerDoesNotExists, result.Error);
-//     }
-
-//     [Fact]
-//     public async Task Should_Not_GetFacility()
-//     {
-//         // Arrange
-//         Role roleOwner = await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-
-//         _testUser.RoleId = roleOwner.Id;
-//         await _fixtures.CreateEntityInMemory<User>(_testUser);
-
-//         FacilityHandler facilityHandler =
-//             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
-//         // Act
-//         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-//             _testUser.Id,
-//             Guid.NewGuid()
-//         );
-
-//         // Assert
-//         Assert.Null(result.Value);
-//         Assert.Equal(CourtErrorResults.RetrieveFacilityDoesNotExist, result.Error);
-//     }
-// }
+}

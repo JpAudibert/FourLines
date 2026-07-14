@@ -65,6 +65,7 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         UpdateCourtDTO updateCourtTest = new()
         {
             Id = _testCourt.Id,
+            OwnerId = _testUser.Id,
             FacilityId = _testFacility.Id,
             SportId = _testSport.Id,
             Name = "Test Updated Court",
@@ -95,11 +96,11 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
         UpdateCourtDTO updateCourtTest = new()
         {
-            Id = Guid.NewGuid(),
+            Id = _testCourt.Id,
             FacilityId = Guid.NewGuid(),
-            SportId = Guid.NewGuid(),
+            SportId = _testSport.Id,
             Name = "Test Updated Court",
-            OwnerId = Guid.Empty,
+            OwnerId = _testUser.Id,
         };
 
         // Act
@@ -114,6 +115,7 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_AffectAnyRowFacility()
     {
         // Arrange
+        await _fixtures.RemoveAllDataFromMemory<Court>();
         await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
         await _fixtures.CreateEntityInMemory<User>(_testUser);
         await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
@@ -123,11 +125,12 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
         UpdateCourtDTO updateCourtTest = new()
         {
-            Id = Guid.NewGuid(),
+            Id = _testCourt.Id,
             FacilityId = _testFacility.Id,
             SportId = _testSport.Id,
             Name = "Test Updated Court",
             IsActive = true,
+            OwnerId = _testUser.Id,
         };
 
         // Act
