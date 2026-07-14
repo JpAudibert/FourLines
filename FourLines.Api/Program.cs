@@ -1,3 +1,6 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
 const string appName = "FourLines";
 const string appVersion = "1.0.0";
 
@@ -8,8 +11,9 @@ Log.Logger = new LoggerConfiguration().CreateBootstrapLogger();
 try
 {
     Log.Information("Starting application");
-
     var builder = WebApplication.CreateBuilder(args);
+
+    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
     builder.Host.ConfigureSerilog(appName, appVersion, openTelemetryEndpoint);
 
@@ -42,8 +46,10 @@ try
     });
 
     builder.Services.ConfigureJwtAuthentication(jwtSettings["Issuer"]!, jwtSettings["Audience"]!, secretKey!);
-    
+
     builder.Services.AddAuthorization();
+
+    builder.Services.AddHealthChecks().AddNpgSql(connectionString);
 
     var app = builder.Build();
 
@@ -59,6 +65,11 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    app.MapHealthChecks("/_health", new HealthCheckOptions()
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
     Log.Information("Application started successfully");
 
