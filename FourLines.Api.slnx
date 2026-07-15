@@ -4,8 +4,10 @@
     <File Path=".editorconfig" />
     <File Path="Collections/FourLines/.gitignore" />
     <File Path="Directory.Packages.props" />
-    <File Path="Helpers/docker-compose.yml" />
+    <File Path="docker-compose.yml" />
     <File Path="Helpers/seeding.sql" />
+    <File Path="otel-collector-config.yaml" />
+    <File Path="prometheus.yml" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="FourLines.Api/FourLines.Api.csproj" />

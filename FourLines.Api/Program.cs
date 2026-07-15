@@ -1,66 +1,85 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
+const string appName = "FourLines";
+const string appVersion = "1.0.0";
 
-var builder = WebApplication.CreateBuilder(args);
+const string openTelemetryEndpoint = "http://localhost:4317";
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["Secret"];
+Log.Logger = new LoggerConfiguration().CreateBootstrapLogger();
 
-// Add services to the container.
-
-builder.Services
-    .AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-builder.Services
-    .AddDomain()
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
-
-builder.Services.AddApiVersioning(options =>
+try
 {
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ReportApiVersions = true;
-});
+    Log.Information("Starting application");
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
+    string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+
+    builder.Host.ConfigureSerilog(appName, appVersion, openTelemetryEndpoint);
+
+    builder.Services.ConfigureProblemDetails();
+    builder.Services.ConfigureOpenTelemtryTracingAndMetrics(openTelemetryEndpoint);
+
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    var secretKey = jwtSettings["Secret"];
+
+    // Add services to the container.
+    builder.Services
+        .AddControllers()
+        .AddJsonOptions(options =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
-        };
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
+    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    builder.Services.AddOpenApi();
+
+    builder.Services
+        .AddDomain()
+        .AddApplication()
+        .AddInfrastructure(builder.Configuration);
+
+    builder.Services.AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
     });
 
-builder.Services.AddAuthorization();
+    builder.Services.ConfigureJwtAuthentication(jwtSettings["Issuer"]!, jwtSettings["Audience"]!, secretKey!);
 
-var app = builder.Build();
+    builder.Services.AddAuthorization();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference(options => options.AddDocument("v1", "API Version 1", isDefault: true));
+    builder.Services.AddHealthChecks().AddNpgSql(connectionString);
+
+    var app = builder.Build();
+
+    app.ConfigureSerilogRequestLogging();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.MapScalarApiReference(options => options.AddDocument("v1", "API Version 1", isDefault: true));
+    }
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.MapHealthChecks("/_health", new HealthCheckOptions()
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
+    Log.Information("Application started successfully");
+
+    app.Run();
 }
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
