@@ -1,5 +1,4 @@
 using FourLines.Application.Handlers;
-using FourLines.Domain.Constants;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
