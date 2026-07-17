@@ -4,6 +4,7 @@ using FourLines.Domain.Constants;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Tests.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Courts;
@@ -12,62 +13,22 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 {
     private readonly InMemoryFixtures _fixtures = fixtures;
 
-    private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
-
-    private static User _testUser = new()
-    {
-        RoleId = _testRoleOwner.Id,
-        Name = "John Doe",
-        Email = "john.doe@example.com",
-        PasswordHash = "Password123!",
-        Birthday = new DateOnly(1970, 1, 1),
-        Phone = "55 54 9 9999-9999",
-        RegistrationNumber = "383.975.210-89",
-    };
-
-    private static Facility _testFacility = new()
-    {
-        Name = "Test Facility",
-        Address = "123 Test St",
-        City = "Test City",
-        State = "TS",
-        ZipCode = "12345",
-        RegistrationNumber = "1234567890",
-        OwnerId = _testUser.Id,
-    };
-
-    private static Sport _testSport = new()
-    {
-        Name = "Test Sport",
-        Indoor = true,
-        StartingPlayersCount = 5,
-        MaxPlayersCount = 10,
-    };
-
-    private static Court _testCourt = new()
-    {
-        FacilityId = _testFacility.Id,
-        SportId = _testSport.Id,
-        Name = "Test Court",
-        IsActive = true,
-    };
-
     [Fact]
     public async Task Should_UpdateCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
-        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
-        await _fixtures.CreateEntityInMemory<Sport>(_testSport);
-        await _fixtures.CreateEntityInMemory<Court>(_testCourt);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
 
         UpdateCourtDTO updateCourtTest = new()
         {
-            Id = _testCourt.Id,
-            OwnerId = _testUser.Id,
-            FacilityId = _testFacility.Id,
-            SportId = _testSport.Id,
+            Id = InMemoryDataSource.court1.Id,
+            OwnerId = InMemoryDataSource.userOwner.Id,
+            FacilityId = InMemoryDataSource.facility1.Id,
+            SportId = InMemoryDataSource.sport.Id,
             Name = "Test Updated Court",
             IsActive = true,
         };
@@ -76,7 +37,7 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
             _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         // Act
-        Result<Court> result = await courtHandler.Update(updateCourtTest); //TODO: court does not have ownerId, so we need to find a way to pass it to the update method
+        Result<Court> result = await courtHandler.Update(updateCourtTest);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -96,11 +57,11 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
         UpdateCourtDTO updateCourtTest = new()
         {
-            Id = _testCourt.Id,
+            Id = InMemoryDataSource.court1.Id,
             FacilityId = Guid.NewGuid(),
-            SportId = _testSport.Id,
+            SportId = InMemoryDataSource.sport.Id,
             Name = "Test Updated Court",
-            OwnerId = _testUser.Id,
+            OwnerId = InMemoryDataSource.userOwner.Id,
         };
 
         // Act
@@ -116,21 +77,21 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     {
         // Arrange
         await _fixtures.RemoveAllDataFromMemory<Court>();
-        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
-        await _fixtures.CreateEntityInMemory<Facility>(_testFacility);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
 
         CourtHandler courtHandler =
             _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         UpdateCourtDTO updateCourtTest = new()
         {
-            Id = _testCourt.Id,
-            FacilityId = _testFacility.Id,
-            SportId = _testSport.Id,
+            Id = InMemoryDataSource.court1.Id,
+            FacilityId = InMemoryDataSource.facility1.Id,
+            SportId = InMemoryDataSource.sport.Id,
             Name = "Test Updated Court",
             IsActive = true,
-            OwnerId = _testUser.Id,
+            OwnerId = InMemoryDataSource.userOwner.Id,
         };
 
         // Act

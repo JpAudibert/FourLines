@@ -5,6 +5,7 @@ using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
+using FourLines.Tests.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

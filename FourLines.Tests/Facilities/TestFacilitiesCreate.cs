@@ -4,6 +4,7 @@ using FourLines.Domain.Constants;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Tests.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
@@ -11,32 +12,7 @@ namespace FourLines.Tests.Facilities;
 public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
     private readonly InMemoryFixtures _fixtures = fixtures;
-
-    private static Role _testRoleOwner = new() { Name = RoleConstants.FacilityOwner };
-    private static Role _testRolePlayer = new() { Name = RoleConstants.Player };
-
-    private static User _testOwner = new()
-    {
-        RoleId = _testRoleOwner.Id,
-        Name = "John Doe",
-        Email = "john.doe@example.com",
-        PasswordHash = "Password123!",
-        Birthday = new DateOnly(1970, 1, 1),
-        Phone = "55 54 9 9999-9999",
-        RegistrationNumber = "383.975.210-89",
-    };
-
-    private static User _testUser = new()
-    {
-        RoleId = _testRolePlayer.Id,
-        Name = "Jane Smith",
-        Email = "jane.smith@example.com",
-        PasswordHash = "Password123!",
-        Birthday = new DateOnly(1990, 1, 1),
-        Phone = "55 54 9 8888-8888",
-        RegistrationNumber = "123.456.789-00",
-    };
-
+    
     private static CreateFacilityDTO _createFacilityTest = new()
     {
         Name = "Test Facility",
@@ -45,15 +21,15 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         State = "TS",
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
-        OwnerId = _testOwner.Id,
+        OwnerId = InMemoryDataSource.userOwner.Id,
     };
 
     [Fact]
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(_testRoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(_testOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -78,8 +54,8 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     {
         // Arrange
 
-        await _fixtures.CreateEntityInMemory<Role>(_testRolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(_testUser);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
