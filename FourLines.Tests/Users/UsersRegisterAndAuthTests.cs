@@ -5,14 +5,14 @@ using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
+using FourLines.Tests.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace FourLines.Tests;
+namespace FourLines.Tests.Users;
 
 public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
