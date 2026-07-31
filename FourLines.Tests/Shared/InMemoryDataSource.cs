@@ -76,4 +76,19 @@ public class InMemoryDataSource
         IsActive = true,
     };
 
+    public static FacilitySchedule facilitySchedule1 = new()
+    {
+        FacilityId = facility1.Id,
+        DayOfWeek = DayOfWeek.Monday,
+        OpensAt = new TimeOnly(8, 0),
+        ClosesAt = new TimeOnly(20, 0),
+    };
+
+    public static FacilitySchedule facilitySchedule2 = new()
+    {
+        FacilityId = facility1.Id,
+        DayOfWeek = DayOfWeek.Tuesday,
+        OpensAt = new TimeOnly(8, 0),
+        ClosesAt = new TimeOnly(20, 0),
+    };
 }

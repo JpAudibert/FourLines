@@ -6,7 +6,9 @@ public class FacilityScheduleMap : IEntityTypeConfiguration<FacilitySchedule>
     {
         builder.ToTable("facility_schedules");
 
-        builder.HasKey(fs => new { fs.FacilityId, fs.DayOfWeek });
+        builder.HasKey(fs => new { fs.Id });
+
+        builder.HasAlternateKey(fs => new { fs.FacilityId, fs.DayOfWeek });
 
         builder.Property(fs => fs.FacilityId)
             .HasColumnName("facility_id")
