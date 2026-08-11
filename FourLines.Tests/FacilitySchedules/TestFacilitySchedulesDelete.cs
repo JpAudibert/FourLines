@@ -4,9 +4,9 @@ using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FourLines.Tests.FacilitiesSchedules;
+namespace FourLines.Tests.FacilitySchedules;
 
-public class TestFacilitiesSchedulesDelete(InMemoryFixtures fixtures)
+public class TestFacilitySchedulesDelete(InMemoryFixtures fixtures)
     : IClassFixture<InMemoryFixtures>
 {
     private readonly InMemoryFixtures _fixtures = fixtures;

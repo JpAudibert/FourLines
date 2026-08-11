@@ -12,19 +12,28 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     private readonly InMemoryFixtures _fixtures = fixtures;
 
     [Fact]
-    public async Task Should_GetAllReservations()
+    public async Task Should_GetAllReservationsFromUser()
     {
         // Arrange
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
+            InMemoryDataSource.facilitySchedule1
+        );
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation1);
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation2);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+        Result<IEnumerable<Reservation>> result =
+            await reservationHandler.GetAllReservationsFromUser(InMemoryDataSource.userPlayer.Id);
 
         // Assert
         Assert.NotEmpty(result.Value);
@@ -32,38 +41,46 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     }
 
     [Fact]
-    public async Task Should_Not_GetAllReservations()
+    public async Task Should_Not_GetAllReservationsFromUser()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
+        await _fixtures.RemoveAllDataFromMemory<Reservation>();
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+        Result<IEnumerable<Reservation>> result =
+            await reservationHandler.GetAllReservationsFromUser(InMemoryDataSource.userPlayer.Id);
 
         // Assert
         Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
+        Assert.Equal(ReservationsErrorResults.GetAllNoReservationsForUser, result.Error);
     }
 
     [Fact]
-    public async Task Should_GetReservations()
+    public async Task Should_GetAllReservationsFromCourt()
     {
         // Arrange
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
+            InMemoryDataSource.facilitySchedule1
+        );
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation1);
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation2);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
-            InMemoryDataSource.userOwner.Id
-        );
+        Result<IEnumerable<Reservation>> result =
+            await reservationHandler.GetAllReservationsFromCourt(InMemoryDataSource.court1.Id);
 
         // Assert
         Assert.NotEmpty(result.Value);
@@ -71,90 +88,71 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     }
 
     [Fact]
-    public async Task Should_Not_GetReservations()
+    public async Task Should_Not_GetAllReservationsFromCourt()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        await _fixtures.RemoveAllDataFromMemory<Reservation>();
+
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
-            Guid.NewGuid()
-        );
+        Result<IEnumerable<Reservation>> result =
+            await reservationHandler.GetAllReservationsFromCourt(InMemoryDataSource.court1.Id);
 
         // Assert
         Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveOwnerDoesNotExists, result.Error);
+        Assert.Equal(ReservationsErrorResults.GetAllNoReservationsForCourt, result.Error);
     }
 
     [Fact]
-    public async Task Should_GetFacilitySchedules()
+    public async Task Should_GetOneReservationFromUser()
     {
         // Arrange
-       
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
+            InMemoryDataSource.facilitySchedule1
+        );
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation1);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.userOwner.Id,
-            InMemoryDataSource.facility1.Id
+        Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
+            InMemoryDataSource.userPlayer.Id,
+            InMemoryDataSource.reservation1.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(InMemoryDataSource.facility1.Name, result.Value.Name);
-        Assert.Equal(InMemoryDataSource.facility1.Address, result.Value.Address);
-        Assert.Equal(InMemoryDataSource.facility1.City, result.Value.City);
-        Assert.Equal(InMemoryDataSource.facility1.State, result.Value.State);
-        Assert.Equal(InMemoryDataSource.facility1.ZipCode, result.Value.ZipCode);
-        Assert.Equal(
-            InMemoryDataSource.facility1.RegistrationNumber,
-            result.Value.RegistrationNumber
-        );
-        Assert.Equal(InMemoryDataSource.facility1.OwnerId, result.Value.OwnerId);
+        Assert.Equal(InMemoryDataSource.reservation1.CourtId, result.Value.CourtId);
+        Assert.Equal(InMemoryDataSource.reservation1.UserId, result.Value.UserId);
+        Assert.Equal(InMemoryDataSource.reservation1.Period, result.Value.Period);
+        Assert.Equal(InMemoryDataSource.reservation1.Status, result.Value.Status);
     }
 
     [Fact]
-    public async Task Should_Not_GetOwnerFacilitySchedules()
+    public async Task Should_Not_GetOneReservationFromUser()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
+        Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
             Guid.NewGuid(),
             Guid.NewGuid()
         );
 
         // Assert
         Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveOwnerDoesNotExists, result.Error);
-    }
-
-    [Fact]
-    public async Task Should_Not_GetFacilitySchedules()
-    {
-        // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
-
-        // Act
-        Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.userOwner.Id,
-            Guid.NewGuid()
-        );
-
-        // Assert
-        Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveFacilityDoesNotExist, result.Error);
+        Assert.Equal(ReservationsErrorResults.GetOneReservationDoesNotExist, result.Error);
     }
 }

@@ -11,20 +11,28 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
     private readonly InMemoryFixtures _fixtures = fixtures;
 
     [Fact]
-    public async Task Should_DeleteFacilitySchedule()
+    public async Task Should_DeleteReservation()
     {
         // Arrange
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
+            InMemoryDataSource.facilitySchedule1
+        );
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation1);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(
-            InMemoryDataSource.userOwner.Id,
-            InMemoryDataSource.facility1.Id
+        Result<bool> result = await reservationHandler.Delete(
+            InMemoryDataSource.userPlayer.Id,
+            InMemoryDataSource.reservation1.Id
         );
 
         // Assert
@@ -32,14 +40,14 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
     }
 
     [Fact]
-    public async Task Should_Not_DeleteFacilitySchedule()
+    public async Task Should_Not_DeleteReservation()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        ReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(Guid.NewGuid(), Guid.NewGuid());
+        Result<bool> result = await reservationHandler.Delete(Guid.NewGuid(), Guid.NewGuid());
 
         // Assert
         Assert.False(result.Value);

@@ -1,4 +1,5 @@
 using FourLines.Application.DTOs.Facilities;
+using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Handlers;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -20,35 +21,35 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
+            InMemoryDataSource.facilitySchedule1
+        );
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        FacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
 
-        UpdateFacilityDTO updateFacilityTest = new()
+        UpdateFacilityScheduleDTO updateFacilityScheduleTest = new()
         {
-            Id = InMemoryDataSource.facility1.Id,
-            Name = "Test Updated Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
+            Id = InMemoryDataSource.facilitySchedule1.Id,
+            FacilityId = InMemoryDataSource.facility1.Id,
             OwnerId = InMemoryDataSource.userOwner.Id,
+            DayOfWeek = DayOfWeek.Tuesday,
+            OpensAt = new TimeOnly(10, 0),
+            ClosesAt = InMemoryDataSource.facilitySchedule1.ClosesAt,
         };
 
         // Act
-        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
+            updateFacilityScheduleTest
+        );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.IsType<Facility>(result.Value);
-        Assert.Equal(updateFacilityTest.Name, result.Value.Name);
-        Assert.Equal(updateFacilityTest.Address, result.Value.Address);
-        Assert.Equal(updateFacilityTest.City, result.Value.City);
-        Assert.Equal(updateFacilityTest.State, result.Value.State);
-        Assert.Equal(updateFacilityTest.ZipCode, result.Value.ZipCode);
-        Assert.Equal(updateFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-        Assert.Equal(updateFacilityTest.OwnerId, result.Value.OwnerId);
+        Assert.IsType<FacilitySchedule>(result.Value);
+        Assert.Equal(updateFacilityScheduleTest.FacilityId, result.Value.FacilityId);
+        Assert.Equal(updateFacilityScheduleTest.DayOfWeek, result.Value.DayOfWeek);
+        Assert.Equal(updateFacilityScheduleTest.OpensAt, result.Value.OpensAt);
+        Assert.Equal(updateFacilityScheduleTest.ClosesAt, result.Value.ClosesAt);
     }
 
     [Fact]

@@ -25,11 +25,11 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
             InMemoryDataSource.facilitySchedule2
         );
 
-        FacilityScheduleHandler facilityHandler =
+        FacilityScheduleHandler facilityScheduleHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
 
         // Act
-        Result<IEnumerable<FacilitySchedule>> result = await facilityHandler.GetSchedules(
+        Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
             InMemoryDataSource.userOwner.Id,
             InMemoryDataSource.facility1.Id
         );
@@ -45,14 +45,17 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
         // Arrange
         await _fixtures.RemoveAllDataFromMemory<Facility>();
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        FacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+        Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        );
 
         // Assert
         Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
+        Assert.Equal(FacilitySchedulesErrorResults.RetrieveFacilitySchedules, result.Error);
     }
 }

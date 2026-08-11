@@ -25,7 +25,7 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_CreateCourt()
     {
         // Arrange
-        
+
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
@@ -62,5 +62,24 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.CreateUnknownFacility, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_HaveKnownSport()
+    {
+        // Arrange
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.RemoveAllDataFromMemory<Sport>();
+
+        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+
+        // Act
+        Result<Court> result = await courtHandler.Create(_createCourtTest);
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.CreateUnknownSport, result.Error);
     }
 }
