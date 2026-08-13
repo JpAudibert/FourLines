@@ -15,12 +15,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetAllFacilities()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner),
-            _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner),
-            _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1),
-            _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -54,12 +52,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacilities()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner),
-            _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner),
-            _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1),
-            _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility2);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -95,11 +91,9 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacility()
     {
         // Arrange
-        await Task.WhenAll(
-            _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner),
-            _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner),
-            _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1)
-        );
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -117,7 +111,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         Assert.Equal(InMemoryDataSource.facility1.City, result.Value.City);
         Assert.Equal(InMemoryDataSource.facility1.State, result.Value.State);
         Assert.Equal(InMemoryDataSource.facility1.ZipCode, result.Value.ZipCode);
-        Assert.Equal(InMemoryDataSource.facility1.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(
+            InMemoryDataSource.facility1.RegistrationNumber,
+            result.Value.RegistrationNumber
+        );
         Assert.Equal(InMemoryDataSource.facility1.OwnerId, result.Value.OwnerId);
     }
 

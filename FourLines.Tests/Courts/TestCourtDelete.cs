@@ -11,7 +11,6 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
 {
     private readonly InMemoryFixtures _fixtures = fixtures;
 
-
     private static CreateCourtDTO _createCourtTest = new()
     {
         OwnerId = InMemoryDataSource.userOwner.Id,
@@ -22,33 +21,40 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
     };
 
     [Fact]
-    public async Task Should_DeleteFacility()
+    public async Task Should_DeleteCourt()
     {
         // Arrange
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(InMemoryDataSource.userOwner.Id, InMemoryDataSource.facility1.Id);
+        Result<bool> result = await courtHandler.Delete(
+            InMemoryDataSource.userOwner.Id,
+            InMemoryDataSource.facility1.Id,
+            InMemoryDataSource.court1.Id
+        );
 
         // Assert
         Assert.True(result.Value);
     }
 
     [Fact]
-    public async Task Should_Not_DeleteFacility()
+    public async Task Should_Not_DeleteCourt()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(Guid.NewGuid(), Guid.NewGuid());
+        Result<bool> result = await courtHandler.Delete(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid()
+        );
 
         // Assert
         Assert.False(result.Value);

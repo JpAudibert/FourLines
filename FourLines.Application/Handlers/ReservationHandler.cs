@@ -46,10 +46,11 @@ public class ReservationHandler(FourLinesContext context, IReservationValidator 
         };
 
         bool overlappingReservation = await _context.Reservations
-            .AnyAsync(r => r.CourtId == newReservation.CourtId &&
+            .Select(r => r.CourtId == newReservation.CourtId &&
                 r.Period.Start < newReservation.Period.End &&
                 r.Period.End > newReservation.Period.Start &&
-                r.Status != ReservationStatus.Cancelled);
+                r.Status != ReservationStatus.Cancelled)
+            .AnyAsync();
 
         if (overlappingReservation)
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationOverlappingReservation);

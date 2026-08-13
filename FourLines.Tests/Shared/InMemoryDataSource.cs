@@ -5,6 +5,7 @@ namespace FourLines.Tests.Shared;
 
 public class InMemoryDataSource
 {
+    public static DateTimeOffset dateTime = DateTimeOffset.Now;
     public static Role roleOwner = new() { Name = RoleConstants.FacilityOwner };
     public static Role rolePlayer = new() { Name = RoleConstants.Player };
 
@@ -13,7 +14,7 @@ public class InMemoryDataSource
         RoleId = roleOwner.Id,
         Name = "John Doe",
         Email = "john.doe@example.com",
-        PasswordHash = "Password123!",
+        PasswordHash = "AQAAAAIAAYagAAAAEMIamrvIuvlWmAnvN+crLN6139ExUi8CuZC2s6J4W/h7DNKU+Z8syKwX08xHWmZp+g==",
         Birthday = new DateOnly(1970, 1, 1),
         Phone = "55 54 9 9999-9999",
         RegistrationNumber = "383.975.210-89",
@@ -24,7 +25,7 @@ public class InMemoryDataSource
         RoleId = rolePlayer.Id,
         Name = "Jane Smith",
         Email = "jane.smith@example.com",
-        PasswordHash = "Password123!",
+        PasswordHash = "AQAAAAIAAYagAAAAEMIamrvIuvlWmAnvN+crLN6139ExUi8CuZC2s6J4W/h7DNKU+Z8syKwX08xHWmZp+g==",
         Birthday = new DateOnly(1970, 1, 1),
         Phone = "55 54 9 9999-9999",
         RegistrationNumber = "383.975.211-89",
@@ -76,4 +77,43 @@ public class InMemoryDataSource
         IsActive = true,
     };
 
+    public static FacilitySchedule facilitySchedule1 = new()
+    {
+        FacilityId = facility1.Id,
+        DayOfWeek = DayOfWeek.Tuesday,
+        OpensAt = new TimeOnly(8, 0),
+        ClosesAt = new TimeOnly(20, 0),
+    };
+
+    public static FacilitySchedule facilitySchedule2 = new()
+    {
+        FacilityId = facility1.Id,
+        DayOfWeek = DayOfWeek.Thursday,
+        OpensAt = new TimeOnly(8, 0),
+        ClosesAt = new TimeOnly(20, 0),
+    };
+
+    public static Reservation reservation1 = new()
+    {
+        CourtId = court1.Id,
+        UserId = userPlayer.Id,
+        Period = new TimeRange(dateTime, dateTime.AddHours(1)),
+        Status = ReservationStatus.Pending,
+    };
+
+    public static Reservation reservation2 = new()
+    {
+        CourtId = court1.Id,
+        UserId = userPlayer.Id,
+        Period = new TimeRange(dateTime.AddHours(1), dateTime.AddHours(2)),
+        Status = ReservationStatus.Pending,
+    };
+
+    public static Reservation reservation3 = new()
+    {
+        CourtId = court2.Id,
+        UserId = userPlayer.Id,
+        Period = new TimeRange(dateTime.AddHours(2), dateTime.AddHours(3)),
+        Status = ReservationStatus.Pending,
+    };
 }

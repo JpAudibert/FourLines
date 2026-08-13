@@ -2,32 +2,40 @@
 
 public class ReservationValidator() : IReservationValidator
 {
-    public async Task<Result<Reservation>> ValidateAsync(CreateReservationDTO reservation, CancellationToken cancellationToken = default)
+    public async Task<Result<Reservation>> ValidateAsync(
+        CreateReservationDTO reservation,
+        CancellationToken cancellationToken = default
+    )
     {
         if (!reservation.Period.AreDatesValid())
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidDates);
 
-        if (reservation.Period.Duration <= TimeSpan.FromMinutes(0))
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidDuration);
-
         if (reservation.Period.StartAndEndAreInThePast())
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationStartAndEndInThePast);
+            return Result<Reservation>.Failure(
+                ReservationsErrorResults.CreationStartAndEndInThePast
+            );
 
         if (!reservation.Period.StartAndEndAreInTheSameDay())
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationStartAndEndNotInTheSameDay);
+            return Result<Reservation>.Failure(
+                ReservationsErrorResults.CreationStartAndEndNotInTheSameDay
+            );
 
         if (reservation.Period.Duration != TimeSpan.FromMinutes(60))
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration);
+            return Result<Reservation>.Failure(
+                ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration
+            );
 
         ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
-        if(!statuses.Contains(reservation.Status))
+        if (!statuses.Contains(reservation.Status))
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidStatus);
 
-        return Result<Reservation>.Success(new Reservation
-        {
-            CourtId = reservation.CourtId,
-            UserId = reservation.UserId,
-            Period = reservation.Period,
-        });
+        return Result<Reservation>.Success(
+            new Reservation
+            {
+                CourtId = reservation.CourtId,
+                UserId = reservation.UserId,
+                Period = reservation.Period,
+            }
+        );
     }
 }
