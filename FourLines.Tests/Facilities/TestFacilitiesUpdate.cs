@@ -16,23 +16,23 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_UpdateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
-            Id = InMemoryDataSource.facility1.Id,
+            Id = InMemoryDataSource.Facility1.Id,
             Name = "Test Updated Facility",
             Address = "123 Test St",
             City = "Test City",
             State = "TS",
             ZipCode = "12345",
             RegistrationNumber = "1234567890",
-            OwnerId = InMemoryDataSource.userOwner.Id,
+            OwnerId = InMemoryDataSource.UserOwner.Id,
         };
 
         // Act

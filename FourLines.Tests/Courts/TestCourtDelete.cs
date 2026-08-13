@@ -13,9 +13,9 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
     private static CreateCourtDTO _createCourtTest = new()
     {
-        OwnerId = InMemoryDataSource.userOwner.Id,
-        FacilityId = InMemoryDataSource.facility1.Id,
-        SportId = InMemoryDataSource.sport.Id,
+        OwnerId = InMemoryDataSource.UserOwner.Id,
+        FacilityId = InMemoryDataSource.Facility1.Id,
+        SportId = InMemoryDataSource.TestSport.Id,
         Name = "Test Court",
         IsActive = true,
     };
@@ -24,19 +24,19 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_DeleteCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
         // Act
         Result<bool> result = await courtHandler.Delete(
-            InMemoryDataSource.userOwner.Id,
-            InMemoryDataSource.facility1.Id,
-            InMemoryDataSource.court1.Id
+            InMemoryDataSource.UserOwner.Id,
+            InMemoryDataSource.Facility1.Id,
+            InMemoryDataSource.Court1.Id
         );
 
         // Assert

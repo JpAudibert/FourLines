@@ -15,8 +15,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
 
     private static CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
-        FacilityId = InMemoryDataSource.facility1.Id,
-        OwnerId = InMemoryDataSource.userOwner.Id,
+        FacilityId = InMemoryDataSource.Facility1.Id,
+        OwnerId = InMemoryDataSource.UserOwner.Id,
         DayOfWeek = DayOfWeek.Monday,
         OpensAt = new TimeOnly(9, 0),
         ClosesAt = new TimeOnly(17, 0),
@@ -24,8 +24,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
 
     private static CreateFacilityScheduleDTO _createFacilityScheduleTest2 = new()
     {
-        FacilityId = InMemoryDataSource.facility1.Id,
-        OwnerId = InMemoryDataSource.userOwner.Id,
+        FacilityId = InMemoryDataSource.Facility1.Id,
+        OwnerId = InMemoryDataSource.UserOwner.Id,
         DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(9, 0),
         ClosesAt = new TimeOnly(17, 0),
@@ -35,10 +35,10 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
         FacilityScheduleHandler facilityScheduleHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
@@ -81,10 +81,10 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
         FacilityScheduleHandler facilityScheduleHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();

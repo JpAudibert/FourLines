@@ -14,9 +14,9 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
 
     private static CreateCourtDTO _createCourtTest = new()
     {
-        OwnerId = InMemoryDataSource.userOwner.Id,
-        FacilityId = InMemoryDataSource.facility1.Id,
-        SportId = InMemoryDataSource.sport.Id,
+        OwnerId = InMemoryDataSource.UserOwner.Id,
+        FacilityId = InMemoryDataSource.Facility1.Id,
+        SportId = InMemoryDataSource.TestSport.Id,
         Name = "Test Court",
         IsActive = true,
     };
@@ -26,10 +26,10 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     {
         // Arrange
 
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
@@ -49,10 +49,10 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_HaveFacilityToCreateCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
-        await _fixtures.RemoveDataFromMemory<Facility>(InMemoryDataSource.facility1.Id);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await _fixtures.RemoveDataFromMemory<Facility>(InMemoryDataSource.Facility1.Id);
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
 
@@ -68,9 +68,9 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_HaveKnownSport()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.RemoveAllDataFromMemory<Sport>();
 
         CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
