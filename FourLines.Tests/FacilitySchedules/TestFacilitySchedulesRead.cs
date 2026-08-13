@@ -15,14 +15,14 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_GetFacilitiesSchedules()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.facilitySchedule1
+            InMemoryDataSource.FacilitySchedule1
         );
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.facilitySchedule2
+            InMemoryDataSource.FacilitySchedule2
         );
 
         FacilityScheduleHandler facilityScheduleHandler =
@@ -30,8 +30,8 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
-            InMemoryDataSource.userOwner.Id,
-            InMemoryDataSource.facility1.Id
+            InMemoryDataSource.UserOwner.Id,
+            InMemoryDataSource.Facility1.Id
         );
 
         // Assert

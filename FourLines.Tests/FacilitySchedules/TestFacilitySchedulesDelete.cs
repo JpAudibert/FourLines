@@ -15,11 +15,11 @@ public class TestFacilitySchedulesDelete(InMemoryFixtures fixtures)
     public async Task Should_DeleteFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.facilitySchedule1
+            InMemoryDataSource.FacilitySchedule1
         );
 
         FacilityScheduleHandler facilityScheduleHandler =
@@ -27,9 +27,9 @@ public class TestFacilitySchedulesDelete(InMemoryFixtures fixtures)
 
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(
-            InMemoryDataSource.userOwner.Id,
-            InMemoryDataSource.facility1.Id,
-            InMemoryDataSource.facilitySchedule1.Id
+            InMemoryDataSource.UserOwner.Id,
+            InMemoryDataSource.Facility1.Id,
+            InMemoryDataSource.FacilitySchedule1.Id
         );
 
         // Assert

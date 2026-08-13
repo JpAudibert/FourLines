@@ -20,15 +20,15 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         State = "TS",
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
-        OwnerId = InMemoryDataSource.userOwner.Id,
+        OwnerId = InMemoryDataSource.UserOwner.Id,
     };
 
     [Fact]
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
@@ -53,8 +53,8 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     {
         // Arrange
 
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
 
         FacilityHandler facilityHandler =
             _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();

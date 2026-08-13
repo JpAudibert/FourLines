@@ -14,25 +14,25 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_DeleteReservation()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.rolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userPlayer);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.sport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.court1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.facilitySchedule1
+            InMemoryDataSource.FacilitySchedule1
         );
-        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.reservation1);
+        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
         ReservationHandler reservationHandler =
             _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
 
         // Act
         Result<bool> result = await reservationHandler.Delete(
-            InMemoryDataSource.userPlayer.Id,
-            InMemoryDataSource.reservation1.Id
+            InMemoryDataSource.UserPlayer.Id,
+            InMemoryDataSource.Reservation1.Id
         );
 
         // Assert

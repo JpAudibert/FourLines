@@ -99,8 +99,8 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveDuplicateUser()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
 
         UserRegisterDTO createUserTest = new()
         {
@@ -110,7 +110,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
             RegistrationNumber = "383.975.210-89",
-            RoleId = InMemoryDataSource.roleOwner.Id,
+            RoleId = InMemoryDataSource.RoleOwner.Id,
         };
 
         UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
@@ -127,7 +127,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveUserRole()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
         await _fixtures.RemoveAllDataFromMemory<User>();
 
         UserRegisterDTO _createUserTest = new()
@@ -173,8 +173,8 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveEqualPasswords()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
 
         User userOwnerTest = new()
         {

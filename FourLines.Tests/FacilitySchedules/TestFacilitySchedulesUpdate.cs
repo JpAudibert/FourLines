@@ -18,11 +18,11 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.roleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.userOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.facility1);
+        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
+        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.facilitySchedule1
+            InMemoryDataSource.FacilitySchedule1
         );
 
         FacilityScheduleHandler facilityScheduleHandler =
@@ -30,12 +30,12 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
 
         UpdateFacilityScheduleDTO updateFacilityScheduleTest = new()
         {
-            Id = InMemoryDataSource.facilitySchedule1.Id,
-            FacilityId = InMemoryDataSource.facility1.Id,
-            OwnerId = InMemoryDataSource.userOwner.Id,
+            Id = InMemoryDataSource.FacilitySchedule1.Id,
+            FacilityId = InMemoryDataSource.Facility1.Id,
+            OwnerId = InMemoryDataSource.UserOwner.Id,
             DayOfWeek = DayOfWeek.Tuesday,
             OpensAt = new TimeOnly(10, 0),
-            ClosesAt = InMemoryDataSource.facilitySchedule1.ClosesAt,
+            ClosesAt = InMemoryDataSource.FacilitySchedule1.ClosesAt,
         };
 
         // Act
