@@ -35,7 +35,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
+            InMemoryDataSource.FacilitySchedule3
         );
 
         ReservationHandler reservationHandler =
@@ -208,7 +208,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
+            InMemoryDataSource.FacilitySchedule3
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 

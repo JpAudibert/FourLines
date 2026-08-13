@@ -93,6 +93,14 @@ public class InMemoryDataSource
         ClosesAt = new TimeOnly(20, 0),
     };
 
+    public readonly static FacilitySchedule FacilitySchedule3 = new()
+    {
+        FacilityId = Facility1.Id,
+        DayOfWeek = DateTimeOffset.Now.DayOfWeek,
+        OpensAt = new TimeOnly(8, 0),
+        ClosesAt = new TimeOnly(20, 0),
+    };
+
     public readonly static Reservation Reservation1 = new()
     {
         CourtId = Court1.Id,
