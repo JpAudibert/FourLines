@@ -26,8 +26,8 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
             InMemoryDataSource.FacilitySchedule1
         );
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         UpdateFacilityScheduleDTO updateFacilityScheduleTest = new()
         {

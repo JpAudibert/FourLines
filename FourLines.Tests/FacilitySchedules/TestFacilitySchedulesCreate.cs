@@ -1,5 +1,6 @@
 using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -40,8 +41,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -64,8 +65,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
         await _fixtures.RemoveAllDataFromMemory<Facility>();
         await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -86,8 +87,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
         {
@@ -123,8 +124,8 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
         await _fixtures.RemoveAllDataFromMemory<Facility>();
         await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
         {
