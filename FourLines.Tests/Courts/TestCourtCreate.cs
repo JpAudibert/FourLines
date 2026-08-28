@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Courts;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -31,7 +31,7 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
 
-        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Domain.Models.Court> result = await courtHandler.Create(_createCourtTest);
@@ -54,7 +54,7 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
         await _fixtures.RemoveDataFromMemory<Facility>(InMemoryDataSource.Facility1.Id);
 
-        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.Create(_createCourtTest);
@@ -73,7 +73,7 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
         await _fixtures.RemoveAllDataFromMemory<Sport>();
 
-        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.Create(_createCourtTest);

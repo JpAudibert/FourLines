@@ -1,4 +1,4 @@
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -22,8 +22,8 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court2);
 
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
@@ -37,8 +37,8 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
     public async Task Should_Not_GetAllCourts()
     {
         // Arrange
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
 
@@ -58,8 +58,8 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court2);
 
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(
@@ -83,8 +83,8 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
         await _fixtures.RemoveAllDataFromMemory<Facility>();
 
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(

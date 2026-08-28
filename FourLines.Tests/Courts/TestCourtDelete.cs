@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Courts;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -30,14 +30,15 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
         await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
 
-        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<bool> result = await courtHandler.Delete(
-            InMemoryDataSource.UserOwner.Id,
-            InMemoryDataSource.Facility1.Id,
-            InMemoryDataSource.Court1.Id
-        );
+        Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO
+        {
+            OwnerId = InMemoryDataSource.UserOwner.Id,
+            FacilityId = InMemoryDataSource.Facility1.Id,
+            CourtId = InMemoryDataSource.Court1.Id
+        });
 
         // Assert
         Assert.True(result.Value);
@@ -47,14 +48,15 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_DeleteCourt()
     {
         // Arrange
-        CourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<bool> result = await courtHandler.Delete(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        );
+        Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO
+        {
+            OwnerId = Guid.NewGuid(),
+            FacilityId = Guid.NewGuid(),
+            CourtId = Guid.NewGuid()
+        });
 
         // Assert
         Assert.False(result.Value);
