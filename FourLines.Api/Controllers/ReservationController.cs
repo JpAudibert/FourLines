@@ -108,7 +108,7 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
 
         StartStopwatch();
 
-        Result<Reservation> result = await _reservationHandler.UpdateStatusFromReservation(new UpdateStatusFromReservationDTO()
+        Result<Reservation> result = await _reservationHandler.Update(new UpdateStatusFromReservationDTO()
         {
             Id = reservationId,
             UserId = userId,
@@ -133,7 +133,11 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
 
         StartStopwatch();
 
-        Result<bool> result = await _reservationHandler.Delete(userId, reservationId);
+        Result<bool> result = await _reservationHandler.Delete(new DeleteReservationDTO
+        {
+            UserId = userId,
+            ReservationId = reservationId
+        });
 
         return HandleResult(result);
     }
