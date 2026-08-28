@@ -5,7 +5,7 @@
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
 public class FacilityScheduleController(ILogger<FacilityScheduleController> logger, FacilityScheduleHandler facilityScheduleHandler)
-    : ApiControllerBase
+    : ApiControllerBase(logger)
 {
     private readonly ILogger<FacilityScheduleController> _logger = logger;
     private readonly FacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
@@ -23,11 +23,11 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(ownerId, facilityId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -44,7 +44,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Create(new CreateFacilityScheduleDTO()
         {
@@ -55,7 +55,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ClosesAt = newFacilitySchedule.ClosesAt,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPost("multiple")]
@@ -72,7 +72,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         List<CreateFacilityScheduleDTO> schedules = [];
 
@@ -92,7 +92,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.CreateMultiple(schedules);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPut("{scheduleId}")]
@@ -111,7 +111,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ["scheduleId"] = scheduleId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Update(new UpdateFacilityScheduleDTO()
         {
@@ -123,7 +123,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ClosesAt = updateFacilitySchedule.ClosesAt,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpDelete("{scheduleId}")]
@@ -141,10 +141,10 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
             ["scheduleId"] = scheduleId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<bool> result = await _facilityScheduleHandler.Delete(ownerId, facilityId, scheduleId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 }

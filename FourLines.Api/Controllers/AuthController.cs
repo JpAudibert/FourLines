@@ -3,7 +3,8 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class AuthController(ILogger<AuthController> logger, AuthenticationHandler authenticationHandler) : ApiControllerBase
+public class AuthController(ILogger<AuthController> logger, AuthenticationHandler authenticationHandler) 
+    : ApiControllerBase(logger)
 {
     private readonly ILogger<AuthController> _logger = logger;
     private readonly AuthenticationHandler _authenticationHandler = authenticationHandler;
@@ -17,7 +18,7 @@ public class AuthController(ILogger<AuthController> logger, AuthenticationHandle
             ["operation"] = operation,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         _logger.LogInformation("{op} - Authentication for {identification}",
             operation,
@@ -29,6 +30,6 @@ public class AuthController(ILogger<AuthController> logger, AuthenticationHandle
             Password = request.Password,
         });
 
-        return HandleResult(result, _logger, operation, sw, StatusCodes.Status401Unauthorized);
+        return HandleResult(result, StatusCodes.Status401Unauthorized);
     }
 }
