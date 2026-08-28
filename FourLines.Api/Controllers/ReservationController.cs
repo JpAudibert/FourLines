@@ -1,14 +1,16 @@
-﻿namespace FourLines.Api.Controllers;
+﻿using FourLines.Application.Interfaces;
+
+namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/user/{userId}/[controller]")]
-public class ReservationController(ILogger<ReservationController> logger, ReservationHandler reservationHandler)
+public class ReservationController(ILogger<ReservationController> logger, IReservationHandler reservationHandler)
     : ApiControllerBase(logger)
 {
     private readonly ILogger<ReservationController> _logger = logger;
-    private readonly ReservationHandler _reservationHandler = reservationHandler;
+    private readonly IReservationHandler _reservationHandler = reservationHandler;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(

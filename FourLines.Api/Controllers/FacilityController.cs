@@ -6,7 +6,7 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilityController(ILogger<FacilityController> logger, FacilityHandler facilityHandler)
+public class FacilityController(ILogger<FacilityController> logger, IFacilityHandler facilityHandler)
     : ApiControllerBase(logger)
 {
     private readonly ILogger<FacilityController> _logger = logger;
