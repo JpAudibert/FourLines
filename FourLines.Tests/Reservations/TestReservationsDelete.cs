@@ -1,4 +1,5 @@
-using FourLines.Application.Handlers;
+using FourLines.Application.DTOs.Reservations;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -26,14 +27,15 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<bool> result = await reservationHandler.Delete(
-            InMemoryDataSource.UserPlayer.Id,
-            InMemoryDataSource.Reservation1.Id
-        );
+        Result<bool> result = await reservationHandler.Delete(new DeleteReservationDTO
+        {
+            UserId = InMemoryDataSource.UserPlayer.Id,
+            ReservationId = InMemoryDataSource.Reservation1.Id
+        });
 
         // Assert
         Assert.True(result.Value);
@@ -43,11 +45,15 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_DeleteReservation()
     {
         // Arrange
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<bool> result = await reservationHandler.Delete(Guid.NewGuid(), Guid.NewGuid());
+        Result<bool> result = await reservationHandler.Delete(new DeleteReservationDTO
+        {
+            UserId = Guid.NewGuid(),
+            ReservationId = Guid.NewGuid()
+        });
 
         // Assert
         Assert.False(result.Value);

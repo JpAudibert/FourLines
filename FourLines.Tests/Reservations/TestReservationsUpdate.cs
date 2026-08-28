@@ -1,6 +1,5 @@
-using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -29,8 +28,8 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {
@@ -40,7 +39,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.UpdateStatusFromReservation(
+        Result<Reservation> result = await reservationHandler.Update(
             updateReservationTest
         );
 
@@ -67,8 +66,8 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {
@@ -78,7 +77,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.UpdateStatusFromReservation(
+        Result<Reservation> result = await reservationHandler.Update(
             updateReservationTest
         );
 
@@ -103,8 +102,8 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {
@@ -114,7 +113,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.UpdateStatusFromReservation(
+        Result<Reservation> result = await reservationHandler.Update(
             updateReservationTest
         );
 
