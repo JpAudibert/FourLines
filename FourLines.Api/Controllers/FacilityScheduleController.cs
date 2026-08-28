@@ -1,14 +1,16 @@
-﻿namespace FourLines.Api.Controllers;
+﻿using FourLines.Application.Interfaces;
+
+namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class FacilityScheduleController(ILogger<FacilityScheduleController> logger, FacilityScheduleHandler facilityScheduleHandler)
+public class FacilityScheduleController(ILogger<FacilityScheduleController> logger, IFacilityScheduleHandler facilityScheduleHandler)
     : ApiControllerBase(logger)
 {
     private readonly ILogger<FacilityScheduleController> _logger = logger;
-    private readonly FacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
+    private readonly IFacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> GetScheduleFromFacility(
@@ -143,7 +145,12 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         StartStopwatch();
 
-        Result<bool> result = await _facilityScheduleHandler.Delete(ownerId, facilityId, scheduleId);
+        Result<bool> result = await _facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId,
+            ScheduleId = scheduleId
+        });
 
         return HandleResult(result);
     }
