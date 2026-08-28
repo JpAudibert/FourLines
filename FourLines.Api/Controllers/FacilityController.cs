@@ -1,3 +1,5 @@
+using FourLines.Application.Interfaces;
+
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
@@ -8,7 +10,7 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
     : ApiControllerBase(logger)
 {
     private readonly ILogger<FacilityController> _logger = logger;
-    private readonly FacilityHandler _facilityHandler = facilityHandler;
+    private readonly IFacilityHandler _facilityHandler = facilityHandler;
 
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
@@ -137,7 +139,11 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
 
         StartStopwatch();
 
-        Result<bool> result = await _facilityHandler.Delete(ownerId, facilityId);
+        Result<bool> result = await _facilityHandler.Delete(new DeleteFacilityDTO()
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId
+        });
 
         return HandleResult(result);
     }

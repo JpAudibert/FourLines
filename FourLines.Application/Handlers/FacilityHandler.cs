@@ -1,26 +1,26 @@
 ﻿namespace FourLines.Application.Handlers;
 
-public class FacilityHandler(FourLinesContext context)
+public class FacilityHandler(FourLinesContext context) : IFacilityHandler
 {
     private readonly FourLinesContext _context = context;
 
-    public async Task<Result<Facility>> Create(CreateFacilityDTO newFacility)
+    public async Task<Result<Facility>> Create(CreateFacilityDTO createDto)
     {
         User? owner = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Id == newFacility.OwnerId && u.Role.Name == RoleConstants.FacilityOwner
+            u.Id == createDto.OwnerId && u.Role.Name == RoleConstants.FacilityOwner
         );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.CreateOwnerDoesNotExists);
 
         Facility facility = new()
         {
-            Name = newFacility.Name,
-            Address = newFacility.Address,
-            City = newFacility.City,
-            State = newFacility.State,
-            ZipCode = newFacility.ZipCode,
-            RegistrationNumber = newFacility.RegistrationNumber,
-            OwnerId = newFacility.OwnerId,
+            Name = createDto.Name,
+            Address = createDto.Address,
+            City = createDto.City,
+            State = createDto.State,
+            ZipCode = createDto.ZipCode,
+            RegistrationNumber = createDto.RegistrationNumber,
+            OwnerId = createDto.OwnerId,
             Owner = owner,
         };
 
@@ -30,39 +30,11 @@ public class FacilityHandler(FourLinesContext context)
         return Result<Facility>.Success(facility);
     }
 
-    public async Task<Result<Facility>> Update(UpdateFacilityDTO facility)
-    {
-        if (facility.OwnerId == Guid.Empty)
-            return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);
-
-        int affectedRows = await _context
-            .Facilities.Where(f => f.Id == facility.Id && f.OwnerId == facility.OwnerId)
-            .ExecuteUpdateAsync(setters =>
-                setters
-                    .SetProperty(f => f.Name, facility.Name)
-                    .SetProperty(f => f.Address, facility.Address)
-                    .SetProperty(f => f.City, facility.City)
-                    .SetProperty(f => f.State, facility.State)
-                    .SetProperty(f => f.ZipCode, facility.ZipCode)
-                    .SetProperty(f => f.RegistrationNumber, facility.RegistrationNumber)
-            );
-        if (affectedRows <= 0)
-            return Result<Facility>.Failure(FacilitiesErrorResults.UpdateFacilityDoesNotExist);
-
-        await _context.SaveChangesAsync();
-
-        Facility? updatedFacility = await _context
-            .Facilities.AsNoTracking()
-            .FirstOrDefaultAsync(f => f.Id == facility.Id);
-
-        return Result<Facility>.Success(updatedFacility!);
-    }
-
-    public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId)
+    public async Task<Result<bool>> Delete(DeleteFacilityDTO deleteDto)
     {
         bool deleted = false;
         int facility = await _context
-            .Facilities.Where(f => f.Id == facilityId && f.OwnerId == ownerId)
+            .Facilities.Where(f => f.Id == deleteDto.FacilityId && f.OwnerId == deleteDto.OwnerId)
             .ExecuteDeleteAsync();
 
         if (facility <= 0)
@@ -141,5 +113,33 @@ public class FacilityHandler(FourLinesContext context)
             );
 
         return Result<IEnumerable<Facility>>.Success(facilities);
+    }
+
+    public async Task<Result<Facility>> Update(UpdateFacilityDTO updateDto)
+    {
+        if (updateDto.OwnerId == Guid.Empty)
+            return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);
+
+        int affectedRows = await _context
+            .Facilities.Where(f => f.Id == updateDto.Id && f.OwnerId == updateDto.OwnerId)
+            .ExecuteUpdateAsync(setters =>
+                setters
+                    .SetProperty(f => f.Name, updateDto.Name)
+                    .SetProperty(f => f.Address, updateDto.Address)
+                    .SetProperty(f => f.City, updateDto.City)
+                    .SetProperty(f => f.State, updateDto.State)
+                    .SetProperty(f => f.ZipCode, updateDto.ZipCode)
+                    .SetProperty(f => f.RegistrationNumber, updateDto.RegistrationNumber)
+            );
+        if (affectedRows <= 0)
+            return Result<Facility>.Failure(FacilitiesErrorResults.UpdateFacilityDoesNotExist);
+
+        await _context.SaveChangesAsync();
+
+        Facility? updatedFacility = await _context
+            .Facilities.AsNoTracking()
+            .FirstOrDefaultAsync(f => f.Id == updateDto.Id);
+
+        return Result<Facility>.Success(updatedFacility!);
     }
 }
