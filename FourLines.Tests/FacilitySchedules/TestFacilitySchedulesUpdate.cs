@@ -1,6 +1,7 @@
 using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -56,8 +57,8 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     public async Task Should_Not_FindOwnerFacilitySchedule()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -83,8 +84,8 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     public async Task Should_Not_AffectAnyRowFacilitySchedule()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
