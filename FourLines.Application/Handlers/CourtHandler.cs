@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.Handlers;
 
-public class CourtHandler(FourLinesContext context)
+public class CourtHandler(FourLinesContext context) : ICourtHandler
 {
     private readonly FourLinesContext _context = context;
 
@@ -62,12 +62,14 @@ public class CourtHandler(FourLinesContext context)
         return Result<Court>.Success(updatedCourt!);
     }
 
-    public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId, Guid courtId)
+    public async Task<Result<bool>> Delete(DeleteCourtDTO deleteDto)
     {
         bool deleted = false;
         int affectedRows = await _context
             .Courts.Where(c =>
-                c.Id == courtId && c.Facility.Id == facilityId && c.Facility.OwnerId == ownerId
+                c.Id == deleteDto.CourtId && 
+                c.Facility.Id == deleteDto.FacilityId && 
+                c.Facility.OwnerId == deleteDto.OwnerId
             )
             .ExecuteDeleteAsync();
 

@@ -128,7 +128,12 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
 
         StartStopwatch();
 
-        Result<bool> result = await _courtHandler.Delete(ownerId, facilityId, courtId);
+        Result<bool> result = await _courtHandler.Delete(new DeleteCourtDTO
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId,
+            CourtId = courtId
+        });
 
         return HandleResult(result);
     }

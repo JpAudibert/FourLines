@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddScoped<UserHandler>();
         services.AddScoped<IFacilityHandler, FacilityHandler>();
         services.AddScoped<IFacilityScheduleHandler, FacilityScheduleHandler>();
-        services.AddScoped<CourtHandler>();
+        services.AddScoped<ICourtHandler, CourtHandler>();
 
         services.AddScoped<IReservationValidator, ReservationValidator>();
         services.AddScoped<ReservationHandler>();
