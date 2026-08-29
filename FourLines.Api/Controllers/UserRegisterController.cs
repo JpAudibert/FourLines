@@ -4,7 +4,7 @@
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class UserRegisterController(ILogger logger, UserHandler userHandler)
-    : ApiControllerBase
+    : ApiControllerBase(logger)
 {
     private readonly ILogger _logger = logger;
     private readonly UserHandler _userHandler = userHandler;
@@ -20,7 +20,7 @@ public class UserRegisterController(ILogger logger, UserHandler userHandler)
             ["email"] = request.Email,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<User> result = await _userHandler.Create(new UserRegisterDTO
         {
@@ -34,6 +34,6 @@ public class UserRegisterController(ILogger logger, UserHandler userHandler)
             IsActive = request.IsActive
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 }

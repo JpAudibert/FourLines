@@ -97,8 +97,8 @@ public class InMemoryDataSource
     {
         FacilityId = Facility1.Id,
         DayOfWeek = DateTimeOffset.Now.DayOfWeek,
-        OpensAt = new TimeOnly(8, 0),
-        ClosesAt = new TimeOnly(20, 0),
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
     };
 
     public readonly static Reservation Reservation1 = new()

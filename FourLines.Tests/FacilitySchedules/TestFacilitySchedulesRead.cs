@@ -1,4 +1,5 @@
 using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -25,8 +26,8 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
             InMemoryDataSource.FacilitySchedule2
         );
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
@@ -45,8 +46,8 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
         // Arrange
         await _fixtures.RemoveAllDataFromMemory<Facility>();
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(

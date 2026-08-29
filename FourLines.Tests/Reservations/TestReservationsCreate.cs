@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -38,8 +38,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             InMemoryDataSource.FacilitySchedule3
         );
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
@@ -92,8 +92,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             Status = (ReservationStatus)999,
         };
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> resultDate = await reservationHandler.Create(
@@ -139,8 +139,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
         await _fixtures.RemoveAllDataFromMemory<Court>();
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
@@ -161,8 +161,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.RemoveDataFromMemory<User>(InMemoryDataSource.UserPlayer.Id);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
@@ -185,8 +185,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
         await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
@@ -212,8 +212,8 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         CreateReservationDTO _createReservationTestOverlapping = new()
         {

@@ -12,12 +12,12 @@ public static class DependencyInjection
         services.AddScoped<AuthenticationHandler>();
 
         services.AddScoped<UserHandler>();
-        services.AddScoped<FacilityHandler>();
-        services.AddScoped<FacilityScheduleHandler>();
-        services.AddScoped<CourtHandler>();
+        services.AddScoped<IFacilityHandler, FacilityHandler>();
+        services.AddScoped<IFacilityScheduleHandler, FacilityScheduleHandler>();
+        services.AddScoped<ICourtHandler, CourtHandler>();
 
         services.AddScoped<IReservationValidator, ReservationValidator>();
-        services.AddScoped<ReservationHandler>();
+        services.AddScoped<IReservationHandler, ReservationHandler>();
 
         services.AddScoped<SeederHandler>();
 

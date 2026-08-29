@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Facilities;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -20,8 +20,8 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -54,8 +54,8 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_FindOwnerFacility()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -81,8 +81,8 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_AffectAnyRowFacility()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {

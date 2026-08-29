@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Courts;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -32,8 +32,8 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
             IsActive = true,
         };
 
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.Update(updateCourtTest);
@@ -51,8 +51,8 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_FindFacility()
     {
         // Arrange
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         UpdateCourtDTO updateCourtTest = new()
         {
@@ -80,8 +80,8 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
 
-        CourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<CourtHandler>();
+        ICourtHandler courtHandler =
+            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         UpdateCourtDTO updateCourtTest = new()
         {

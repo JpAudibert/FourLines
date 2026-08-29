@@ -1,14 +1,16 @@
-﻿namespace FourLines.Api.Controllers;
+﻿using FourLines.Application.Interfaces;
+
+namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/user/{userId}/[controller]")]
-public class ReservationController(ILogger<ReservationController> logger, ReservationHandler reservationHandler)
-    : ApiControllerBase
+public class ReservationController(ILogger<ReservationController> logger, IReservationHandler reservationHandler)
+    : ApiControllerBase(logger)
 {
     private readonly ILogger<ReservationController> _logger = logger;
-    private readonly ReservationHandler _reservationHandler = reservationHandler;
+    private readonly IReservationHandler _reservationHandler = reservationHandler;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(
@@ -21,11 +23,11 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["userId"] = userId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromUser(userId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpGet("~/api/v{version:apiVersion}/court/{courtId}/[controller]")]
@@ -39,11 +41,11 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["courtId"] = courtId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<Reservation>> result = await _reservationHandler.GetAllReservationsFromCourt(courtId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpGet("{reservationId}")]
@@ -59,11 +61,11 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["reservationId"] = reservationId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Reservation> result = await _reservationHandler.GetOneReservationFromUser(userId, reservationId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -79,7 +81,7 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["courtId"] = newReservation.CourtId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Reservation> result = await _reservationHandler.Create(new CreateReservationDTO()
         {
@@ -89,7 +91,7 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             Status = newReservation.Status,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPatch("{reservationId}")]
@@ -106,16 +108,16 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["reservationId"] = reservationId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
-        Result<Reservation> result = await _reservationHandler.UpdateStatusFromReservation(new UpdateStatusFromReservationDTO()
+        Result<Reservation> result = await _reservationHandler.Update(new UpdateStatusFromReservationDTO()
         {
             Id = reservationId,
             UserId = userId,
             Status = updateReservation.Status,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpDelete("{reservationId}")]
@@ -131,10 +133,14 @@ public class ReservationController(ILogger<ReservationController> logger, Reserv
             ["reservationId"] = reservationId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
-        Result<bool> result = await _reservationHandler.Delete(userId, reservationId);
+        Result<bool> result = await _reservationHandler.Delete(new DeleteReservationDTO
+        {
+            UserId = userId,
+            ReservationId = reservationId
+        });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 }

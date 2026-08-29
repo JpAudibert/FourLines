@@ -1,13 +1,16 @@
+using FourLines.Application.Interfaces;
+
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class CourtController(ILogger<CourtController> logger, CourtHandler courtHandler) : ApiControllerBase
+public class CourtController(ILogger<CourtController> logger, ICourtHandler courtHandler) 
+    : ApiControllerBase(logger)
 {
     private readonly ILogger<CourtController> _logger = logger;
-    private readonly CourtHandler _courtHandler = courtHandler;
+    private readonly ICourtHandler _courtHandler = courtHandler;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Court>>> GetAllCourtsFromFacility(
@@ -22,11 +25,11 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(ownerId, facilityId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpGet("{courtId}")]
@@ -44,11 +47,11 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             ["courtId"] = courtId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Court> result = await _courtHandler.GetFacility(ownerId, facilityId, courtId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -65,7 +68,7 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Court> result = await _courtHandler.Create(new CreateCourtDTO()
         {
@@ -76,7 +79,7 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             IsActive = newCourt.IsActive,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPut("{courtId}")]
@@ -95,7 +98,7 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             ["courtId"] = courtId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Court> result = await _courtHandler.Update(new UpdateCourtDTO()
         {
@@ -107,7 +110,7 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             IsActive = updateCourt.IsActive,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpDelete("{courtId}")]
@@ -125,10 +128,15 @@ public class CourtController(ILogger<CourtController> logger, CourtHandler court
             ["courtId"] = courtId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
-        Result<bool> result = await _courtHandler.Delete(ownerId, facilityId, courtId);
+        Result<bool> result = await _courtHandler.Delete(new DeleteCourtDTO
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId,
+            CourtId = courtId
+        });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 }

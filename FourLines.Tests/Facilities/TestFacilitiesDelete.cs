@@ -1,4 +1,5 @@
-using FourLines.Application.Handlers;
+using FourLines.Application.DTOs.Facilities;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -18,11 +19,15 @@ public class TestFacilitiesDelete(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
         await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(InMemoryDataSource.UserOwner.Id, InMemoryDataSource.Facility1.Id);
+        Result<bool> result = await facilityHandler.Delete(new DeleteFacilityDTO()
+        {
+            OwnerId = InMemoryDataSource.UserOwner.Id,
+            FacilityId = InMemoryDataSource.Facility1.Id
+        });
 
         // Assert
         Assert.True(result.Value);
@@ -32,11 +37,15 @@ public class TestFacilitiesDelete(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_DeleteFacility()
     {
         // Arrange
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
-        Result<bool> result = await facilityHandler.Delete(Guid.NewGuid(), Guid.NewGuid());
+        Result<bool> result = await facilityHandler.Delete(new DeleteFacilityDTO()
+        {
+            OwnerId = Guid.NewGuid(),
+            FacilityId = Guid.NewGuid()
+        });
 
         // Assert
         Assert.False(result.Value);

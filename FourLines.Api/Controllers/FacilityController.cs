@@ -1,13 +1,16 @@
+using FourLines.Application.Interfaces;
+
 namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilityController(ILogger<FacilityController> logger, FacilityHandler facilityHandler) : ApiControllerBase
+public class FacilityController(ILogger<FacilityController> logger, IFacilityHandler facilityHandler)
+    : ApiControllerBase(logger)
 {
     private readonly ILogger<FacilityController> _logger = logger;
-    private readonly FacilityHandler _facilityHandler = facilityHandler;
+    private readonly IFacilityHandler _facilityHandler = facilityHandler;
 
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
@@ -19,11 +22,11 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["operation"] = operation,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<Facility>> result = await _facilityHandler.GetAllFacilities();
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpGet]
@@ -37,11 +40,11 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["ownerId"] = ownerId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<IEnumerable<Facility>> result = await _facilityHandler.GetFacilitiesFromOwner(ownerId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpGet("{facilityId}")]
@@ -56,11 +59,11 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Facility> result = await _facilityHandler.GetFacilityFromOwner(ownerId, facilityId);
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -74,7 +77,7 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["ownerId"] = ownerId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Facility> result = await _facilityHandler.Create(new CreateFacilityDTO()
         {
@@ -87,7 +90,7 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             RegistrationNumber = request.RegistrationNumber,
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpPut("{facilityId}")]
@@ -105,7 +108,7 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
         Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
         {
@@ -119,7 +122,7 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             RegistrationNumber = facility.RegistrationNumber
         });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 
     [HttpDelete("{facilityId}")]
@@ -134,10 +137,14 @@ public class FacilityController(ILogger<FacilityController> logger, FacilityHand
             ["facilityId"] = facilityId,
         });
 
-        Stopwatch sw = Stopwatch.StartNew();
+        StartStopwatch();
 
-        Result<bool> result = await _facilityHandler.Delete(ownerId, facilityId);
+        Result<bool> result = await _facilityHandler.Delete(new DeleteFacilityDTO()
+        {
+            OwnerId = ownerId,
+            FacilityId = facilityId
+        });
 
-        return HandleResult(result, _logger, operation, sw);
+        return HandleResult(result);
     }
 }

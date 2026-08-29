@@ -1,4 +1,4 @@
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -28,8 +28,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation2);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
@@ -46,8 +46,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
         // Arrange
         await _fixtures.RemoveAllDataFromMemory<Reservation>();
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
@@ -75,8 +75,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation2);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
@@ -93,8 +93,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
         // Arrange
         await _fixtures.RemoveAllDataFromMemory<Reservation>();
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
@@ -121,8 +121,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
         );
         await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
 
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
@@ -142,8 +142,8 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_GetOneReservationFromUser()
     {
         // Arrange
-        ReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ReservationHandler>();
+        IReservationHandler reservationHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(

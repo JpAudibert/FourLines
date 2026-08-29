@@ -1,4 +1,6 @@
+using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -22,15 +24,16 @@ public class TestFacilitySchedulesDelete(InMemoryFixtures fixtures)
             InMemoryDataSource.FacilitySchedule1
         );
 
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
-        Result<bool> result = await facilityScheduleHandler.Delete(
-            InMemoryDataSource.UserOwner.Id,
-            InMemoryDataSource.Facility1.Id,
-            InMemoryDataSource.FacilitySchedule1.Id
-        );
+        Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
+        {
+            OwnerId = InMemoryDataSource.UserOwner.Id,
+            FacilityId = InMemoryDataSource.Facility1.Id,
+            ScheduleId = InMemoryDataSource.FacilitySchedule1.Id
+        });
 
         // Assert
         Assert.True(result.Value);
@@ -40,15 +43,16 @@ public class TestFacilitySchedulesDelete(InMemoryFixtures fixtures)
     public async Task Should_Not_DeleteFacilitySchedule()
     {
         // Arrange
-        FacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
-        Result<bool> result = await facilityScheduleHandler.Delete(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        );
+        Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
+        {
+            OwnerId = Guid.NewGuid(),
+            FacilityId = Guid.NewGuid(),
+            ScheduleId = Guid.NewGuid()
+        });
 
         // Assert
         Assert.False(result.Value);

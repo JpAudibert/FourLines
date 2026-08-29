@@ -1,5 +1,5 @@
 using FourLines.Application.DTOs.Facilities;
-using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -30,8 +30,8 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
@@ -56,8 +56,8 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
         await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
 
-        FacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<FacilityHandler>();
+        IFacilityHandler facilityHandler =
+            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);

@@ -1,6 +1,7 @@
 ﻿namespace FourLines.Application.Handlers;
 
-public class ReservationHandler(FourLinesContext context, IReservationValidator reservationValidator)
+public class ReservationHandler(FourLinesContext context, IReservationValidator reservationValidator) 
+    : IReservationHandler
 {
     private readonly FourLinesContext _context = context;
     private readonly IReservationValidator _reservationValidator = reservationValidator;
@@ -63,7 +64,7 @@ public class ReservationHandler(FourLinesContext context, IReservationValidator 
         return Result<Reservation>.Success(reservation);
     }
 
-    public async Task<Result<Reservation>> UpdateStatusFromReservation(UpdateStatusFromReservationDTO reservation)
+    public async Task<Result<Reservation>> Update(UpdateStatusFromReservationDTO reservation)
     {
         ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
         if (!statuses.Contains(reservation.Status))
@@ -85,10 +86,10 @@ public class ReservationHandler(FourLinesContext context, IReservationValidator 
         return Result<Reservation>.Success(updatedReservation!);
     }
 
-    public async Task<Result<bool>> Delete(Guid userId, Guid reservationId)
+    public async Task<Result<bool>> Delete(DeleteReservationDTO deleteDto)
     {
         int affectedRows = await _context.Reservations
-            .Where(r => r.Id == reservationId && r.UserId == userId)
+            .Where(r => r.Id == deleteDto.ReservationId && r.UserId == deleteDto.UserId)
             .ExecuteDeleteAsync();
 
         if (affectedRows <= 0)

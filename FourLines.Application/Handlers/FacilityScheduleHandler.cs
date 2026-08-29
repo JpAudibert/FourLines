@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.Handlers;
 
-public class FacilityScheduleHandler(FourLinesContext context)
+public class FacilityScheduleHandler(FourLinesContext context) : IFacilityScheduleHandler
 {
     private readonly FourLinesContext _context = context;
 
@@ -80,12 +80,15 @@ public class FacilityScheduleHandler(FourLinesContext context)
         return Result<FacilitySchedule>.Success(updatedSchedule!);
     }
 
-    public async Task<Result<bool>> Delete(Guid ownerId, Guid facilityId, Guid scheduleId)
+    public async Task<Result<bool>> Delete(DeleteFacilityScheduleDTO deleteDto)
     {
         bool deleted = false;
 
         int affectedRows = await _context.FacilitySchedules
-            .Where(fs => fs.Id == scheduleId && fs.FacilityId == facilityId && fs.Facility.OwnerId == ownerId)
+            .Where(fs => 
+                fs.Id == deleteDto.ScheduleId && 
+                fs.FacilityId == deleteDto.FacilityId && 
+                fs.Facility.OwnerId == deleteDto.OwnerId)
             .ExecuteDeleteAsync();
 
         if (affectedRows <= 0)
