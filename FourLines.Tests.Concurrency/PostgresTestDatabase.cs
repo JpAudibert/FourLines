@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-namespace FourLines.Tests.Shared;
+namespace FourLines.Tests.Concurrency;
 
 public class PostgresTestDatabase : IAsyncLifetime
 {

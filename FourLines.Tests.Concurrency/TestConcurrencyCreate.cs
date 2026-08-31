@@ -4,12 +4,11 @@ using FourLines.Application.Interfaces;
 using FourLines.Application.Strategies;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
-using FourLines.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Npgsql;
 
-namespace FourLines.Tests.Reservations;
+namespace FourLines.Tests.Concurrency;
 
 public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixture<PostgresTestDatabase>
 {

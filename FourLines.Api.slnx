@@ -20,4 +20,5 @@
   <Folder Name="/tests/">
     <Project Path="FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
   </Folder>
+  <Project Path="FourLines.Tests.Concurrency/FourLines.Tests.Concurrency.csproj" />
 </Solution>
