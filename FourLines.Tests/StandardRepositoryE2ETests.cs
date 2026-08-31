@@ -15,7 +15,7 @@ public class StandardRepositoryE2ETests
             .UseInMemoryDatabase(dbName)
             .Options;
 
-        return new FourLinesContext(options) { Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build() };
+        return new FourLinesContext(options);
     }
 
     [Fact]

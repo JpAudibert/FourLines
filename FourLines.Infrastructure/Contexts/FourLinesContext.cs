@@ -2,8 +2,6 @@
 
 public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbContext(options)
 {
-    public required IConfigurationRoot Configuration;
-
     public DbSet<Role> Roles { get; set; } = default!;
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<Facility> Facilities { get; set; } = default!;
