@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Domain.Models;
 
-public class FacilitySchedule : BaseEntity
+public record FacilitySchedule : BaseEntity
 {
     public Guid FacilityId { get; init; }
     public DayOfWeek DayOfWeek { get; init; }

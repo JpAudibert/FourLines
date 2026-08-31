@@ -1,6 +1,6 @@
 namespace FourLines.Domain.Models;
 
-public class Sport : BaseEntity
+public record Sport : BaseEntity
 {
     public string Name { get; init; } = default!;
     public bool Indoor { get; init; }

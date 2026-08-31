@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Domain.Models;
 
-public class User : BaseEntity
+public record User : BaseEntity
 {
     public Guid RoleId { get; set; }
     public string Name { get; set; } = default!;

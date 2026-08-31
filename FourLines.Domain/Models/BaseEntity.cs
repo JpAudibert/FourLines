@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Domain.Models;
 
-public abstract class BaseEntity
+public abstract record BaseEntity
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;

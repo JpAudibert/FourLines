@@ -1,6 +1,6 @@
 namespace FourLines.Domain.Models;
 
-public class Court : BaseEntity
+public record Court : BaseEntity
 {
     public Guid FacilityId { get; init; }
     public Guid SportId { get; init; }
