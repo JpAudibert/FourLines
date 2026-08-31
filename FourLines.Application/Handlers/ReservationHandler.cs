@@ -1,21 +1,24 @@
 ﻿namespace FourLines.Application.Handlers;
 
-public class ReservationHandler(FourLinesContext context, IReservationValidator reservationValidator) 
+public class ReservationHandler(
+    FourLinesContext context, 
+    IReservationValidator reservationValidator, 
+    ICourtLockStrategies courtLockStrategy) 
     : IReservationHandler
 {
     private readonly FourLinesContext _context = context;
     private readonly IReservationValidator _reservationValidator = reservationValidator;
+    private readonly ICourtLockStrategies _courtLockStrategy = courtLockStrategy;
 
     public async Task<Result<Reservation>> Create(CreateReservationDTO newReservation)
     {
         Result<Reservation> validationResult = await _reservationValidator.ValidateAsync(newReservation);
-
         if (validationResult.IsFailure)
             return validationResult;
 
-        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-        Court? court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == newReservation.CourtId);
+        Court? court = await _courtLockStrategy.GetForUpdateAsync(newReservation.CourtId);
         if (court is null)
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationUnknownCourt);
 

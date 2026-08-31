@@ -35,7 +35,7 @@ try
 
     builder.Services
         .AddDomain()
-        .AddApplication()
+        .AddApplication(builder.Configuration)
         .AddInfrastructure(builder.Configuration);
 
     builder.Services.AddApiVersioning(options =>
