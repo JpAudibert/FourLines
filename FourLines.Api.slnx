@@ -18,7 +18,7 @@
     <Project Path="FourLines.Infrastructure/FourLines.Infrastructure.csproj" Id="d1873149-8356-4762-9819-5db09c96b7a0" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="FourLines.Tests.Concurrency/FourLines.Tests.Concurrency.csproj" />
     <Project Path="FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
   </Folder>
-  <Project Path="FourLines.Tests.Concurrency/FourLines.Tests.Concurrency.csproj" />
 </Solution>

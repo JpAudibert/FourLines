@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.DTOs.Courts;
 
-public class UpdateCourtDTO
+public record UpdateCourtDTO
 {
     public Guid Id { get; init; } = default!;
     public Guid OwnerId { get; init; } = default!;

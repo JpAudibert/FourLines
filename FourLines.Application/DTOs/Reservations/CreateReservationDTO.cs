@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.DTOs.Reservations;
 
-public class CreateReservationDTO
+public record CreateReservationDTO
 {
     public Guid CourtId { get; init; }
     public Guid UserId { get; init; }

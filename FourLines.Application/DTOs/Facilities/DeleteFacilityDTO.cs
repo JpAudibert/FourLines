@@ -1,7 +1,7 @@
 ﻿namespace FourLines.Application.DTOs.Facilities;
 
-public class DeleteFacilityDTO
+public record DeleteFacilityDTO
 {
-    public Guid OwnerId { get; set; }
-    public Guid FacilityId { get; set; }
+    public Guid OwnerId { get; init; }
+    public Guid FacilityId { get; init; }
 }

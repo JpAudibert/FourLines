@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.DTOs.Facilities;
 
-public record class CreateFacilityDTO
+public record CreateFacilityDTO
 {
     public Guid OwnerId { get; init; } = default!;
     public string Name { get; init; } = default!;

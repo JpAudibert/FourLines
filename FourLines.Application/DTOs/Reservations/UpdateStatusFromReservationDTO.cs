@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Application.DTOs.Reservations;
 
-public class UpdateStatusFromReservationDTO
+public record UpdateStatusFromReservationDTO
 {
     public Guid Id { get; init; } = default!;
     public Guid UserId { get; init; } = default!;
