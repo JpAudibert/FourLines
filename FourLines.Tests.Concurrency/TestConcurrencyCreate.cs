@@ -37,7 +37,7 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
             await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Facility1, context);
             await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.TestSport, context);
             await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Court1, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.FacilitySchedule3, context);
+            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Facility1SettedSchedule, context);
         }
 
         async Task<Result<Reservation>> MakeReservation()

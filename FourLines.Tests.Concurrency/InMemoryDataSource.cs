@@ -111,6 +111,14 @@ public class InMemoryDataSource
         ClosesAt = new TimeOnly(23, 59),
     };
 
+    public static readonly FacilitySchedule Facility1SettedSchedule = new()
+    {
+        FacilityId = Facility1.Id,
+        DayOfWeek = DayOfWeek.Monday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
     public static readonly Reservation Reservation1 = new()
     {
         CourtId = Court1.Id,
