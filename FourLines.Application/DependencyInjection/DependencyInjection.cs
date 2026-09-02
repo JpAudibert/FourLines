@@ -1,8 +1,12 @@
-﻿namespace FourLines.Application.DependencyInjection;
+﻿using FourLines.Application.Strategies;
+
+namespace FourLines.Application.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddSingleton<ITokenProvider, JwtTokenProvider>();
 
@@ -15,6 +19,15 @@ public static class DependencyInjection
         services.AddScoped<IFacilityHandler, FacilityHandler>();
         services.AddScoped<IFacilityScheduleHandler, FacilityScheduleHandler>();
         services.AddScoped<ICourtHandler, CourtHandler>();
+
+        if (configuration.GetValue<bool>("UseInMemory", false))
+        {
+            services.AddScoped<ICourtLockStrategies, SqliteCourtLockStrategy>();
+        }
+        else
+        {
+            services.AddScoped<ICourtLockStrategies, PostgresCourtLockStrategy>();
+        }
 
         services.AddScoped<IReservationValidator, ReservationValidator>();
         services.AddScoped<IReservationHandler, ReservationHandler>();

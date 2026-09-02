@@ -1,7 +1,7 @@
 ﻿namespace FourLines.Application.DTOs.Reservations;
 
-public class DeleteReservationDTO
+public record DeleteReservationDTO
 {
-    public Guid UserId { get; set; }
-    public Guid ReservationId { get; set; }
+    public Guid UserId { get; init; }
+    public Guid ReservationId { get; init; }
 }

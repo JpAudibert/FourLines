@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Domain.Models;
 
-public class Role : BaseEntity
+public record Role : BaseEntity
 {
     public string Name { get; init; } = default!;
 

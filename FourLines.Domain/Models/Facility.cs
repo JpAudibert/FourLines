@@ -1,6 +1,6 @@
 namespace FourLines.Domain.Models;
 
-public class Facility : BaseEntity
+public record Facility : BaseEntity
 {
     public Guid OwnerId { get; init; }
     public string Name { get; init; } = default!;

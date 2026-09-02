@@ -1,6 +1,6 @@
 ﻿namespace FourLines.Domain.Models;
 
-public class Reservation : BaseEntity
+public record Reservation : BaseEntity
 {
     public Guid CourtId { get; init; }
     public Guid UserId { get; init; }

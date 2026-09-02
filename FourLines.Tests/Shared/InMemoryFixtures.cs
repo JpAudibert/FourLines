@@ -37,7 +37,7 @@ public class InMemoryFixtures
 
         Builder.Services.AddSingleton(_connection);
 
-        Builder.Services.AddInfrastructure(Configuration).AddApplication().AddDomain();
+        Builder.Services.AddInfrastructure(Configuration).AddApplication(Configuration).AddDomain();
 
         Builder.Configuration.AddConfiguration(Configuration);
 
