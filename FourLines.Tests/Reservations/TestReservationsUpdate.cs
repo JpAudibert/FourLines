@@ -39,7 +39,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.Update(
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
             updateReservationTest
         );
 
@@ -77,7 +77,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.Update(
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
             updateReservationTest
         );
 
@@ -113,7 +113,7 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.Update(
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
             updateReservationTest
         );
 

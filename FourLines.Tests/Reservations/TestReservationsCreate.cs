@@ -42,15 +42,19 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.IsType<Reservation>(result.Value);
-        Assert.Equal(_createReservationTest.CourtId, result.Value.CourtId);
-        Assert.Equal(_createReservationTest.UserId, result.Value.UserId);
-        Assert.Equal(_createReservationTest.Period, result.Value.Period);
-        Assert.Equal(_createReservationTest.Status, result.Value.Status);
+        Assert.IsType<ConfirmReservationResponseDTO>(result.Value);
+        Assert.Equal(_createReservationTest.CourtId, result.Value.Reservation.CourtId);
+        Assert.Equal(_createReservationTest.UserId, result.Value.Reservation.UserId);
+        Assert.Equal(_createReservationTest.Period, result.Value.Reservation.Period);
+        Assert.Equal(_createReservationTest.Status, result.Value.Reservation.Status);
+
+
+        Assert.NotNull(result.Value.Match);
+        Assert.Equal(6, result.Value.Match.Code.Length);
     }
 
     [Fact]
@@ -96,19 +100,19 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<Reservation> resultDate = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(
             _createReservationTestInvalidDate
         );
-        Result<Reservation> resultPastDate = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(
             _createReservationTestInvalidPastDate
         );
-        Result<Reservation> resultDayPeriod = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> resultDayPeriod = await reservationHandler.Create(
             _createReservationTestInvalidDayPeriod
         );
-        Result<Reservation> resultDuration = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(
             _createReservationTestInvalidDuration
         );
-        Result<Reservation> resultStatus = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(
             _createReservationTestInvalidStatus
         );
 
@@ -143,7 +147,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
 
         // Assert
         Assert.Null(result.Value);
@@ -165,7 +169,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
 
         // Assert
         Assert.Null(result.Value);
@@ -189,7 +193,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<Reservation> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
 
         // Assert
         Assert.Null(result.Value);
@@ -226,7 +230,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
         };
 
         // Act
-        Result<Reservation> result = await reservationHandler.Create(
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
             _createReservationTestOverlapping
         );
 
