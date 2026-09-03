@@ -2,5 +2,5 @@
 
 public interface IReservationValidator
 {
-    Task<Result<Reservation>> ValidateAsync(CreateReservationDTO reservationDTO, CancellationToken cancellationToken = default);
+    Task<Result<ConfirmReservationResponseDTO>> ValidateAsync(CreateReservationDTO reservationDTO, CancellationToken cancellationToken = default);
 }

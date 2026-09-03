@@ -2,39 +2,44 @@
 
 public class ReservationValidator() : IReservationValidator
 {
-    public async Task<Result<Reservation>> ValidateAsync(
+    public async Task<Result<ConfirmReservationResponseDTO>> ValidateAsync(
         CreateReservationDTO reservation,
         CancellationToken cancellationToken = default
     )
     {
         if (!reservation.Period.AreDatesValid())
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidDates);
+            return Result<ConfirmReservationResponseDTO>.Failure(ReservationsErrorResults.CreationInvalidDates);
 
         if (reservation.Period.StartAndEndAreInThePast())
-            return Result<Reservation>.Failure(
+            return Result<ConfirmReservationResponseDTO>.Failure(
                 ReservationsErrorResults.CreationStartAndEndInThePast
             );
 
         if (!reservation.Period.StartAndEndAreInTheSameDay())
-            return Result<Reservation>.Failure(
+            return Result<ConfirmReservationResponseDTO>.Failure(
                 ReservationsErrorResults.CreationStartAndEndNotInTheSameDay
             );
 
         if (reservation.Period.Duration != TimeSpan.FromMinutes(60))
-            return Result<Reservation>.Failure(
+            return Result<ConfirmReservationResponseDTO>.Failure(
                 ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration
             );
 
         ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
         if (!statuses.Contains(reservation.Status))
-            return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidStatus);
+            return Result<ConfirmReservationResponseDTO>.Failure(ReservationsErrorResults.CreationInvalidStatus);
 
-        return Result<Reservation>.Success(
-            new Reservation
+        return Result<ConfirmReservationResponseDTO>.Success(
+            new ConfirmReservationResponseDTO
             {
-                CourtId = reservation.CourtId,
-                UserId = reservation.UserId,
-                Period = reservation.Period,
+                Match = default!,
+                Reservation = new Reservation()
+                {
+                    CourtId = reservation.CourtId,
+                    UserId = reservation.UserId,
+                    Period = reservation.Period,
+                    Status = reservation.Status,
+                },
             }
         );
     }
