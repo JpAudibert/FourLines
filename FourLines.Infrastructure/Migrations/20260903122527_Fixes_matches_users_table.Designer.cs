@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Infrastructure.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    partial class FourLinesContextModelSnapshot : ModelSnapshot
+    [Migration("20260903122527_Fixes_matches_users_table")]
+    partial class Fixes_matches_users_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Infrastructure.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    partial class FourLinesContextModelSnapshot : ModelSnapshot
+    [Migration("20260903121645_Updates_sport_with_has_fixed_goalkeeper")]
+    partial class Updates_sport_with_has_fixed_goalkeeper
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,11 +257,18 @@ namespace FourLines.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id1");
+
                     b.HasKey("Id")
                         .HasName("pk_matches_users");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_matches_users_user_id");
+
+                    b.HasIndex("UserId1")
+                        .HasDatabaseName("ix_matches_users_user_id1");
 
                     b.HasIndex("MatchId", "UserId")
                         .IsUnique()
@@ -546,11 +556,16 @@ namespace FourLines.Infrastructure.Migrations
                         .HasConstraintName("fk_matches_users_matches_match_id");
 
                     b.HasOne("FourLines.Domain.Models.User", "User")
-                        .WithMany("MatchesUsers")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_matches_users_users_user_id");
+
+                    b.HasOne("FourLines.Domain.Models.User", null)
+                        .WithMany("MatchesUsers")
+                        .HasForeignKey("UserId1")
+                        .HasConstraintName("fk_matches_users_users_user_id1");
 
                     b.Navigation("Match");
 
