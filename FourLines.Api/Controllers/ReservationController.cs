@@ -69,7 +69,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
     }
 
     [HttpPost]
-    public async Task<ActionResult<Reservation>> CreateAReservationForUser(
+    public async Task<ActionResult<ConfirmReservationResponseDTO>> CreateAReservationForUser(
         [FromRoute] Guid userId,
         [FromBody] CreateReservationViewModel newReservation)
     {
@@ -83,7 +83,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
 
         StartStopwatch();
 
-        Result<Reservation> result = await _reservationHandler.Create(new CreateReservationDTO()
+        Result<ConfirmReservationResponseDTO> result = await _reservationHandler.Create(new CreateReservationDTO()
         {
             UserId = userId,
             CourtId = newReservation.CourtId,
@@ -110,7 +110,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
 
         StartStopwatch();
 
-        Result<Reservation> result = await _reservationHandler.Update(new UpdateStatusFromReservationDTO()
+        Result<Reservation> result = await _reservationHandler.UpdateReservationStatus(new UpdateStatusFromReservationDTO()
         {
             Id = reservationId,
             UserId = userId,
