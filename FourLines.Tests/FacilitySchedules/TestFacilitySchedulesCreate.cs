@@ -1,20 +1,17 @@
 using FourLines.Application.DTOs.FacilitySchedules;
-using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.FacilitySchedules;
 
 public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
 
-    private static CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
+    private readonly static CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
         FacilityId = InMemoryDataSource.Facility1.Id,
         OwnerId = InMemoryDataSource.UserOwner.Id,
@@ -23,7 +20,7 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
         ClosesAt = new TimeOnly(17, 0),
     };
 
-    private static CreateFacilityScheduleDTO _createFacilityScheduleTest2 = new()
+    private readonly static CreateFacilityScheduleDTO _createFacilityScheduleTest2 = new()
     {
         FacilityId = InMemoryDataSource.Facility1.Id,
         OwnerId = InMemoryDataSource.UserOwner.Id,
@@ -36,13 +33,16 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -62,11 +62,14 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_Not_CreateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
-        await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+            await DbOperations.RemoveAllDataFromMemory<FacilitySchedule>(context);
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -82,13 +85,16 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
         {
@@ -121,17 +127,20 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_Not_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
-        await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+            await DbOperations.RemoveAllDataFromMemory<FacilitySchedule>(context);
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
-        {
+        List<CreateFacilityScheduleDTO> newSchedules =
+        [
             _createFacilityScheduleTest1,
             _createFacilityScheduleTest2,
-        };
+        ];
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.CreateMultiple(

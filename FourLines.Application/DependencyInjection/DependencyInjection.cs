@@ -31,6 +31,7 @@ public static class DependencyInjection
 
         services.AddScoped<IReservationValidator, ReservationValidator>();
         services.AddScoped<IReservationHandler, ReservationHandler>();
+        services.AddScoped<IMatchHandler, MatchHandler>();
 
         services.AddScoped<SeederHandler>();
 

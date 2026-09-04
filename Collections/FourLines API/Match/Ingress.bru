@@ -1,0 +1,28 @@
+meta {
+  name: Ingress
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/match/:matchId/ingress/:userId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  matchId: 83a79c32-f9c6-4b6e-b949-97913cf53423
+  userId: 2e145c4e-4933-4332-86ed-922789ae2617
+}
+
+body:json {
+  {
+    "code": "767944"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

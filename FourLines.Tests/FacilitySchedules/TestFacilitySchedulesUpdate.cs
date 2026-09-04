@@ -1,33 +1,33 @@
 using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.DTOs.FacilitySchedules;
-using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.FacilitySchedules;
 
 public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule1,
+                context
+            );
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         UpdateFacilityScheduleDTO updateFacilityScheduleTest = new()
         {
@@ -58,7 +58,7 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -85,7 +85,7 @@ public class TestFacilitySchedulesUpdate(InMemoryFixtures fixtures)
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {

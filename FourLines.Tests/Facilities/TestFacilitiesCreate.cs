@@ -4,15 +4,12 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
 
 public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-    
-    private static CreateFacilityDTO _createFacilityTest = new()
+    private static readonly CreateFacilityDTO _createFacilityTest = new()
     {
         Name = "Test Facility",
         Address = "123 Test St",
@@ -27,11 +24,14 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
@@ -52,12 +52,14 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_CreateFacility()
     {
         // Arrange
-
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);

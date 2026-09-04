@@ -1,33 +1,34 @@
-using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.FacilitySchedules;
 
 public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_GetFacilitiesSchedules()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule2
-        );
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule1,
+                context
+            );
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule2,
+                context
+            );
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
@@ -44,10 +45,13 @@ public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_GetFacilitiesSchedules()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+        }
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(

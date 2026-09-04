@@ -3,10 +3,10 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UserRegisterController(ILogger logger, UserHandler userHandler)
+public class UserRegisterController(ILogger<UserRegisterController> logger, UserHandler userHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger _logger = logger;
+    private readonly ILogger<UserRegisterController> _logger = logger;
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost("{roleId}")]
