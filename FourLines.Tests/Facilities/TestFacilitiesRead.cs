@@ -3,25 +3,25 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
 
 public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_GetAllFacilities()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
@@ -35,10 +35,13 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetAllFacilities()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
@@ -52,13 +55,16 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacilities()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
@@ -75,7 +81,7 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
@@ -91,12 +97,15 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
@@ -123,7 +132,7 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
@@ -140,11 +149,14 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(

@@ -2,7 +2,6 @@ using FourLines.Api.Controllers;
 using FourLines.Api.ViewModels.Users;
 using FourLines.Application.DTOs;
 using FourLines.Application.Handlers;
-using FourLines.Application.Providers;
 using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
@@ -10,19 +9,11 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace FourLines.Tests.Users;
 
 public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_RegisterAndAuthenticateUser()
     {
@@ -45,7 +36,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
             Password = "Password123!",
         };
 
-        FourLinesContext context = _fixtures.ServiceProvider.GetRequiredService<FourLinesContext>();
+        FourLinesContext context = fixtures.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
         if (testUser is not null)
@@ -65,10 +56,10 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
         }
 
         IPasswordHashProvider passwordHashProvider =
-            _fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
-        UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
+        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
         ITokenProvider jwtTokenProvider =
-            _fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
+            fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
 
         AuthenticationHandler authenticationHandler = new(
             context,
@@ -99,8 +90,11 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveDuplicateUser()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+        }
 
         UserRegisterDTO createUserTest = new()
         {
@@ -113,7 +107,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
             RoleId = InMemoryDataSource.RoleOwner.Id,
         };
 
-        UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
 
         // Act
         Result<User> result = await userHandler.Create(createUserTest);
@@ -127,8 +121,11 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveUserRole()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.RemoveAllDataFromMemory<User>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.RemoveAllDataFromMemory<User>(context);
+        }
 
         UserRegisterDTO _createUserTest = new()
         {
@@ -141,7 +138,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
             RoleId = Guid.NewGuid(),
         };
 
-        UserHandler userHandler = _fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
 
         // Act
         Result<User> result = await userHandler.Create(_createUserTest);
@@ -155,11 +152,15 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveUserForAuthentication()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<User>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<User>(context);
+        }
+
         AuthenticationDTO authTest = new() { Email = "test@test.com", Password = "Test123!" };
 
         AuthenticationHandler authHandler =
-            _fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
+            fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
 
         // Act
         Result<String> result = await authHandler.Authenticate(authTest);
@@ -173,8 +174,11 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
     public async Task Should_Not_HaveEqualPasswords()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+        }
 
         User userOwnerTest = new()
         {
@@ -194,7 +198,7 @@ public class UsersRegisterAndAuthTests(InMemoryFixtures fixtures) : IClassFixtur
         };
 
         AuthenticationHandler authHandler =
-            _fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
+            fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
 
         // Act
         Result<String> result = await authHandler.Authenticate(authTest);

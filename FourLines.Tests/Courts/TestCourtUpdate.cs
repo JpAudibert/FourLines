@@ -4,23 +4,23 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Courts;
 
 public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_UpdateCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+        }
 
         UpdateCourtDTO updateCourtTest = new()
         {
@@ -33,7 +33,7 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
         };
 
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.Update(updateCourtTest);
@@ -52,7 +52,7 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     {
         // Arrange
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         UpdateCourtDTO updateCourtTest = new()
         {
@@ -75,13 +75,16 @@ public class TestCourtUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_AffectAnyRowFacility()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Court>();
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.RemoveAllDataFromMemory<Court>(context);
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+        }
 
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         UpdateCourtDTO updateCourtTest = new()
         {

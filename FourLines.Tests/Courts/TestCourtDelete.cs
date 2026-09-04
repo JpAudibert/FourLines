@@ -3,34 +3,25 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Courts;
 
 public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
-    private static CreateCourtDTO _createCourtTest = new()
-    {
-        OwnerId = InMemoryDataSource.UserOwner.Id,
-        FacilityId = InMemoryDataSource.Facility1.Id,
-        SportId = InMemoryDataSource.TestSport.Id,
-        Name = "Test Court",
-        IsActive = true,
-    };
-
     [Fact]
     public async Task Should_DeleteCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+        }
 
-        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO
@@ -48,7 +39,7 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_DeleteCourt()
     {
         // Arrange
-        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO

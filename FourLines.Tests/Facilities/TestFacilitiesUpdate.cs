@@ -4,24 +4,24 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
 
 public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_UpdateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+        }
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -55,7 +55,7 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {
@@ -82,7 +82,7 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     {
         // Arrange
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         UpdateFacilityDTO updateFacilityTest = new()
         {

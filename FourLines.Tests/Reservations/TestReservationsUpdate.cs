@@ -4,32 +4,33 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Reservations;
 
 public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
-        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule1,
+                context
+            );
+            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
+        }
 
         IReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {
@@ -54,26 +55,30 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_HaveValidStatus()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
-        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule1,
+                context
+            );
+            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
+        }
 
         IReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {
             Id = InMemoryDataSource.Reservation1.Id,
             UserId = InMemoryDataSource.UserPlayer.Id,
-            Status = (ReservationStatus) 999,
+            Status = (ReservationStatus)999,
         };
 
         // Act
@@ -90,20 +95,24 @@ public class TestReservationsUpdate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_AffectAnyRowFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
-        await _fixtures.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
+                InMemoryDataSource.FacilitySchedule1,
+                context
+            );
+            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
+        }
 
         IReservationHandler reservationHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         UpdateStatusFromReservationDTO updateReservationTest = new()
         {

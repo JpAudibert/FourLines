@@ -3,27 +3,27 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Courts;
 
 public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_GetAllCourts()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court2);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court2, context);
+        }
 
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
@@ -38,7 +38,8 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
     {
         // Arrange
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
 
@@ -51,15 +52,18 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
     public async Task Should_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court1);
-        await _fixtures.CreateEntityInMemory<Court>(InMemoryDataSource.Court2);
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
+            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court2, context);
+        }
 
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(
@@ -75,16 +79,19 @@ public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFi
         Assert.Equal(result.Value.SportId, InMemoryDataSource.Court1.SportId);
     }
 
-      [Fact]
+    [Fact]
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
+        await using (var context = fixtures.CreateContext())
+        {
+            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
+            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+        }
 
         ICourtHandler courtHandler =
-            _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(
