@@ -49,7 +49,8 @@ public class ReservationHandler(
         };
 
         bool overlappingReservation = await context.Reservations
-            .Select(r => r.CourtId == newReservation.CourtId &&
+            .Where(r => 
+                r.CourtId == newReservation.CourtId &&
                 r.Period.Start < newReservation.Period.End &&
                 r.Period.End > newReservation.Period.Start &&
                 r.Status != ReservationStatus.Cancelled)
