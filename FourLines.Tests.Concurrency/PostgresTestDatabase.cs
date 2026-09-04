@@ -2,7 +2,6 @@
 using FourLines.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace FourLines.Tests.Concurrency;
 
