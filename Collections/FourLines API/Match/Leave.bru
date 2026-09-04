@@ -1,0 +1,22 @@
+meta {
+  name: Leave
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/match/:matchId/ingress/:userId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  matchId: 83a79c32-f9c6-4b6e-b949-97913cf53423
+  userId: 09846d19-d334-41e0-bbb8-9186f8683489
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

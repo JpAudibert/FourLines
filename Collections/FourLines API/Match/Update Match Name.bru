@@ -1,0 +1,21 @@
+meta {
+  name: Update Match Name
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/:matchId/update-match-name
+  body: none
+  auth: inherit
+}
+
+params:path {
+  matchId: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
