@@ -27,7 +27,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
 
         StartStopwatch();
 
-        Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(ownerId, facilityId);
+        Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(facilityId);
 
         return HandleResult(result);
     }
@@ -49,7 +49,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
 
         StartStopwatch();
 
-        Result<Court> result = await _courtHandler.GetFacility(ownerId, facilityId, courtId);
+        Result<Court> result = await _courtHandler.GetFacility(facilityId, courtId);
 
         return HandleResult(result);
     }
@@ -132,7 +132,6 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
 
         Result<bool> result = await _courtHandler.Delete(new DeleteCourtDTO
         {
-            OwnerId = ownerId,
             FacilityId = facilityId,
             CourtId = courtId
         });
