@@ -5,14 +5,14 @@ namespace FourLines.Tests.Shared;
 
 public class DbOperations
 {
-    public static async Task RemoveAllDataFromMemory<T>(FourLinesContext context)
+    public static async Task RemoveAllRecords<T>(FourLinesContext context)
         where T : BaseEntity
     {
         context.Set<T>().RemoveRange(context.Set<T>());
         await context.SaveChangesAsync();
     }
 
-    public static async Task RemoveDataFromMemory<T>(Guid id, FourLinesContext context)
+    public static async Task RemoveRecord<T>(Guid id, FourLinesContext context)
         where T : BaseEntity
     {
         T? entity = await context.Set<T>().FindAsync(id);
@@ -24,7 +24,7 @@ public class DbOperations
         }
     }
 
-    public static async Task<T> CreateEntityInMemory<T>(T entity, FourLinesContext context)
+    public static async Task<T> CreateRecord<T>(T entity, FourLinesContext context)
         where T : BaseEntity
     {
         if (await context.FindAsync<T>(entity.Id) == null)

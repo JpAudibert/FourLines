@@ -4,21 +4,29 @@ using FourLines.Domain.Models;
 
 namespace FourLines.Tests.Shared;
 
-public class InMemoryDataSource
+public class TestDataSource
 {
     public static readonly Guid RoleOwnerId = new("17b044a4-3c53-4fc9-86b1-16f314877de0");
     public static readonly Guid RolePlayerId = new("76199b24-62ef-49f1-816e-decfa45c2900");
     public static readonly Guid UserOwnerId = new("e7021ffc-ab35-4475-b640-a6b23742a132");
     public static readonly Guid UserPlayerId = new("1a8997ec-171f-4af2-82b1-49a914b2a526");
-    public static readonly Guid FacilityId = new("40b43ff5-2ad0-4a82-b7df-574f2f7ca716");
-    public static readonly Guid TestSportId = new("ad4eb568-bbe0-43fe-a6ed-3e1bb1e05340");
-    public static readonly Guid CourtId = new("1c07cc5e-036e-4d23-a3ed-ac8d64b2968c");
-    public static readonly Guid FacilityScheduleId = new("26a011e8-25a8-4b91-8471-0c4f1854eee4");
+    public static readonly Guid DefaultFacilityId = new("40b43ff5-2ad0-4a82-b7df-574f2f7ca716");
+    public static readonly Guid DefaultSportId = new("ad4eb568-bbe0-43fe-a6ed-3e1bb1e05340");
+    public static readonly Guid DefaultCourtId = new("1c07cc5e-036e-4d23-a3ed-ac8d64b2968c");
+    public static readonly Guid DefaultFacilityScheduleId = new("26a011e8-25a8-4b91-8471-0c4f1854eee4");
 
-    public static readonly DateTimeOffset DateTime = DateTimeOffset.Now;
-    public static readonly DateTimeOffset SettedDateTime = new(2026, 8, 31, 10, 0, 0, TimeSpan.Zero);
-    public static readonly Role RoleOwner = new() { Name = RoleConstants.FacilityOwner };
-    public static readonly Role RolePlayer = new() { Name = RoleConstants.Player };
+    public static readonly DateTimeOffset DateTimeNow = DateTimeOffset.UtcNow;
+    public static readonly DateTimeOffset SettedDateTime = 
+        new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
+
+    public static readonly Role RoleOwner = new()
+    {
+        Name = RoleConstants.FacilityOwner
+    };
+    public static readonly Role RolePlayer = new()
+    {
+        Name = RoleConstants.Player
+    };
 
     public static readonly User UserOwner = new()
     {
@@ -63,7 +71,7 @@ public class InMemoryDataSource
         RegistrationNumber = "383.975.213-89",
     };
 
-    public static readonly Facility Facility1 = new()
+    public static readonly Facility DefaultFacility = new()
     {
         Name = "Test Facility 1",
         Address = "123 Test St",
@@ -96,7 +104,7 @@ public class InMemoryDataSource
         OwnerId = UserOwner.Id,
     };
 
-    public static readonly Sport TestSport = new()
+    public static readonly Sport DefaultSport = new()
     {
         Name = "Test Sport",
         Indoor = true,
@@ -105,7 +113,7 @@ public class InMemoryDataSource
         HasFixedGoalKeeper = true,
     };
 
-    public static readonly Sport TestSport2 = new()
+    public static readonly Sport Sport2 = new()
     {
         Name = "Test Sport 2",
         Indoor = true,
@@ -114,32 +122,56 @@ public class InMemoryDataSource
         HasFixedGoalKeeper = false,
     };
 
-    public static readonly Court Court1 = new()
+    public static readonly Court DefaultCourt = new()
     {
-        FacilityId = Facility1.Id,
-        SportId = TestSport.Id,
+        FacilityId = DefaultFacility.Id,
+        SportId = DefaultSport.Id,
         Name = "Test Court",
         IsActive = true,
     };
 
     public static readonly Court Court2 = new()
     {
-        FacilityId = Facility1.Id,
-        SportId = TestSport.Id,
+        FacilityId = DefaultFacility.Id,
+        SportId = DefaultSport.Id,
         Name = "Test Court 2",
         IsActive = true,
     };
     public static readonly Court Court3 = new()
     {
-        FacilityId = Facility1.Id,
-        SportId = TestSport2.Id,
+        FacilityId = Facility2.Id,
+        SportId = Sport2.Id,
         Name = "Test Court 3",
         IsActive = true,
+    };
+    public static readonly Court Court4 = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        SportId = Sport2.Id,
+        Name = "Test Court 4",
+        IsActive = true,
+    };
+
+    public static readonly FacilitySchedule DefaultFacilitySchedule = new()
+    {
+        Id = DefaultFacility.Id,
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DateTimeOffset.UtcNow.DayOfWeek,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilitySchedulePlusOneDay = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DateTimeOffset.UtcNow.AddDays(1).DayOfWeek,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
     };
 
     public static readonly FacilitySchedule FacilitySchedule1 = new()
     {
-        FacilityId = Facility1.Id,
+        FacilityId = Facility2.Id,
         DayOfWeek = DayOfWeek.Tuesday,
         OpensAt = new TimeOnly(8, 0),
         ClosesAt = new TimeOnly(20, 0),
@@ -147,18 +179,10 @@ public class InMemoryDataSource
 
     public static readonly FacilitySchedule FacilitySchedule2 = new()
     {
-        FacilityId = Facility1.Id,
+        FacilityId = Facility2.Id,
         DayOfWeek = DayOfWeek.Thursday,
         OpensAt = new TimeOnly(8, 0),
         ClosesAt = new TimeOnly(20, 0),
-    };
-
-    public static readonly FacilitySchedule FacilitySchedule3 = new()
-    {
-        FacilityId = Facility1.Id,
-        DayOfWeek = DateTimeOffset.Now.DayOfWeek,
-        OpensAt = new TimeOnly(0, 0),
-        ClosesAt = new TimeOnly(23, 59),
     };
 
     public static readonly FacilitySchedule FacilitySchedule4 = new()
@@ -169,19 +193,19 @@ public class InMemoryDataSource
         ClosesAt = new TimeOnly(23, 59),
     };
 
-    public static readonly Reservation Reservation1 = new()
+    public static readonly Reservation DefaultReservation = new()
     {
-        CourtId = Court1.Id,
+        CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
-        Period = new TimeRange(DateTime, DateTime.AddHours(1)),
+        Period = new TimeRange(DateTimeNow, DateTimeNow.AddHours(1)),
         Status = ReservationStatus.Pending,
     };
 
     public static readonly Reservation Reservation2 = new()
     {
-        CourtId = Court1.Id,
+        CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
-        Period = new TimeRange(DateTime.AddHours(1), DateTime.AddHours(2)),
+        Period = new TimeRange(DateTimeNow.AddHours(1), DateTimeNow.AddHours(2)),
         Status = ReservationStatus.Pending,
     };
 
@@ -189,28 +213,28 @@ public class InMemoryDataSource
     {
         CourtId = Court2.Id,
         UserId = UserPlayer.Id,
-        Period = new TimeRange(DateTime.AddHours(2), DateTime.AddHours(3)),
+        Period = new TimeRange(DateTimeNow.AddHours(2), DateTimeNow.AddHours(3)),
         Status = ReservationStatus.Pending,
     };
 
     public static readonly CreateReservationDTO CreateGoalKeeperReservationTest = new()
     {
-        CourtId = Court1.Id,
+        CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            DateTime,
-            DateTime.AddHours(1)
+            SettedDateTime.AddHours(12),
+            SettedDateTime.AddHours(13)
         ),
         Status = ReservationStatus.Pending,
     };
 
     public static readonly CreateReservationDTO CreateNoGoalKeeperReservationTest = new()
     {
-        CourtId = Court3.Id,
+        CourtId = Court4.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            DateTime.AddHours(2),
-            DateTime.AddHours(3)
+            SettedDateTime.AddHours(12),
+            SettedDateTime.AddHours(13)
         ),
         Status = ReservationStatus.Pending,
     };
