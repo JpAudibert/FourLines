@@ -1,6 +1,8 @@
-﻿namespace FourLines.Application.DTOs.Matches;
+﻿using FourLines.Application.DTOs.Matches.Interfaces;
 
-public record CreateIngressDTO
+namespace FourLines.Application.DTOs.Matches;
+
+public record CreateIngressDTO : ICreateIngressDTO
 {
     public Guid MatchId { get; init; }
     public Guid UserId { get; init; }
