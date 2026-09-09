@@ -19,8 +19,8 @@ public record TestUpdateFacilityDTO : IUpdateFacilityDTO
     public string RegistrationNumber { get; init; } = default!;
 }
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitiesUpdate(FacilitySchedulesFixture fixtures)
+[Collection(FacilityCollection.Name)]
+public class TestFacilitiesUpdate(FacilityFixture fixtures)
 {
     private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
     {

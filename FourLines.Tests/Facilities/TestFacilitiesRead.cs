@@ -6,8 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitiesRead(FacilitySchedulesFixture fixtures)
+[Collection(FacilityCollection.Name)]
+public class TestFacilitiesRead(FacilityFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllFacilities()

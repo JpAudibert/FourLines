@@ -1,7 +1,7 @@
 ﻿namespace FourLines.Tests.Facilities;
 
 [CollectionDefinition(Name)]
-public class FacilitySchedulesCollection : ICollectionFixture<FacilitySchedulesFixture>
+public class FacilityCollection : ICollectionFixture<FacilityFixture>
 {
     public const string Name = "Facility";
 }

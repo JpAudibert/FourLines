@@ -19,8 +19,8 @@ public record TestCreateFacilityDTO : ICreateFacilityDTO
     public string RegistrationNumber { get; init; } = default!;
 }
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitiesCreate(FacilitySchedulesFixture fixtures)
+[Collection(FacilityCollection.Name)]
+public class TestFacilitiesCreate(FacilityFixture fixtures)
 {
     private static readonly TestCreateFacilityDTO _createFacilityTest = new()
     {

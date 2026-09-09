@@ -3,9 +3,9 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-public class FacilitySchedulesFixture : DefaultInitializationFixture, IAsyncLifetime
+public class FacilityFixture : DefaultInitializationFixture, IAsyncLifetime
 {
-    public FacilitySchedulesFixture() : base()
+    public FacilityFixture() : base()
     { }
 
     public async Task DisposeAsync()

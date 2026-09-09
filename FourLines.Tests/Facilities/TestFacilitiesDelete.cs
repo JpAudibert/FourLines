@@ -6,8 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitiesDelete(FacilitySchedulesFixture fixtures)
+[Collection(FacilityCollection.Name)]
+public class TestFacilitiesDelete(FacilityFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteFacility()
