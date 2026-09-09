@@ -1,9 +1,11 @@
-﻿namespace FourLines.Application.Validators;
+﻿using FourLines.Application.DTOs.Reservations.Interfaces;
+
+namespace FourLines.Application.Validators;
 
 public class ReservationValidator() : IReservationValidator
 {
     public async Task<Result<ConfirmReservationResponseDTO>> ValidateAsync(
-        CreateReservationDTO reservation,
+        ICreateReservationDTO reservation,
         CancellationToken cancellationToken = default
     )
     {
