@@ -9,7 +9,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     public async Task<Result<FacilitySchedule>> Create(ICreateFacilityScheduleDTO newSchedule)
     {
         Facility? facility = await _context.Facilities
-            .FirstOrDefaultAsync(f => f.Id == newSchedule.FacilityId && f.OwnerId == newSchedule.OwnerId);
+            .FirstOrDefaultAsync(f => f.Id == newSchedule.FacilityId);
         if (facility is null)
             return Result<FacilitySchedule>.Failure(FacilitySchedulesErrorResults.CreateFacilitySchedules);
 
@@ -31,7 +31,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     public async Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(List<ICreateFacilityScheduleDTO> newSchedules)
     {
         Facility? facility = await _context.Facilities
-            .FirstOrDefaultAsync(f => f.Id == newSchedules[0].FacilityId && f.OwnerId == newSchedules[0].OwnerId);
+            .FirstOrDefaultAsync(f => f.Id == newSchedules[0].FacilityId);
         if (facility is null)
             return Result<IEnumerable<FacilitySchedule>>.Failure(FacilitySchedulesErrorResults.CreateFacilitySchedules);
 

@@ -13,7 +13,6 @@ public record TestCreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
     public DayOfWeek DayOfWeek { get; init; }
     public Guid FacilityId { get; init; }
     public TimeOnly OpensAt { get; init; }
-    public Guid OwnerId { get; init; }
 }
 
 [Collection(FacilitySchedulesCollection.Name)]
@@ -21,8 +20,7 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
 {
     private readonly static TestCreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
-        FacilityId = TestDataSource.DefaultFacility.Id,
-        OwnerId = TestDataSource.UserOwner.Id,
+        FacilityId = TestDataSource.Facility4.Id,
         DayOfWeek = DayOfWeek.Monday,
         OpensAt = new TimeOnly(9, 0),
         ClosesAt = new TimeOnly(17, 0),
@@ -74,20 +72,21 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        TestCreateFacilityScheduleDTO schedule1Facility3 = _createFacilityScheduleTest1 with
+        TestCreateFacilityScheduleDTO schedule2Facility4 = _createFacilityScheduleTest1 with
         {
-            FacilityId = TestDataSource.Facility3.Id
+            FacilityId = TestDataSource.Facility4.Id,
+            DayOfWeek = DayOfWeek.Tuesday
         };
-        TestCreateFacilityScheduleDTO schedule2Facility3 = _createFacilityScheduleTest1 with
+        TestCreateFacilityScheduleDTO schedule3Facility4 = _createFacilityScheduleTest1 with
         {
-            FacilityId = TestDataSource.Facility3.Id,
+            FacilityId = TestDataSource.Facility4.Id,
             DayOfWeek = DayOfWeek.Wednesday
         };
 
         List<ICreateFacilityScheduleDTO> newSchedules =
         [
-            schedule1Facility3,
-            schedule2Facility3
+            schedule2Facility4,
+            schedule3Facility4
         ];
 
         // Act

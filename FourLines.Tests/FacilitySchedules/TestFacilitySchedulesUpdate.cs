@@ -21,11 +21,11 @@ public class TestFacilitySchedulesUpdate(FacilitySchedulesFixture fixtures)
 {
     private static readonly TestUpdateScheduleDTO _updateFacilityScheduleTest = new()
     {
-        Id = TestDataSource.DefaultFacilitySchedule.Id,
-        FacilityId = TestDataSource.DefaultFacility.Id,
-        DayOfWeek = DayOfWeek.Tuesday,
+        Id = TestDataSource.FacilitySchedule4.Id,
+        FacilityId = TestDataSource.Facility3.Id,
+        DayOfWeek = TestDataSource.FacilitySchedule4.DayOfWeek,
         OpensAt = new TimeOnly(10, 0),
-        ClosesAt = TestDataSource.FacilitySchedule1.ClosesAt,
+        ClosesAt = new TimeOnly(18, 0),
     };
 
     [Fact]

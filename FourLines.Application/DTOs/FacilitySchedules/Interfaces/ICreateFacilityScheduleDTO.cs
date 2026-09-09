@@ -6,6 +6,5 @@
         DayOfWeek DayOfWeek { get; init; }
         Guid FacilityId { get; init; }
         TimeOnly OpensAt { get; init; }
-        Guid OwnerId { get; init; }
     }
 }

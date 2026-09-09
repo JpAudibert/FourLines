@@ -24,9 +24,11 @@ public class FacilitySchedulesFixture : DefaultInitializationFixture, IAsyncLife
         await using var context = CreateContext();
         await DbOperations.CreateRecord<Facility>(TestDataSource.Facility2, context);
         await DbOperations.CreateRecord<Facility>(TestDataSource.Facility3, context);
+        await DbOperations.CreateRecord<Facility>(TestDataSource.Facility4, context);
 
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule1, context);
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule2, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule4, context);
     }
 
 }
