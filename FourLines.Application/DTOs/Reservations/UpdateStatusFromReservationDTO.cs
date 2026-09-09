@@ -1,6 +1,8 @@
-﻿namespace FourLines.Application.DTOs.Reservations;
+﻿using FourLines.Application.DTOs.Reservations.Interfaces;
 
-public record UpdateStatusFromReservationDTO
+namespace FourLines.Application.DTOs.Reservations;
+
+public record UpdateStatusFromReservationDTO : IUpdateStatusFromReservationDTO
 {
     public Guid Id { get; init; } = default!;
     public Guid UserId { get; init; } = default!;
