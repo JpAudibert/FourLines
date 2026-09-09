@@ -12,22 +12,9 @@ public static class DependencyInjection
         services.AddDbContext<FourLinesContext>(
             (serviceProvider, options) =>
             {
-                // Allow tests to opt-in to an in-memory provider using configuration
-                if (configuration.GetValue<bool>("UseInMemory", false))
-                {
-                    options
-                        .UseSqlite(serviceProvider.GetService<SqliteConnection>()!)
-                        .UseSnakeCaseNamingConvention()
-                        .EnableSensitiveDataLogging()
-                        .EnableDetailedErrors()
-                        .LogTo(Console.WriteLine, LogLevel.Information);
-                }
-                else
-                {
-                    options
-                        .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
-                        .UseSnakeCaseNamingConvention();
-                }
+                options
+                    .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+                    .UseSnakeCaseNamingConvention();
             }
         );
 
