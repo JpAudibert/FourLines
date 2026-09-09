@@ -6,18 +6,15 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-public class TestFacilitiesDelete(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(FacilitySchedulesCollection.Name)]
+public class TestFacilitiesDelete(FacilitySchedulesFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-        }
+        await using var context = fixtures.CreateContext();
+        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.Facility3, context);
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -25,8 +22,8 @@ public class TestFacilitiesDelete(InMemoryFixtures fixtures) : IClassFixture<InM
         // Act
         Result<bool> result = await facilityHandler.Delete(new DeleteFacilityDTO()
         {
-            OwnerId = InMemoryDataSource.UserOwner.Id,
-            FacilityId = InMemoryDataSource.Facility1.Id
+            OwnerId = testFacility.OwnerId,
+            FacilityId = testFacility.Id
         });
 
         // Assert

@@ -6,7 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(FacilitySchedulesCollection.Name)]
+public class TestFacilitiesRead(FacilitySchedulesFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllFacilities()
@@ -14,10 +15,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         // Arrange
         await using (var context = fixtures.CreateContext())
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2, context);
+            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
+            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
+            await DbOperations.CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
+            await DbOperations.CreateRecord<Facility>(TestDataSource.Facility2, context);
         }
 
         IFacilityHandler facilityHandler =
@@ -37,7 +38,7 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         // Arrange
         await using (var context = fixtures.CreateContext())
         {
-            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
+            await DbOperations.RemoveAllRecords<Facility>(context);
         }
 
         IFacilityHandler facilityHandler =
@@ -57,10 +58,10 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         // Arrange
         await using (var context = fixtures.CreateContext())
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2, context);
+            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
+            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
+            await DbOperations.CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
+            await DbOperations.CreateRecord<Facility>(TestDataSource.Facility2, context);
         }
 
         IFacilityHandler facilityHandler =
@@ -68,7 +69,7 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
-            InMemoryDataSource.UserOwner.Id
+            TestDataSource.DefaultFacility.OwnerId
         );
 
         // Assert
@@ -99,9 +100,9 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         // Arrange
         await using (var context = fixtures.CreateContext())
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
+            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
+            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
+            await DbOperations.CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
         }
 
         IFacilityHandler facilityHandler =
@@ -109,22 +110,22 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.UserOwner.Id,
-            InMemoryDataSource.Facility1.Id
+            TestDataSource.UserOwner.Id,
+            TestDataSource.DefaultFacility.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(InMemoryDataSource.Facility1.Name, result.Value.Name);
-        Assert.Equal(InMemoryDataSource.Facility1.Address, result.Value.Address);
-        Assert.Equal(InMemoryDataSource.Facility1.City, result.Value.City);
-        Assert.Equal(InMemoryDataSource.Facility1.State, result.Value.State);
-        Assert.Equal(InMemoryDataSource.Facility1.ZipCode, result.Value.ZipCode);
+        Assert.Equal(TestDataSource.DefaultFacility.Name, result.Value.Name);
+        Assert.Equal(TestDataSource.DefaultFacility.Address, result.Value.Address);
+        Assert.Equal(TestDataSource.DefaultFacility.City, result.Value.City);
+        Assert.Equal(TestDataSource.DefaultFacility.State, result.Value.State);
+        Assert.Equal(TestDataSource.DefaultFacility.ZipCode, result.Value.ZipCode);
         Assert.Equal(
-            InMemoryDataSource.Facility1.RegistrationNumber,
+            TestDataSource.DefaultFacility.RegistrationNumber,
             result.Value.RegistrationNumber
         );
-        Assert.Equal(InMemoryDataSource.Facility1.OwnerId, result.Value.OwnerId);
+        Assert.Equal(TestDataSource.DefaultFacility.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
@@ -151,8 +152,8 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
         // Arrange
         await using (var context = fixtures.CreateContext())
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
+            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
+            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
         }
 
         IFacilityHandler facilityHandler =
@@ -160,7 +161,7 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.UserOwner.Id,
+            TestDataSource.DefaultFacility.OwnerId,
             Guid.NewGuid()
         );
 

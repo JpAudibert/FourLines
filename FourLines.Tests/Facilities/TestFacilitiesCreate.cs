@@ -1,4 +1,5 @@
 using FourLines.Application.DTOs.Facilities;
+using FourLines.Application.DTOs.Facilities.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -7,9 +8,21 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+public record TestCreateFacilityDTO : ICreateFacilityDTO
 {
-    private static readonly CreateFacilityDTO _createFacilityTest = new()
+    public Guid OwnerId { get; init; } = default!;
+    public string Name { get; init; } = default!;
+    public string Address { get; init; } = default!;
+    public string City { get; init; } = default!;
+    public string State { get; init; } = default!;
+    public string ZipCode { get; init; } = default!;
+    public string RegistrationNumber { get; init; } = default!;
+}
+
+[Collection(FacilitySchedulesCollection.Name)]
+public class TestFacilitiesCreate(FacilitySchedulesFixture fixtures)
+{
+    private static readonly TestCreateFacilityDTO _createFacilityTest = new()
     {
         Name = "Test Facility",
         Address = "123 Test St",
@@ -17,21 +30,14 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
         State = "TS",
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
-        OwnerId = InMemoryDataSource.UserOwner.Id,
+        OwnerId = TestDataSource.UserOwner.Id,
     };
 
     [Fact]
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-        }
-
-        IFacilityHandler facilityHandler =
-            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
@@ -52,17 +58,11 @@ public class TestFacilitiesCreate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_CreateFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-        }
-
-        IFacilityHandler facilityHandler =
-            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        TestCreateFacilityDTO facilityWithNoOwner = _createFacilityTest with { OwnerId = Guid.NewGuid() };
 
         // Act
-        Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
+        Result<Facility> result = await facilityHandler.Create(facilityWithNoOwner);
 
         // Assert
         Assert.Null(result.Value);
