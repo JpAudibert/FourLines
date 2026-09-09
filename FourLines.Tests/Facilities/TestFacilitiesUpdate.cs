@@ -30,7 +30,7 @@ public class TestFacilitiesUpdate(FacilitySchedulesFixture fixtures)
         City = "Test City",
         State = "TS",
         ZipCode = "12345",
-        RegistrationNumber = "1234567811",
+        RegistrationNumber = "1111111111",
         OwnerId = TestDataSource.UserOwner.Id,
     };
 
