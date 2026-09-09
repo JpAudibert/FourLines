@@ -1,6 +1,8 @@
-﻿namespace FourLines.Application.DTOs.FacilitySchedules;
+﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
 
-public record CreateFacilityScheduleDTO
+namespace FourLines.Application.DTOs.FacilitySchedules;
+
+public record CreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
 {
     public Guid FacilityId { get; init; }
     public Guid OwnerId { get; init; }
