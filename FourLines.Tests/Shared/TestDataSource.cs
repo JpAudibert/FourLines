@@ -17,7 +17,7 @@ public class TestDataSource
 
     public static readonly DateTimeOffset DateTimeNow = DateTimeOffset.UtcNow;
     public static readonly DateTimeOffset SettedDateTime = 
-        new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
+        new(DateTimeOffset.UtcNow.Year + 1, 2, 1, 22, 0, 0, TimeSpan.Zero);
 
     public static readonly Role RoleOwner = new()
     {
@@ -104,6 +104,17 @@ public class TestDataSource
         OwnerId = UserOwner.Id,
     };
 
+    public static readonly Facility Facility4 = new()
+    {
+        Name = "Test Facility 4",
+        Address = "789 Test Blvd",
+        City = "Test City 4",
+        State = "TS",
+        ZipCode = "12346",
+        RegistrationNumber = "0987654389",
+        OwnerId = UserOwner.Id,
+    };
+
     public static readonly Sport DefaultSport = new()
     {
         Name = "Test Sport",
@@ -152,19 +163,58 @@ public class TestDataSource
         IsActive = true,
     };
 
-    public static readonly FacilitySchedule DefaultFacilitySchedule = new()
+    public static readonly FacilitySchedule DefaultFacilityScheduleSunday = new()
     {
-        Id = DefaultFacility.Id,
         FacilityId = DefaultFacility.Id,
-        DayOfWeek = DateTimeOffset.UtcNow.DayOfWeek,
+        DayOfWeek = DayOfWeek.Sunday,
         OpensAt = new TimeOnly(0, 0),
         ClosesAt = new TimeOnly(23, 59),
     };
 
-    public static readonly FacilitySchedule DefaultFacilitySchedulePlusOneDay = new()
+    public static readonly FacilitySchedule DefaultFacilityScheduleMonday = new()
     {
         FacilityId = DefaultFacility.Id,
-        DayOfWeek = DateTimeOffset.UtcNow.AddDays(1).DayOfWeek,
+        DayOfWeek = DayOfWeek.Monday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilityScheduleTuesday = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DayOfWeek.Tuesday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilityScheduleWednesday = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DayOfWeek.Wednesday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilityScheduleThursday = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DayOfWeek.Thursday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilityScheduleFriday = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DayOfWeek.Friday,
+        OpensAt = new TimeOnly(0, 0),
+        ClosesAt = new TimeOnly(23, 59),
+    };
+
+    public static readonly FacilitySchedule DefaultFacilityScheduleSaturday = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        DayOfWeek = DayOfWeek.Saturday,
         OpensAt = new TimeOnly(0, 0),
         ClosesAt = new TimeOnly(23, 59),
     };
@@ -188,7 +238,7 @@ public class TestDataSource
     public static readonly FacilitySchedule FacilitySchedule4 = new()
     {
         FacilityId = Facility3.Id,
-        DayOfWeek = DateTimeOffset.Now.DayOfWeek,
+        DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(0, 0),
         ClosesAt = new TimeOnly(23, 59),
     };
@@ -233,8 +283,8 @@ public class TestDataSource
         CourtId = Court4.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            SettedDateTime.AddHours(12),
-            SettedDateTime.AddHours(13)
+            SettedDateTime.AddHours(13),
+            SettedDateTime.AddHours(14)
         ),
         Status = ReservationStatus.Pending,
     };

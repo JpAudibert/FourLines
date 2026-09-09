@@ -56,7 +56,13 @@ public abstract class DefaultInitializationFixture
 
         await DbOperations.CreateRecord<Court>(TestDataSource.DefaultCourt, context);
 
-        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilitySchedule, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSunday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleMonday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleTuesday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleWednesday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleThursday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleFriday, context);
+        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSaturday, context);
     }
 
     public async Task DeleteDatabaseAsync()
