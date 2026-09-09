@@ -6,53 +6,35 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
 
-public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(ReservationsCollection.Name)]
+public class TestReservationsRead(ReservationsFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllReservationsFromUser()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(InMemoryDataSource.FacilitySchedule1, context);
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation2, context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromUser(InMemoryDataSource.UserPlayer.Id);
+            await reservationHandler.GetAllReservationsFromUser(TestDataSource.UserPlayer.Id);
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(4, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetAllReservationsFromUser()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.RemoveAllDataFromMemory<Reservation>(context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromUser(InMemoryDataSource.UserPlayer.Id);
+            await reservationHandler.GetAllReservationsFromUser(Guid.NewGuid());
 
         // Assert
         Assert.Null(result.Value);
@@ -63,47 +45,28 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_GetAllReservationsFromCourt()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(InMemoryDataSource.FacilitySchedule1, context);
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation2, context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(InMemoryDataSource.Court1.Id);
+            await reservationHandler.GetAllReservationsFromCourt(TestDataSource.DefaultCourt.Id);
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(3, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetAllReservationsFromCourt()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.RemoveAllDataFromMemory<Reservation>(context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(InMemoryDataSource.Court1.Id);
+            await reservationHandler.GetAllReservationsFromCourt(Guid.NewGuid());
 
         // Assert
         Assert.Null(result.Value);
@@ -114,34 +77,20 @@ public class TestReservationsRead(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_GetOneReservationFromUser()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(InMemoryDataSource.FacilitySchedule1, context);
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
-            InMemoryDataSource.UserPlayer.Id,
-            InMemoryDataSource.Reservation1.Id
+            TestDataSource.UserPlayer.Id,
+            TestDataSource.Reservation2.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(InMemoryDataSource.Reservation1.CourtId, result.Value.CourtId);
-        Assert.Equal(InMemoryDataSource.Reservation1.UserId, result.Value.UserId);
-        Assert.Equal(InMemoryDataSource.Reservation1.Period, result.Value.Period);
-        Assert.Equal(InMemoryDataSource.Reservation1.Status, result.Value.Status);
+        Assert.Equal(TestDataSource.DefaultReservation.CourtId, result.Value.CourtId);
+        Assert.Equal(TestDataSource.DefaultReservation.UserId, result.Value.UserId);
+        Assert.Equal(TestDataSource.DefaultReservation.Status, result.Value.Status);
     }
 
     [Fact]

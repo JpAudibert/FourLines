@@ -1,4 +1,5 @@
 using FourLines.Application.DTOs.Reservations;
+using FourLines.Application.DTOs.Reservations.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -7,15 +8,24 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
 
-public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+public record TestCreateReservationDTO : ICreateReservationDTO
 {
-    private readonly CreateReservationDTO _createReservationTest = new()
+    public Guid CourtId { get; init; }
+    public TimeRange Period { get; init; } = default!;
+    public ReservationStatus Status { get; init; }
+    public Guid UserId { get; init; }
+}
+
+[Collection(ReservationsCollection.Name)]
+public class TestReservationsCreate(ReservationsFixture fixtures)
+{
+    private static readonly TestCreateReservationDTO _createReservationTest = new()
     {
-        CourtId = InMemoryDataSource.Court1.Id,
-        UserId = InMemoryDataSource.UserPlayer.Id,
+        CourtId = TestDataSource.DefaultCourt.Id,
+        UserId = TestDataSource.UserPlayer.Id,
         Period = new TimeRange(
-            InMemoryDataSource.DateTime,
-            InMemoryDataSource.DateTime.AddHours(1)
+            TestDataSource.DateTimeNow.AddHours(1),
+            TestDataSource.DateTimeNow.AddHours(2)
         ),
         Status = ReservationStatus.Pending,
     };
@@ -24,23 +34,7 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_CreateReservation()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
-                InMemoryDataSource.FacilitySchedule3,
-                context
-            );
-        }
-
-        IReservationHandler reservationHandler =
-            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+        IReservationHandler reservationHandler = fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
@@ -62,38 +56,24 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_CreateReservation_RejectedValidation()
     {
         // Arrange
-        CreateReservationDTO _createReservationTestInvalidDate = new()
+        TestCreateReservationDTO reservationWithInvalidDate = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
             Period = new TimeRange(DateTime.Now, DateTime.Now.AddHours(-2)),
         };
-        CreateReservationDTO _createReservationTestInvalidPastDate = new()
+        TestCreateReservationDTO reservationWithInvalidPastDate = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
             Period = new TimeRange(DateTime.Now.AddHours(-2), DateTime.Now),
         };
-        CreateReservationDTO _createReservationTestInvalidDayPeriod = new()
+        TestCreateReservationDTO reservationWithInvalidDayPeriod = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
             Period = new TimeRange(DateTime.Now, DateTime.Now.AddDays(1)),
         };
-        CreateReservationDTO _createReservationTestInvalidDuration = new()
+        TestCreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
             Period = new TimeRange(DateTime.Now, DateTime.Now.AddHours(2)),
         };
-        CreateReservationDTO _createReservationTestInvalidStatus = new()
+        TestCreateReservationDTO reservationWithInvalidStatus = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
-            Period = new TimeRange(
-                InMemoryDataSource.DateTime,
-                InMemoryDataSource.DateTime.AddHours(1)
-            ),
             Status = (ReservationStatus)999,
         };
 
@@ -101,21 +81,11 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(
-            _createReservationTestInvalidDate
-        );
-        Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(
-            _createReservationTestInvalidPastDate
-        );
-        Result<ConfirmReservationResponseDTO> resultDayPeriod = await reservationHandler.Create(
-            _createReservationTestInvalidDayPeriod
-        );
-        Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(
-            _createReservationTestInvalidDuration
-        );
-        Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(
-            _createReservationTestInvalidStatus
-        );
+        Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(reservationWithInvalidDate);
+        Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(reservationWithInvalidPastDate);
+        Result<ConfirmReservationResponseDTO> resultDayPeriod = await reservationHandler.Create(reservationWithInvalidDayPeriod);
+        Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(reservationWithInvalidDuration);
+        Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(reservationWithInvalidStatus);
 
         // Assert
         Assert.Null(resultDate.Value);
@@ -140,18 +110,16 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_CreateReservation_NoCourtFound()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
+        TestCreateReservationDTO reservationWithInvalidCourt = _createReservationTest with
         {
-            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
-            await DbOperations.RemoveAllDataFromMemory<FacilitySchedule>(context);
-            await DbOperations.RemoveAllDataFromMemory<Court>(context);
-        }
+            CourtId = Guid.NewGuid(),
+        };
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithInvalidCourt);
 
         // Assert
         Assert.Null(result.Value);
@@ -162,21 +130,16 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_CreateReservation_NoUserFound()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
+        TestCreateReservationDTO reservationWithInvalidUser = _createReservationTest with
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.RemoveDataFromMemory<User>(InMemoryDataSource.UserPlayer.Id, context);
-        }
+            UserId = Guid.NewGuid(),
+        };
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithInvalidUser);
 
         // Assert
         Assert.Null(result.Value);
@@ -187,25 +150,20 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_CreateReservation_NoScheduleFound()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
+        DateTimeOffset testDateTime = new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
+        TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.RemoveAllDataFromMemory<FacilitySchedule>(context);
-        }
+            CourtId = TestDataSource.Court3.Id,
+            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(1)),
+        };
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithSchedule);
 
-        // Assert
+        // AssertDefaultFacilitySchedule
         Assert.Null(result.Value);
         Assert.Equal(ReservationsErrorResults.CreationOutsideFacilitySchedule, result.Error);
     }
@@ -214,38 +172,22 @@ public class TestReservationsCreate(InMemoryFixtures fixtures) : IClassFixture<I
     public async Task Should_Not_CreateReservation_OverlappingReservation()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
-                InMemoryDataSource.FacilitySchedule3,
-                context
-            );
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
-        }
-
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        CreateReservationDTO _createReservationTestOverlapping = new()
+        TestCreateReservationDTO reservationWithOverlapping = _createReservationTest with
         {
-            CourtId = InMemoryDataSource.Court1.Id,
-            UserId = InMemoryDataSource.UserPlayer.Id,
             Period = new TimeRange(
-                InMemoryDataSource.DateTime.AddMinutes(30),
-                InMemoryDataSource.DateTime.AddHours(1).AddMinutes(30)
+                TestDataSource.DateTimeNow.AddMinutes(30),
+                TestDataSource.DateTimeNow.AddHours(1).AddMinutes(30)
             ),
         };
 
+        await reservationHandler.Create(reservationWithOverlapping);
+
         // Act
         Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
-            _createReservationTestOverlapping
+            reservationWithOverlapping
         );
 
         // Assert

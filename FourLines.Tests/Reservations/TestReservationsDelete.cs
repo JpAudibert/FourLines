@@ -6,27 +6,15 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
 
-public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(ReservationsCollection.Name)]
+public class TestReservationsDelete(ReservationsFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteReservation()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RolePlayer, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserPlayer, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<FacilitySchedule>(
-                InMemoryDataSource.FacilitySchedule1,
-                context
-            );
-            await DbOperations.CreateEntityInMemory<Reservation>(InMemoryDataSource.Reservation1, context);
-        }
+        await using var context = fixtures.CreateContext();
+        Reservation testReservation = await DbOperations.CreateRecord<Reservation>(TestDataSource.Reservation2, context);
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
@@ -34,8 +22,8 @@ public class TestReservationsDelete(InMemoryFixtures fixtures) : IClassFixture<I
         // Act
         Result<bool> result = await reservationHandler.Delete(new DeleteReservationDTO
         {
-            UserId = InMemoryDataSource.UserPlayer.Id,
-            ReservationId = InMemoryDataSource.Reservation1.Id
+            UserId = testReservation.UserId,
+            ReservationId = testReservation.Id
         });
 
         // Assert
