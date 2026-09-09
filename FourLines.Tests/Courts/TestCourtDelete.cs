@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Courts;
+using FourLines.Application.DTOs.Courts.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -6,30 +6,38 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Courts;
 
-public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+public record TestDeleteCourtDTO : IDeleteCourtDTO
 {
+    public Guid CourtId { get; init; }
+    public Guid FacilityId { get; init; }
+}
+
+[Collection(CourtCollection.Name)]
+public class TestCourtDelete(CourtFixture fixtures)
+{
+    private static readonly TestDeleteCourtDTO _deleteCourt = new()
+    {
+        CourtId = TestDataSource.Court2.Id,
+        FacilityId = TestDataSource.Court2.FacilityId,
+    };
+
     [Fact]
     public async Task Should_DeleteCourt()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-        }
+        await using var context = fixtures.CreateContext();
+        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.Court2, context);
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
-        // Act
-        Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO
+        TestDeleteCourtDTO deleteCourt = new()
         {
-            OwnerId = InMemoryDataSource.UserOwner.Id,
-            FacilityId = InMemoryDataSource.Facility1.Id,
-            CourtId = InMemoryDataSource.Court1.Id
-        });
+            CourtId = testCourt.Id,
+            FacilityId = testCourt.FacilityId,
+        };
+
+        // Act
+        Result<bool> result = await courtHandler.Delete(deleteCourt);
 
         // Assert
         Assert.True(result.Value);
@@ -41,13 +49,10 @@ public class TestCourtDelete(InMemoryFixtures fixtures) : IClassFixture<InMemory
         // Arrange
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
+        TestDeleteCourtDTO inexistentCourt = _deleteCourt with { CourtId = Guid.NewGuid() };
+
         // Act
-        Result<bool> result = await courtHandler.Delete(new DeleteCourtDTO
-        {
-            OwnerId = Guid.NewGuid(),
-            FacilityId = Guid.NewGuid(),
-            CourtId = Guid.NewGuid()
-        });
+        Result<bool> result = await courtHandler.Delete(inexistentCourt);
 
         // Assert
         Assert.False(result.Value);

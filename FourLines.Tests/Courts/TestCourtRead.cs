@@ -6,96 +6,74 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Courts;
 
-public class TestCourtRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(CourtCollection.Name)]
+public class TestCourtRead(CourtFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllCourts()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court2, context);
-        }
-
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(TestDataSource.DefaultFacility.Id);
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(3, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetAllCourts()
     {
         // Arrange
-        ICourtHandler courtHandler =
-            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        await using var context = fixtures.CreateContext();
+        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.Facility3, context);
+
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(testFacility.Id);
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
+
+        await DbOperations.RemoveRecord<Facility>(testFacility.Id, context);
     }
 
     [Fact]
     public async Task Should_GetFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1, context);
-            await DbOperations.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court1, context);
-            await DbOperations.CreateEntityInMemory<Court>(InMemoryDataSource.Court2, context);
-        }
-
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(
-            InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Court1.FacilityId, InMemoryDataSource.Court1.Id
+            TestDataSource.DefaultCourt.FacilityId, TestDataSource.DefaultCourt.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(result.Value.Id, InMemoryDataSource.Court1.Id);
-        Assert.Equal(result.Value.Name, InMemoryDataSource.Court1.Name);
-        Assert.Equal(result.Value.IsActive, InMemoryDataSource.Court1.IsActive);
-        Assert.Equal(result.Value.FacilityId, InMemoryDataSource.Court1.FacilityId);
-        Assert.Equal(result.Value.SportId, InMemoryDataSource.Court1.SportId);
+        Assert.Equal(TestDataSource.DefaultCourt.Id, result.Value.Id);
+        Assert.Equal(TestDataSource.DefaultCourt.Name, result.Value.Name);
+        Assert.Equal(TestDataSource.DefaultCourt.IsActive, result.Value.IsActive);
+        Assert.Equal(TestDataSource.DefaultCourt.FacilityId, result.Value.FacilityId);
+        Assert.Equal(TestDataSource.DefaultCourt.SportId, result.Value.SportId);
     }
 
     [Fact]
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner, context);
-            await DbOperations.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner, context);
-            await DbOperations.RemoveAllDataFromMemory<Facility>(context);
-        }
-
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetFacility(
-            InMemoryDataSource.Facility1.OwnerId, InMemoryDataSource.Facility1.Id, InMemoryDataSource.Court1.Id
+            Guid.NewGuid(), TestDataSource.DefaultCourt.Id
         );
 
         // Assert
