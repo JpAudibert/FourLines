@@ -40,7 +40,6 @@ public class ReservationsFixture : DefaultInitializationFixture, IAsyncLifetime
         await DbOperations.CreateRecord<Court>(TestDataSource.Court3, context);
         await DbOperations.CreateRecord<Court>(TestDataSource.Court4, context);
 
-        await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilitySchedulePlusOneDay, context);
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule1, context);
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule2, context);
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.FacilitySchedule4, context);

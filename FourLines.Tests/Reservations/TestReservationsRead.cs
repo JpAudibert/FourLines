@@ -54,7 +54,7 @@ public class TestReservationsRead(ReservationsFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(3, result.Value.Count());
+        Assert.Equal(4, result.Value.Count());
     }
 
     [Fact]
@@ -80,17 +80,33 @@ public class TestReservationsRead(ReservationsFixture fixtures)
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
+        // Create a test reservation instead of relying on seeded data
+        var createDto = new TestCreateReservationDTO
+        {
+            CourtId = TestDataSource.DefaultCourt.Id,
+            UserId = TestDataSource.UserPlayer.Id,
+            Period = new TimeRange(
+                TestDataSource.DateTimeNow.AddHours(3),
+                TestDataSource.DateTimeNow.AddHours(4)
+            ),
+            Status = ReservationStatus.Pending
+        };
+
+        var createResult = await reservationHandler.Create(createDto);
+        Assert.NotNull(createResult.Value);
+        var createdReservationId = createResult.Value.Reservation.Id;
+
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
             TestDataSource.UserPlayer.Id,
-            TestDataSource.Reservation2.Id
+            createdReservationId
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(TestDataSource.DefaultReservation.CourtId, result.Value.CourtId);
-        Assert.Equal(TestDataSource.DefaultReservation.UserId, result.Value.UserId);
-        Assert.Equal(TestDataSource.DefaultReservation.Status, result.Value.Status);
+        Assert.Equal(createDto.CourtId, result.Value.CourtId);
+        Assert.Equal(createDto.UserId, result.Value.UserId);
+        Assert.Equal(createDto.Status, result.Value.Status);
     }
 
     [Fact]

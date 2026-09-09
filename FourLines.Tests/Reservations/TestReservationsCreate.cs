@@ -58,19 +58,19 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
         // Arrange
         TestCreateReservationDTO reservationWithInvalidDate = _createReservationTest with
         {
-            Period = new TimeRange(DateTime.Now, DateTime.Now.AddHours(-2)),
+            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(-2)),
         };
         TestCreateReservationDTO reservationWithInvalidPastDate = _createReservationTest with
         {
-            Period = new TimeRange(DateTime.Now.AddHours(-2), DateTime.Now),
+            Period = new TimeRange(TestDataSource.DateTimeNow.AddHours(-2), TestDataSource.DateTimeNow),
         };
         TestCreateReservationDTO reservationWithInvalidDayPeriod = _createReservationTest with
         {
-            Period = new TimeRange(DateTime.Now, DateTime.Now.AddDays(1)),
+            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddDays(1)),
         };
         TestCreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
         {
-            Period = new TimeRange(DateTime.Now, DateTime.Now.AddHours(2)),
+            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(2)),
         };
         TestCreateReservationDTO reservationWithInvalidStatus = _createReservationTest with
         {
