@@ -28,7 +28,8 @@ public class PostgresTestDatabase : IAsyncLifetime
     {
         await using var context = CreateContext();
 
-        await context.Database.MigrateAsync();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
     }
 
     public FourLinesContext CreateContext()
