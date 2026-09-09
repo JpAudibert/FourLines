@@ -1,7 +1,9 @@
-﻿namespace FourLines.Application.Interfaces;
+﻿using FourLines.Application.DTOs.Courts.Interfaces;
 
-public interface ICourtHandler : ICrudHandler<Court, CreateCourtDTO, UpdateCourtDTO, DeleteCourtDTO>
+namespace FourLines.Application.Interfaces;
+
+public interface ICourtHandler : ICrudHandler<Court, ICreateCourtDTO, IUpdateCourtDTO, IDeleteCourtDTO>
 {
-    Task<Result<Court>> GetFacility(Guid ownerId, Guid facilityId, Guid courtId);
-    Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(Guid ownerId, Guid facilityId);
+    Task<Result<Court>> GetFacility(Guid facilityId, Guid courtId);
+    Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(Guid facilityId);
 }

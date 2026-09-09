@@ -1,10 +1,12 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+
+namespace FourLines.Application.Handlers;
 
 public class FacilityHandler(FourLinesContext context) : IFacilityHandler
 {
     private readonly FourLinesContext _context = context;
 
-    public async Task<Result<Facility>> Create(CreateFacilityDTO createDto)
+    public async Task<Result<Facility>> Create(ICreateFacilityDTO createDto)
     {
         User? owner = await _context.Users.FirstOrDefaultAsync(u =>
             u.Id == createDto.OwnerId && u.Role.Name == RoleConstants.FacilityOwner
@@ -30,7 +32,7 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
         return Result<Facility>.Success(facility);
     }
 
-    public async Task<Result<bool>> Delete(DeleteFacilityDTO deleteDto)
+    public async Task<Result<bool>> Delete(IDeleteFacilityDTO deleteDto)
     {
         bool deleted = false;
         int facility = await _context
@@ -115,7 +117,7 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
         return Result<IEnumerable<Facility>>.Success(facilities);
     }
 
-    public async Task<Result<Facility>> Update(UpdateFacilityDTO updateDto)
+    public async Task<Result<Facility>> Update(IUpdateFacilityDTO updateDto)
     {
         if (updateDto.OwnerId == Guid.Empty)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);

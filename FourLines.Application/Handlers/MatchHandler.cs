@@ -1,4 +1,5 @@
 ﻿using FourLines.Application.DTOs.Matches;
+using FourLines.Application.DTOs.Matches.Interfaces;
 
 namespace FourLines.Application.Handlers;
 
@@ -36,7 +37,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         return Result<Match>.Success(updatedMatch);
     }
 
-    public async Task<Result<MatchesUsers>> Ingress(CreateIngressDTO ingress)
+    public async Task<Result<MatchesUsers>> Ingress(ICreateIngressDTO ingress)
     {
         Match? match = await context.Matches.FirstOrDefaultAsync(m => m.Id == ingress.MatchId && m.Code == ingress.Code);
         if (match is null)
@@ -61,7 +62,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         return Result<MatchesUsers>.Success(matchesUsers);
     }
 
-    public async Task<Result<MatchesUsers>> IngressAsGoalKeeper(CreateIngressDTO ingress)
+    public async Task<Result<MatchesUsers>> IngressAsGoalKeeper(ICreateIngressDTO ingress)
     {
         Match? match = await context.Matches
             .Include(s => s.Sport)

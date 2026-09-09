@@ -1,4 +1,6 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Application.DTOs.Reservations.Interfaces;
+
+namespace FourLines.Application.Handlers;
 
 public class ReservationHandler(
     FourLinesContext context, 
@@ -9,7 +11,7 @@ public class ReservationHandler(
 
     private const string DefaultMatchName = "World Cup Match";
 
-    public async Task<Result<ConfirmReservationResponseDTO>> Create(CreateReservationDTO newReservation)
+    public async Task<Result<ConfirmReservationResponseDTO>> Create(ICreateReservationDTO newReservation)
     {
         Result<ConfirmReservationResponseDTO> validationResult = await reservationValidator.ValidateAsync(newReservation);
         if (validationResult.IsFailure)
@@ -83,7 +85,7 @@ public class ReservationHandler(
         });
     }
 
-    public async Task<Result<Reservation>> UpdateReservationStatus(UpdateStatusFromReservationDTO reservation)
+    public async Task<Result<Reservation>> UpdateReservationStatus(IUpdateStatusFromReservationDTO reservation)
     {
         ReservationStatus[] statuses = Enum.GetValues<ReservationStatus>();
         if (!statuses.Contains(reservation.Status))
@@ -105,7 +107,7 @@ public class ReservationHandler(
         return Result<Reservation>.Success(updatedReservation!);
     }
 
-    public async Task<Result<bool>> Delete(DeleteReservationDTO deleteDto)
+    public async Task<Result<bool>> Delete(IDeleteReservationDTO deleteDto)
     {
         int affectedRows = await context.Reservations
             .Where(r => r.Id == deleteDto.ReservationId && r.UserId == deleteDto.UserId)
