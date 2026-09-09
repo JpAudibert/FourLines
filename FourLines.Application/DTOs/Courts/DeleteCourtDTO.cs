@@ -1,8 +1,9 @@
-﻿namespace FourLines.Application.DTOs.Courts;
+﻿using FourLines.Application.DTOs.Courts.Interfaces;
 
-public record DeleteCourtDTO
+namespace FourLines.Application.DTOs.Courts;
+
+public record DeleteCourtDTO : IDeleteCourtDTO
 {
-    public Guid OwnerId { get; init; }
     public Guid FacilityId { get; init; }
     public Guid CourtId { get; init; }
 }
