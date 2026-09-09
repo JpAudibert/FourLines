@@ -9,11 +9,15 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
+        string connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Postgres") ??
+            configuration.GetConnectionString("DefaultConnection") ??
+            throw new InvalidOperationException("Connection string not found.");
+
         services.AddDbContext<FourLinesContext>(
             (serviceProvider, options) =>
             {
                 options
-                    .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+                    .UseNpgsql(connectionString)
                     .UseSnakeCaseNamingConvention();
             }
         );
