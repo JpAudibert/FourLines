@@ -12,9 +12,9 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Users;
 
-public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : IClassFixture<DefaultInitializationFixture>
+[Collection(FourLinesCollection.Name)]
+public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 {
-    /*
     [Fact]
     public async Task Should_RegisterAndAuthenticateUser()
     {
@@ -91,12 +91,6 @@ public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : 
     public async Task Should_Not_HaveDuplicateUser()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
-            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
-        }
-
         UserRegisterDTO createUserTest = new()
         {
             Name = "John Doe",
@@ -122,11 +116,8 @@ public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : 
     public async Task Should_Not_HaveUserRole()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
-            await DbOperations.RemoveAllRecords<User>(context);
-        }
+        await using var context = fixtures.CreateContext();
+        await DbOperations.RemoveAllRecords<User>(context);
 
         UserRegisterDTO _createUserTest = new()
         {
@@ -147,16 +138,16 @@ public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(UsersErrorResults.InvalidRole, result.Error);
+
+        await FourLinesFixture.SeedDefaultUsers(context);
     }
 
     [Fact]
     public async Task Should_Not_HaveUserForAuthentication()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.RemoveAllRecords<User>(context);
-        }
+        using var context = fixtures.CreateContext();
+        await DbOperations.RemoveAllRecords<User>(context);
 
         AuthenticationDTO authTest = new() { Email = "test@test.com", Password = "Test123!" };
 
@@ -169,18 +160,14 @@ public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(AuthenticationErrorResults.UnknownUser, result.Error);
+
+        await FourLinesFixture.SeedDefaultUsers(context);
     }
 
     [Fact]
     public async Task Should_Not_HaveEqualPasswords()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
-            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
-        }
-
         User userOwnerTest = new()
         {
             RoleId = Guid.NewGuid(),
@@ -202,11 +189,10 @@ public class UsersRegisterAndAuthTests(DefaultInitializationFixture fixtures) : 
             fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
 
         // Act
-        Result<String> result = await authHandler.Authenticate(authTest);
+        Result<string> result = await authHandler.Authenticate(authTest);
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(AuthenticationErrorResults.InvalidPassword, result.Error);
     }
-    */
 }
