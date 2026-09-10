@@ -19,8 +19,8 @@ public record TestUpdateFacilityDTO : IUpdateFacilityDTO
     public string RegistrationNumber { get; init; } = default!;
 }
 
-[Collection(FacilityCollection.Name)]
-public class TestFacilitiesUpdate(FacilityFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
     {
@@ -38,7 +38,22 @@ public class TestFacilitiesUpdate(FacilityFixture fixtures)
     public async Task Should_UpdateFacility()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
+        Facility toBeUpdatedFacility = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedFacility, context);
+
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+
+        TestUpdateFacilityDTO updateFacilityDTO = new()
+        {
+            Id = toBeUpdatedFacility.Id,
+            Name = "Test Updated Facility",
+            Address = "123 Test St",
+            City = "Test City",
+            State = "TS",
+            ZipCode = "12345",
+            RegistrationNumber = "1111111111",
+            OwnerId = TestDataSource.UserOwner.Id,
+        };
 
         // Act
         Result<Facility> result = await facilityHandler.Update(_updateFacilityTest);
@@ -53,6 +68,8 @@ public class TestFacilitiesUpdate(FacilityFixture fixtures)
         Assert.Equal(_updateFacilityTest.ZipCode, result.Value.ZipCode);
         Assert.Equal(_updateFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(_updateFacilityTest.OwnerId, result.Value.OwnerId);
+
+        await DbOperations.RemoveRecord<Facility>(toBeUpdatedFacility.Id, context);
     }
 
     [Fact]

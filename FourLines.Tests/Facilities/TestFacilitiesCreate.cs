@@ -1,4 +1,3 @@
-using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.DTOs.Facilities.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
@@ -19,8 +18,8 @@ public record TestCreateFacilityDTO : ICreateFacilityDTO
     public string RegistrationNumber { get; init; } = default!;
 }
 
-[Collection(FacilityCollection.Name)]
-public class TestFacilitiesCreate(FacilityFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitiesCreate(FourLinesFixture fixtures)
 {
     private static readonly TestCreateFacilityDTO _createFacilityTest = new()
     {
@@ -37,6 +36,7 @@ public class TestFacilitiesCreate(FacilityFixture fixtures)
     public async Task Should_CreateFacility()
     {
         // Arrange
+        await using var context = fixtures.CreateContext();
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
@@ -52,6 +52,8 @@ public class TestFacilitiesCreate(FacilityFixture fixtures)
         Assert.Equal(_createFacilityTest.ZipCode, result.Value.ZipCode);
         Assert.Equal(_createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(_createFacilityTest.OwnerId, result.Value.OwnerId);
+
+        await DbOperations.RemoveRecord<Facility>(result.Value.Id, context);
     }
 
     [Fact]

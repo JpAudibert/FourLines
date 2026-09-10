@@ -6,15 +6,15 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
 
-[Collection(FacilityCollection.Name)]
-public class TestFacilitiesDelete(FacilityFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitiesDelete(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteFacility()
     {
         // Arrange
         await using var context = fixtures.CreateContext();
-        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.Facility3, context);
+        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.ToBeDeletedFacility, context);
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
