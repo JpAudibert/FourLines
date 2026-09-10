@@ -12,8 +12,8 @@ public record TestDeleteCourtDTO : IDeleteCourtDTO
     public Guid FacilityId { get; init; }
 }
 
-[Collection(CourtCollection.Name)]
-public class TestCourtDelete(CourtFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestCourtDelete(FourLinesFixture fixtures)
 {
     private static readonly TestDeleteCourtDTO _deleteCourt = new()
     {
@@ -26,7 +26,7 @@ public class TestCourtDelete(CourtFixture fixtures)
     {
         // Arrange
         await using var context = fixtures.CreateContext();
-        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.Court2, context);
+        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.ToBeDeletedCourt, context);
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 

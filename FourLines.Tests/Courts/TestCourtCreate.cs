@@ -4,7 +4,6 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using System.Xml.Linq;
 
 namespace FourLines.Tests.Courts;
 
@@ -17,8 +16,8 @@ public record TestCreateCourtDTO : ICreateCourtDTO
     public Guid SportId { get; init; }
 }
 
-[Collection(CourtCollection.Name)]
-public class TestCourtCreate(CourtFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestCourtCreate(FourLinesFixture fixtures)
 {
     private static readonly TestCreateCourtDTO _createCourtTest = new()
     {
@@ -33,6 +32,8 @@ public class TestCourtCreate(CourtFixture fixtures)
     public async Task Should_CreateCourt()
     {
         // Arrange
+        await using var context = fixtures.CreateContext();
+
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
@@ -45,6 +46,8 @@ public class TestCourtCreate(CourtFixture fixtures)
         Assert.Equal(_createCourtTest.FacilityId, result.Value.FacilityId);
         Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
         Assert.Equal(_createCourtTest.IsActive, result.Value.IsActive);
+
+        await DbOperations.RemoveRecord<Court>(result.Value.Id, context);
     }
 
     [Fact]

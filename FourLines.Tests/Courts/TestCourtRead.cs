@@ -6,8 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Courts;
 
-[Collection(CourtCollection.Name)]
-public class TestCourtRead(CourtFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestCourtRead(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllCourts()

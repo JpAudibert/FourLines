@@ -16,8 +16,8 @@ public record TestUpdateCourtDTO : IUpdateCourtDTO
     public Guid SportId { get; init; }
 }
 
-[Collection(CourtCollection.Name)]
-public class TestCourtUpdate(CourtFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestCourtUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateCourtDTO _updateCourt = new()
     {
@@ -32,18 +32,32 @@ public class TestCourtUpdate(CourtFixture fixtures)
     public async Task Should_UpdateCourt()
     {
         // Arrange
+        await using var context = fixtures.CreateContext();
+        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.ToBeUpdatedCourt, context);
+
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
+        TestUpdateCourtDTO updateCourtDTO = new()
+        {
+            Id = testCourt.Id,
+            FacilityId = testCourt.FacilityId,
+            SportId = testCourt.SportId,
+            Name = "Updated Court Name",
+            IsActive = true,
+        };
+
         // Act
-        Result<Court> result = await courtHandler.Update(_updateCourt);
+        Result<Court> result = await courtHandler.Update(updateCourtDTO);
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<Court>(result.Value);
-        Assert.Equal(_updateCourt.Name, result.Value.Name);
-        Assert.Equal(_updateCourt.FacilityId, result.Value.FacilityId);
-        Assert.Equal(_updateCourt.SportId, result.Value.SportId);
-        Assert.Equal(_updateCourt.IsActive, result.Value.IsActive);
+        Assert.Equal(updateCourtDTO.Name, result.Value.Name);
+        Assert.Equal(updateCourtDTO.FacilityId, result.Value.FacilityId);
+        Assert.Equal(updateCourtDTO.SportId, result.Value.SportId);
+        Assert.Equal(updateCourtDTO.IsActive, result.Value.IsActive);
+
+        await DbOperations.RemoveRecord<Court>(testCourt.Id, context);
     }
 
     [Fact]
