@@ -1,21 +1,18 @@
 using FourLines.Application.DependencyInjection;
-using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.Interfaces;
 using FourLines.Domain.DependencyInjection;
 using FourLines.Domain.Models;
-using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
 
 namespace FourLines.Tests.Shared;
 
-public abstract class DefaultInitializationFixture
+public class FourLinesFixture: IAsyncLifetime
 {
     public IConfiguration Configuration { get; set; }
     public HostApplicationBuilder Builder { get; set; }
     public IServiceProvider ServiceProvider { get; set; }
 
-    public DefaultInitializationFixture()
+    public FourLinesFixture()
     {
         Configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -37,12 +34,12 @@ public abstract class DefaultInitializationFixture
         ServiceProvider = host.Services;
     }
 
-    public async Task DefaultSeedAsync()
+    public async Task InitializeAsync()
     {
         await using var context = CreateContext();
 
         await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
+        await context.Database.MigrateAsync();
 
         await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
         await DbOperations.CreateRecord<Role>(TestDataSource.RolePlayer, context);
@@ -65,7 +62,7 @@ public abstract class DefaultInitializationFixture
         await DbOperations.CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSaturday, context);
     }
 
-    public async Task DeleteDatabaseAsync()
+    public async Task DisposeAsync()
     {
         await using var context = CreateContext();
         await context.Database.EnsureDeletedAsync();
@@ -86,6 +83,4 @@ public abstract class DefaultInitializationFixture
 
         return new FourLinesContext(options);
     }
-
-    public abstract Task SeedLocalTestingDataAsync();
 }
