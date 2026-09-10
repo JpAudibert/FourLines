@@ -49,7 +49,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
 
         StartStopwatch();
 
-        Result<Court> result = await _courtHandler.GetFacility(facilityId, courtId);
+        Result<Court> result = await _courtHandler.GetCourtFromFacility(facilityId, courtId);
 
         return HandleResult(result);
     }
