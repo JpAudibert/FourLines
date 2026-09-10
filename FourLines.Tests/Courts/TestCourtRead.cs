@@ -29,18 +29,18 @@ public class TestCourtRead(FourLinesFixture fixtures)
     {
         // Arrange
         await using var context = fixtures.CreateContext();
-        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.Facility3, context);
+        Facility dummyFacility = await DbOperations.CreateRecord(TestDataSource.DummyFacility, context);
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(testFacility.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(dummyFacility.Id);
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
 
-        await DbOperations.RemoveRecord<Facility>(testFacility.Id, context);
+        await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, context);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<Court> result = await courtHandler.GetFacility(
+        Result<Court> result = await courtHandler.GetCourtFromFacility(
             TestDataSource.DefaultCourt.FacilityId, TestDataSource.DefaultCourt.Id
         );
 
@@ -72,7 +72,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<Court> result = await courtHandler.GetFacility(
+        Result<Court> result = await courtHandler.GetCourtFromFacility(
             Guid.NewGuid(), TestDataSource.DefaultCourt.Id
         );
 
