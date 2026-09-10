@@ -43,16 +43,9 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
-        TestUpdateFacilityDTO updateFacilityDTO = new()
+        TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with 
         {
             Id = toBeUpdatedFacility.Id,
-            Name = "Test Updated Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1111111111",
-            OwnerId = TestDataSource.UserOwner.Id,
         };
 
         // Act

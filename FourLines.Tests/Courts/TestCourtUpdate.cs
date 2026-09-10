@@ -22,8 +22,8 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
     private static readonly TestUpdateCourtDTO _updateCourt = new()
     {
         Id = TestDataSource.Court3.Id,
-        FacilityId = TestDataSource.Facility2.Id,
-        SportId = TestDataSource.DefaultSport.Id,
+        FacilityId = TestDataSource.ToBeUpdatedCourt.FacilityId,
+        SportId = TestDataSource.ToBeUpdatedCourt.SportId,
         Name = "Test Updated Court",
         IsActive = true,
     };
@@ -37,13 +37,10 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
-        TestUpdateCourtDTO updateCourtDTO = new()
+        TestUpdateCourtDTO updateCourtDTO = _updateCourt with
         {
             Id = testCourt.Id,
-            FacilityId = testCourt.FacilityId,
-            SportId = testCourt.SportId,
             Name = "Updated Court Name",
-            IsActive = true,
         };
 
         // Act
