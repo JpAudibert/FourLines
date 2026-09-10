@@ -14,12 +14,12 @@ public record TestUpdateStatusFromReservationDTO : IUpdateStatusFromReservationD
     public Guid UserId { get; init; }
 }
 
-[Collection(ReservationsCollection.Name)]
-public class TestReservationsUpdate(ReservationsFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestReservationsUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateStatusFromReservationDTO _updateReservationTest = new()
     {
-        Id = TestDataSource.DefaultReservation.Id,
+        Id = TestDataSource.ToBeUpdatedReservation.Id,
         UserId = TestDataSource.UserPlayer.Id,
         Status = ReservationStatus.Confirmed,
     };
@@ -28,8 +28,17 @@ public class TestReservationsUpdate(ReservationsFixture fixtures)
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
+        Reservation toBeUpdated = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedReservation, context);
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+
+        TestUpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
+        {
+            Id = toBeUpdated.Id,
+            UserId = toBeUpdated.UserId,
+        };
 
         // Act
         Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
@@ -41,6 +50,8 @@ public class TestReservationsUpdate(ReservationsFixture fixtures)
         Assert.IsType<Reservation>(result.Value);
         Assert.Equal(_updateReservationTest.Status, result.Value.Status);
         Assert.Equal(_updateReservationTest.UserId, result.Value.UserId);
+
+        await DbOperations.RemoveRecord<Reservation>(result.Value.Id, context);
     }
 
     [Fact]

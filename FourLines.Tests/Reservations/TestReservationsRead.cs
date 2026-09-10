@@ -6,8 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
 
-[Collection(ReservationsCollection.Name)]
-public class TestReservationsRead(ReservationsFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestReservationsRead(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_GetAllReservationsFromUser()
@@ -84,7 +84,7 @@ public class TestReservationsRead(ReservationsFixture fixtures)
         var createDto = new TestCreateReservationDTO
         {
             CourtId = TestDataSource.DefaultCourt.Id,
-            UserId = TestDataSource.UserPlayer.Id,
+            UserId = TestDataSource.UserPlayer2.Id,
             Period = new TimeRange(
                 TestDataSource.DateTimeNow.AddHours(3),
                 TestDataSource.DateTimeNow.AddHours(4)
@@ -98,7 +98,7 @@ public class TestReservationsRead(ReservationsFixture fixtures)
 
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
-            TestDataSource.UserPlayer.Id,
+            TestDataSource.UserPlayer2.Id,
             createdReservationId
         );
 

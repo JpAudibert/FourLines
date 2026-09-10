@@ -6,15 +6,15 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
 
-[Collection(ReservationsCollection.Name)]
-public class TestReservationsDelete(ReservationsFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestReservationsDelete(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteReservation()
     {
         // Arrange
         await using var context = fixtures.CreateContext();
-        Reservation testReservation = await DbOperations.CreateRecord<Reservation>(TestDataSource.Reservation2, context);
+        Reservation testReservation = await DbOperations.CreateRecord<Reservation>(TestDataSource.ToBeDeletedReservation, context);
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();

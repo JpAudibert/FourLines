@@ -16,8 +16,8 @@ public record TestCreateReservationDTO : ICreateReservationDTO
     public Guid UserId { get; init; }
 }
 
-[Collection(ReservationsCollection.Name)]
-public class TestReservationsCreate(ReservationsFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestReservationsCreate(FourLinesFixture fixtures)
 {
     private static readonly TestCreateReservationDTO _createReservationTest = new()
     {
@@ -34,6 +34,8 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
     public async Task Should_CreateReservation()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
+
         IReservationHandler reservationHandler = fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
@@ -50,6 +52,8 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
 
         Assert.NotNull(result.Value.Match);
         Assert.Equal(6, result.Value.Match.Code.Length);
+
+        await DbOperations.RemoveRecord<Reservation>(result.Value.Reservation.Id, context);
     }
 
     [Fact]
