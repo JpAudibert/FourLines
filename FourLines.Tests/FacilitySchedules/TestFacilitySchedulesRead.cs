@@ -6,8 +6,8 @@ using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitySchedulesRead(FacilitySchedulesFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_GetFacilitiesSchedules()
@@ -18,12 +18,12 @@ public class TestFacilitySchedulesRead(FacilitySchedulesFixture fixtures)
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
-            TestDataSource.FacilitySchedule1.FacilityId
+            TestDataSource.DefaultFacility.Id
         );
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(7, result.Value.Count());
     }
 
     [Fact]

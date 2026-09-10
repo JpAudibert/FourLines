@@ -16,14 +16,14 @@ public record TestUpdateScheduleDTO : IUpdateFacilityScheduleDTO
     public TimeOnly OpensAt { get; init; }
 }
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitySchedulesUpdate(FacilitySchedulesFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateScheduleDTO _updateFacilityScheduleTest = new()
     {
-        Id = TestDataSource.FacilitySchedule4.Id,
-        FacilityId = TestDataSource.Facility3.Id,
-        DayOfWeek = TestDataSource.FacilitySchedule4.DayOfWeek,
+        Id = TestDataSource.ToBeUpdatedFacilitySchedule.Id,
+        FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
+        DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(10, 0),
         ClosesAt = new TimeOnly(18, 0),
     };
@@ -32,12 +32,17 @@ public class TestFacilitySchedulesUpdate(FacilitySchedulesFixture fixtures)
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
+        FacilitySchedule scheduleToBeUpdated = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedFacilitySchedule, context);
+
+        TestUpdateScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with { Id = scheduleToBeUpdated.Id };
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
-            _updateFacilityScheduleTest
+            updateScheduleDTO
         );
 
         // Assert
@@ -47,6 +52,8 @@ public class TestFacilitySchedulesUpdate(FacilitySchedulesFixture fixtures)
         Assert.Equal(_updateFacilityScheduleTest.DayOfWeek, result.Value.DayOfWeek);
         Assert.Equal(_updateFacilityScheduleTest.OpensAt, result.Value.OpensAt);
         Assert.Equal(_updateFacilityScheduleTest.ClosesAt, result.Value.ClosesAt);
+
+        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, context);
     }
 
     [Fact]

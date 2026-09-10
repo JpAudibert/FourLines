@@ -15,12 +15,12 @@ public record TestCreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
     public TimeOnly OpensAt { get; init; }
 }
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
 {
     private readonly static TestCreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
-        FacilityId = TestDataSource.Facility4.Id,
+        FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
         DayOfWeek = DayOfWeek.Monday,
         OpensAt = new TimeOnly(9, 0),
         ClosesAt = new TimeOnly(17, 0),
@@ -30,6 +30,7 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
     public async Task Should_CreateFacilitySchedule()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
         IFacilityScheduleHandler facilityScheduleHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
@@ -44,6 +45,8 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
         Assert.Equal(_createFacilityScheduleTest1.DayOfWeek, result.Value.DayOfWeek);
         Assert.Equal(_createFacilityScheduleTest1.OpensAt, result.Value.OpensAt);
         Assert.Equal(_createFacilityScheduleTest1.ClosesAt, result.Value.ClosesAt);
+
+        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, context);
     }
 
     [Fact]
@@ -69,24 +72,25 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
     public async Task Should_CreateMultipleFacilitySchedule()
     {
         // Arrange
+        using var context = fixtures.CreateContext();
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        TestCreateFacilityScheduleDTO schedule2Facility4 = _createFacilityScheduleTest1 with
+        TestCreateFacilityScheduleDTO schedule2 = _createFacilityScheduleTest1 with
         {
-            FacilityId = TestDataSource.Facility4.Id,
+            FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
             DayOfWeek = DayOfWeek.Tuesday
         };
-        TestCreateFacilityScheduleDTO schedule3Facility4 = _createFacilityScheduleTest1 with
+        TestCreateFacilityScheduleDTO schedule3 = _createFacilityScheduleTest1 with
         {
-            FacilityId = TestDataSource.Facility4.Id,
+            FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
             DayOfWeek = DayOfWeek.Wednesday
         };
 
         List<ICreateFacilityScheduleDTO> newSchedules =
         [
-            schedule2Facility4,
-            schedule3Facility4
+            schedule2,
+            schedule3
         ];
 
         // Act
@@ -108,6 +112,9 @@ public class TestFacilitySchedulesCreate(FacilitySchedulesFixture fixtures)
         Assert.Equal(newSchedules[1].DayOfWeek, result.Value.ElementAt(1).DayOfWeek);
         Assert.Equal(newSchedules[1].OpensAt, result.Value.ElementAt(1).OpensAt);
         Assert.Equal(newSchedules[1].ClosesAt, result.Value.ElementAt(1).ClosesAt);
+
+        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(0).Id, context);
+        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(1).Id, context);
     }
 
     [Fact]

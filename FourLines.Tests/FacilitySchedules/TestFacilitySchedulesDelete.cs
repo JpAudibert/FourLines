@@ -2,21 +2,20 @@ using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
-using FourLines.Tests.Facilities;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-[Collection(FacilitySchedulesCollection.Name)]
-public class TestFacilitySchedulesDelete(FacilitySchedulesFixture fixtures)
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
 {
     [Fact]
     public async Task Should_DeleteFacilitySchedule()
     {
         // Arrange
         await using var context = fixtures.CreateContext();
-        FacilitySchedule testSchedule = await DbOperations.CreateRecord<FacilitySchedule>(
-            TestDataSource.FacilitySchedule2,
+        FacilitySchedule toBeDeleted = await DbOperations.CreateRecord(
+            TestDataSource.ToBeDeletedFacilitySchedule,
             context
         );
 
@@ -26,8 +25,8 @@ public class TestFacilitySchedulesDelete(FacilitySchedulesFixture fixtures)
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
-            FacilityId = testSchedule.FacilityId,
-            ScheduleId = testSchedule.Id
+            FacilityId = toBeDeleted.FacilityId,
+            ScheduleId = toBeDeleted.Id
         });
 
         // Assert
