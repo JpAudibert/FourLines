@@ -83,7 +83,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
         return Result<bool>.Success(deleted);
     }
 
-    public async Task<Result<Court>> GetFacility(Guid facilityId, Guid courtId)
+    public async Task<Result<Court>> GetCourtFromFacility(Guid facilityId, Guid courtId)
     {
         Court? court = await _context.Courts.FirstOrDefaultAsync(c =>
             c.Id == courtId && c.Facility.Id == facilityId
