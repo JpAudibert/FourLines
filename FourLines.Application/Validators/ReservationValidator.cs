@@ -17,11 +17,6 @@ public class ReservationValidator() : IReservationValidator
                 ReservationsErrorResults.CreationStartAndEndInThePast
             );
 
-        if (!reservation.Period.StartAndEndAreInTheSameDay())
-            return Result<ConfirmReservationResponseDTO>.Failure(
-                ReservationsErrorResults.CreationStartAndEndNotInTheSameDay
-            );
-
         if (reservation.Period.Duration != TimeSpan.FromMinutes(60))
             return Result<ConfirmReservationResponseDTO>.Failure(
                 ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration

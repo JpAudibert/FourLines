@@ -64,10 +64,6 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
         {
             Period = new TimeRange(TestDataSource.DateTimeNow.AddHours(-2), TestDataSource.DateTimeNow),
         };
-        TestCreateReservationDTO reservationWithInvalidDayPeriod = _createReservationTest with
-        {
-            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddDays(1)),
-        };
         TestCreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
         {
             Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(2)),
@@ -83,7 +79,6 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
         // Act
         Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(reservationWithInvalidDate);
         Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(reservationWithInvalidPastDate);
-        Result<ConfirmReservationResponseDTO> resultDayPeriod = await reservationHandler.Create(reservationWithInvalidDayPeriod);
         Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(reservationWithInvalidDuration);
         Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(reservationWithInvalidStatus);
 
@@ -92,11 +87,6 @@ public class TestReservationsCreate(ReservationsFixture fixtures)
         Assert.Equal(ReservationsErrorResults.CreationInvalidDates, resultDate.Error);
         Assert.Null(resultPastDate.Value);
         Assert.Equal(ReservationsErrorResults.CreationStartAndEndInThePast, resultPastDate.Error);
-        Assert.Null(resultDayPeriod.Value);
-        Assert.Equal(
-            ReservationsErrorResults.CreationStartAndEndNotInTheSameDay,
-            resultDayPeriod.Error
-        );
         Assert.Null(resultDuration.Value);
         Assert.Equal(
             ReservationsErrorResults.CreationDurationTimeDifferentThanConfiguration,

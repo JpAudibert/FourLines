@@ -10,7 +10,6 @@ public static class ReservationsErrorResults
     public static readonly Error CreationInvalidDates = new("ReservationsCreation.InvalidDates", "The reservation period is invalid.");
     public static readonly Error CreationInvalidDuration = new("ReservationsCreation.InvalidDuration ", "The reservation duration is invalid or less than or equal to 0.");
     public static readonly Error CreationStartAndEndInThePast = new("ReservationsCreation.StartAndEndInThePast", "The reservation period is in the past.");
-    public static readonly Error CreationStartAndEndNotInTheSameDay = new("ReservationsCreation.StartAndEndNotInTheSameDay", "The reservation period must start and end on the same day.");
     public static readonly Error CreationDurationTimeDifferentThanConfiguration = new("ReservationsCreation.DurationTimeDifferentThanConfiguration", "The reservation duration must be equal to the configured duration.");
     public static readonly Error CreationInvalidStatus = new("ReservationsCreation.InvalidStatus", "The reservation status is invalid.");
 
