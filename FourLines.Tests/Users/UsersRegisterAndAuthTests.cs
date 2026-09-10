@@ -46,16 +46,6 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             await context.SaveChangesAsync();
         }
 
-        Role? testRole = await context.Roles.FirstOrDefaultAsync(r =>
-            r.Name == RoleConstants.Player
-        );
-        Guid roleGuid = Guid.NewGuid();
-        if (testRole is null)
-        {
-            await context.Roles.AddAsync(new() { Id = roleGuid, Name = RoleConstants.Player });
-            await context.SaveChangesAsync();
-        }
-
         IPasswordHashProvider passwordHashProvider =
             fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
         UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
@@ -76,7 +66,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         // Act
         ActionResult<User> userRegisterResult = await userRegisterController.Register(
-            roleGuid,
+            TestDataSource.RolePlayer.Id,
             newUser
         );
         ActionResult<string> authResult = await authController.Authenticate(loginRequest);
@@ -116,13 +106,10 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_Not_HaveUserRole()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        await DbOperations.RemoveAllRecords<User>(context);
-
-        UserRegisterDTO _createUserTest = new()
+        UserRegisterDTO createUserTest = new()
         {
             Name = "John Doe",
-            Email = "john.doe@example.com",
+            Email = "randomEmailTest@example.com",
             Password = "Password123!",
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
@@ -133,22 +120,17 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
 
         // Act
-        Result<User> result = await userHandler.Create(_createUserTest);
+        Result<User> result = await userHandler.Create(createUserTest);
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(UsersErrorResults.InvalidRole, result.Error);
-
-        await FourLinesFixture.SeedDefaultUsers(context);
     }
 
     [Fact]
     public async Task Should_Not_HaveUserForAuthentication()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        await DbOperations.RemoveAllRecords<User>(context);
-
         AuthenticationDTO authTest = new() { Email = "test@test.com", Password = "Test123!" };
 
         AuthenticationHandler authHandler =
@@ -160,29 +142,16 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(AuthenticationErrorResults.UnknownUser, result.Error);
-
-        await FourLinesFixture.SeedDefaultUsers(context);
     }
 
     [Fact]
     public async Task Should_Not_HaveEqualPasswords()
     {
         // Arrange
-        User userOwnerTest = new()
-        {
-            RoleId = Guid.NewGuid(),
-            Name = "John Doe",
-            Email = "john.doe@example.com",
-            PasswordHash = "VGVzdDEyMyEK",
-            Birthday = new DateOnly(1970, 1, 1),
-            Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "383.975.210-89",
-        };
-
         AuthenticationDTO authTest = new()
         {
-            Email = userOwnerTest.Email,
-            Password = userOwnerTest.PasswordHash,
+            Email = TestDataSource.UserPlayer.Email,
+            Password = "testingPassword",
         };
 
         AuthenticationHandler authHandler =
