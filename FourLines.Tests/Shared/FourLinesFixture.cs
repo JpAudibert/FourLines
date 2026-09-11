@@ -1,9 +1,13 @@
 using DotNet.Testcontainers.Builders;
 using FourLines.Application.DependencyInjection;
+using FourLines.Application.DTOs.Reservations;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.DependencyInjection;
 using FourLines.Domain.Models;
+using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
+using FourLines.Tests.Matches;
 using Testcontainers.PostgreSql;
 
 namespace FourLines.Tests.Shared;
@@ -13,6 +17,11 @@ public class FourLinesFixture : IAsyncLifetime
     public IConfiguration Configuration { get; set; } = default!;
     public HostApplicationBuilder Builder { get; set; } = default!;
     public IServiceProvider ServiceProvider { get; set; } = default!;
+
+    private bool _isGoalKeeperReservationCreated = false;
+    private bool _isNoGoalKeeperReservationCreated = false;
+    public Result<ConfirmReservationResponseDTO> GoalKeeperReservationResult = default!;
+    public Result<ConfirmReservationResponseDTO> NoGoalKeeperReservationResult = default!;
 
     private const string _databaseName = "fourlines_test";
     private const string _username = "fourlines";
@@ -99,6 +108,7 @@ public class FourLinesFixture : IAsyncLifetime
     public async Task SeedDefaultSports(FourLinesContext context)
     {
         await CreateRecord<Sport>(TestDataSource.DefaultSport, context);
+        await CreateRecord<Sport>(TestDataSource.SportWithoutGoalkeeper, context);
     }
 
     public async Task SeedDefaultUsers(FourLinesContext context)
@@ -106,6 +116,7 @@ public class FourLinesFixture : IAsyncLifetime
         await CreateRecord<User>(TestDataSource.UserOwner, context);
         await CreateRecord<User>(TestDataSource.UserPlayer, context);
         await CreateRecord<User>(TestDataSource.UserPlayer2, context);
+        await CreateRecord<User>(TestDataSource.UserPlayer3, context);
     }
 
     public async Task SeedDefaultFacilities(FourLinesContext context)
@@ -113,6 +124,7 @@ public class FourLinesFixture : IAsyncLifetime
         await CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
         await CreateRecord<Facility>(TestDataSource.DefaultFacility2, context);
         await CreateRecord<Facility>(TestDataSource.DefaultNoSchedulesFacility, context);
+        await CreateRecord<Facility>(TestDataSource.DefaultNoSchedulesFacility2, context);
 
         await CreateRecord<Facility>(TestDataSource.ToBeUpdatedFacility, context);
         await CreateRecord<Facility>(TestDataSource.ToBeDeletedFacility, context);
@@ -122,9 +134,12 @@ public class FourLinesFixture : IAsyncLifetime
     {
         await CreateRecord<Court>(TestDataSource.DefaultCourt, context);
         await CreateRecord<Court>(TestDataSource.CourtWithNoSchedule, context);
+        await CreateRecord<Court>(TestDataSource.CourtWithNoSchedule2, context);
 
         await CreateRecord<Court>(TestDataSource.ToBeUpdatedCourt, context);
         await CreateRecord<Court>(TestDataSource.ToBeDeletedCourt, context);
+
+        await CreateRecord<Court>(TestDataSource.CourtWithSportWithoutGoalkeeper, context);
     }
 
     public async Task SeedDefaultFacilitySchedules(FourLinesContext context)
@@ -168,17 +183,17 @@ public class FourLinesFixture : IAsyncLifetime
         await context.SaveChangesAsync();
     }
 
-    //public async Task RemoveRecord<T>(Guid id)
-    //    where T : BaseEntity
-    //{
-    //    T? entity = await Context.Set<T>().FindAsync(id);
+    public async Task RemoveRecord<T>(Guid id, FourLinesContext context)
+        where T : BaseEntity
+    {
+        T? entity = await context.Set<T>().FindAsync(id);
 
-    //    if (entity != null)
-    //    {
-    //        Context.Set<T>().Remove(entity);
-    //        await Context.SaveChangesAsync();
-    //    }
-    //}
+        if (entity != null)
+        {
+            context.Set<T>().Remove(entity);
+            await context.SaveChangesAsync();
+        }
+    }
 
     public async Task<T> CreateRecord<T>(T entity, FourLinesContext context)
         where T : BaseEntity
@@ -192,5 +207,33 @@ public class FourLinesFixture : IAsyncLifetime
         }
 
         return entity;
+    }
+
+    public async Task EnsureGoalKeeperReservationCreatedAsync()
+    {
+        if (!_isGoalKeeperReservationCreated)
+        {
+            IReservationHandler reservationHandler =
+                ServiceProvider.GetRequiredService<IReservationHandler>();
+            GoalKeeperReservationResult = await reservationHandler.Create(
+                TestDataSource.CreateGoalKeeperReservationTest
+            );
+
+            _isGoalKeeperReservationCreated = true;
+        }
+    }
+
+    public async Task EnsureNoGoalKeeperReservationCreatedAsync()
+    {
+        if (!_isNoGoalKeeperReservationCreated)
+        {
+            IReservationHandler reservationHandler =
+                ServiceProvider.GetRequiredService<IReservationHandler>();
+            NoGoalKeeperReservationResult = await reservationHandler.Create(
+                TestDataSource.CreateNoGoalKeeperReservationTest
+            );
+
+            _isNoGoalKeeperReservationCreated = true;
+        }
     }
 }

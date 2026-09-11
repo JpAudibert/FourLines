@@ -104,6 +104,17 @@ public class TestDataSource
         OwnerId = UserOwner.Id,
     };
 
+    public static readonly Facility DefaultNoSchedulesFacility2 = new()
+    {
+        Name = "No schedules facility",
+        Address = "789 Test Blvd",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12346",
+        RegistrationNumber = "0994874389",
+        OwnerId = UserOwner.Id,
+    };
+
     public static readonly Facility ToBeUpdatedFacility = new()
     {
         Name = "To be updated",
@@ -146,7 +157,7 @@ public class TestDataSource
         HasFixedGoalKeeper = true,
     };
 
-    public static readonly Sport Sport2 = new()
+    public static readonly Sport SportWithoutGoalkeeper = new()
     {
         Name = "Test Sport 2",
         Indoor = true,
@@ -165,6 +176,14 @@ public class TestDataSource
     public static readonly Court CourtWithNoSchedule = new()
     {
         FacilityId = DefaultNoSchedulesFacility.Id,
+        SportId = DefaultSport.Id,
+        Name = "Test Court 2",
+        IsActive = true,
+    };
+
+    public static readonly Court CourtWithNoSchedule2 = new()
+    {
+        FacilityId = DefaultNoSchedulesFacility2.Id,
         SportId = DefaultSport.Id,
         Name = "Test Court 2",
         IsActive = true,
@@ -196,14 +215,14 @@ public class TestDataSource
     public static readonly Court Court3 = new()
     {
         FacilityId = DummyFacility.Id,
-        SportId = Sport2.Id,
+        SportId = SportWithoutGoalkeeper.Id,
         Name = "Test Court 3",
         IsActive = true,
     };
-    public static readonly Court Court4 = new()
+    public static readonly Court CourtWithSportWithoutGoalkeeper = new()
     {
         FacilityId = DefaultFacility.Id,
-        SportId = Sport2.Id,
+        SportId = SportWithoutGoalkeeper.Id,
         Name = "Test Court 4",
         IsActive = true,
     };
@@ -309,19 +328,19 @@ public class TestDataSource
         CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            SettedDateTime.AddHours(4),
-            SettedDateTime.AddHours(5)
+            SettedDateTime.AddHours(14),
+            SettedDateTime.AddHours(15)
         ),
         Status = ReservationStatus.Pending,
     };
 
     public static readonly CreateReservationDTO CreateNoGoalKeeperReservationTest = new()
     {
-        CourtId = Court4.Id,
+        CourtId = CourtWithSportWithoutGoalkeeper.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            SettedDateTime.AddHours(5),
-            SettedDateTime.AddHours(6)
+            SettedDateTime.AddHours(15),
+            SettedDateTime.AddHours(16)
         ),
         Status = ReservationStatus.Pending,
     };
