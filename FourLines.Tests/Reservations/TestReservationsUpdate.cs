@@ -25,39 +25,36 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
     };
 
     [Fact]
-    public async Task Should_UpdateFacilitySchedule()
+    public async Task Should_UpdateReservation()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        Reservation toBeUpdated = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedReservation, context);
-
+        await using var scope = fixtures.CreateAsyncServiceScope();
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         TestUpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
         {
-            Id = toBeUpdated.Id,
-            UserId = toBeUpdated.UserId,
+            Id = TestDataSource.ToBeUpdatedReservation.Id,
+            UserId = TestDataSource.ToBeUpdatedReservation.UserId,
         };
 
         // Act
         Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
-            _updateReservationTest
+            reservationDTO
         );
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<Reservation>(result.Value);
-        Assert.Equal(_updateReservationTest.Status, result.Value.Status);
-        Assert.Equal(_updateReservationTest.UserId, result.Value.UserId);
-
-        await DbOperations.RemoveRecord<Reservation>(result.Value.Id, context);
+        Assert.Equal(reservationDTO.Status, result.Value.Status);
+        Assert.Equal(reservationDTO.UserId, result.Value.UserId);
     }
 
     [Fact]
     public async Task Should_Not_HaveValidStatus()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -80,6 +77,7 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
     public async Task Should_Not_AffectAnyRowFacilitySchedule()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 

@@ -34,7 +34,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
     public async Task Should_CreateReservation()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IReservationHandler reservationHandler = fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -53,13 +53,15 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         Assert.NotNull(result.Value.Match);
         Assert.Equal(6, result.Value.Match.Code.Length);
 
-        await DbOperations.RemoveRecord<Reservation>(result.Value.Reservation.Id, context);
+        //await DbOperations.RemoveRecord<Reservation>(result.Value.Reservation.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_CreateReservation_RejectedValidation()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         TestCreateReservationDTO reservationWithInvalidDate = _createReservationTest with
         {
             Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(-2)),
@@ -104,6 +106,8 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
     public async Task Should_Not_CreateReservation_NoCourtFound()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         TestCreateReservationDTO reservationWithInvalidCourt = _createReservationTest with
         {
             CourtId = Guid.NewGuid(),
@@ -124,6 +128,8 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
     public async Task Should_Not_CreateReservation_NoUserFound()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         TestCreateReservationDTO reservationWithInvalidUser = _createReservationTest with
         {
             UserId = Guid.NewGuid(),
@@ -144,10 +150,12 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
     public async Task Should_Not_CreateReservation_NoScheduleFound()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         DateTimeOffset testDateTime = new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
         TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
-            CourtId = TestDataSource.Court3.Id,
+            CourtId = TestDataSource.CourtWithNoSchedule.Id,
             Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(1)),
         };
 
@@ -166,6 +174,8 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
     public async Task Should_Not_CreateReservation_OverlappingReservation()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 

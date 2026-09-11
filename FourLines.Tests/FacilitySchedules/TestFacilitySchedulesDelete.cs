@@ -13,11 +13,7 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
     public async Task Should_DeleteFacilitySchedule()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        FacilitySchedule toBeDeleted = await DbOperations.CreateRecord(
-            TestDataSource.ToBeDeletedFacilitySchedule,
-            context
-        );
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
@@ -25,8 +21,8 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
-            FacilityId = toBeDeleted.FacilityId,
-            ScheduleId = toBeDeleted.Id
+            FacilityId = TestDataSource.ToBeDeletedFacilitySchedule.FacilityId,
+            ScheduleId = TestDataSource.ToBeDeletedFacilitySchedule.Id
         });
 
         // Assert
@@ -37,6 +33,8 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
     public async Task Should_Not_DeleteFacilitySchedule()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 

@@ -73,7 +73,7 @@ public class TestDataSource
 
     public static readonly Facility DefaultFacility = new()
     {
-        Name = "Test Facility 1",
+        Name = "Default Facility 1",
         Address = "123 Test St",
         City = "Test City",
         State = "TS",
@@ -82,36 +82,58 @@ public class TestDataSource
         OwnerId = UserOwner.Id,
     };
 
-    public static readonly Facility Facility2 = new()
+    public static readonly Facility DefaultFacility2 = new()
     {
-        Name = "Test Facility 2",
+        Name = "Default Facility 2",
         Address = "456 Test Ave",
         City = "Test City 2",
         State = "TS",
         ZipCode = "12345",
-        RegistrationNumber = "0987654321",
+        RegistrationNumber = "0987654458",
         OwnerId = UserOwner.Id,
     };
 
-    public static readonly Facility Facility3 = new()
+    public static readonly Facility DefaultNoSchedulesFacility = new()
     {
-        Name = "Test Facility 3",
+        Name = "No schedules facility",
+        Address = "789 Test Blvd",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12346",
+        RegistrationNumber = "0994654389",
+        OwnerId = UserOwner.Id,
+    };
+
+    public static readonly Facility ToBeUpdatedFacility = new()
+    {
+        Name = "To be updated",
+        Address = "456 Test Ave",
+        City = "Test City 2",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "0987654987",
+        OwnerId = UserOwner.Id,
+    };
+
+    public static readonly Facility ToBeDeletedFacility = new()
+    {
+        Name = "To be deleted",
+        Address = "456 Test Ave",
+        City = "Test City 2",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "0986324987",
+        OwnerId = UserOwner.Id,
+    };
+
+    public static readonly Facility DummyFacility = new()
+    {
+        Name = "Dummy Facility",
         Address = "789 Test Blvd",
         City = "Test City 3",
         State = "TS",
         ZipCode = "12346",
         RegistrationNumber = "0987654345",
-        OwnerId = UserOwner.Id,
-    };
-
-    public static readonly Facility Facility4 = new()
-    {
-        Name = "Test Facility 4",
-        Address = "789 Test Blvd",
-        City = "Test City 4",
-        State = "TS",
-        ZipCode = "12346",
-        RegistrationNumber = "0987654389",
         OwnerId = UserOwner.Id,
     };
 
@@ -140,6 +162,29 @@ public class TestDataSource
         Name = "Test Court",
         IsActive = true,
     };
+    public static readonly Court CourtWithNoSchedule = new()
+    {
+        FacilityId = DefaultNoSchedulesFacility.Id,
+        SportId = DefaultSport.Id,
+        Name = "Test Court 2",
+        IsActive = true,
+    };
+
+    public static readonly Court ToBeUpdatedCourt = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        SportId = DefaultSport.Id,
+        Name = "To be updated",
+        IsActive = true,
+    };
+
+    public static readonly Court ToBeDeletedCourt = new()
+    {
+        FacilityId = DefaultFacility.Id,
+        SportId = DefaultSport.Id,
+        Name = "To be deleted",
+        IsActive = true,
+    };
 
     public static readonly Court Court2 = new()
     {
@@ -150,7 +195,7 @@ public class TestDataSource
     };
     public static readonly Court Court3 = new()
     {
-        FacilityId = Facility2.Id,
+        FacilityId = DummyFacility.Id,
         SportId = Sport2.Id,
         Name = "Test Court 3",
         IsActive = true,
@@ -219,25 +264,17 @@ public class TestDataSource
         ClosesAt = new TimeOnly(23, 59),
     };
 
-    public static readonly FacilitySchedule FacilitySchedule1 = new()
+    public static readonly FacilitySchedule ToBeDeletedFacilitySchedule = new()
     {
-        FacilityId = Facility2.Id,
-        DayOfWeek = DayOfWeek.Tuesday,
-        OpensAt = new TimeOnly(8, 0),
-        ClosesAt = new TimeOnly(20, 0),
-    };
-
-    public static readonly FacilitySchedule FacilitySchedule2 = new()
-    {
-        FacilityId = Facility2.Id,
+        FacilityId = DefaultNoSchedulesFacility.Id,
         DayOfWeek = DayOfWeek.Thursday,
         OpensAt = new TimeOnly(8, 0),
         ClosesAt = new TimeOnly(20, 0),
     };
 
-    public static readonly FacilitySchedule FacilitySchedule4 = new()
+    public static readonly FacilitySchedule ToBeUpdatedFacilitySchedule = new()
     {
-        FacilityId = Facility3.Id,
+        FacilityId = DefaultNoSchedulesFacility.Id,
         DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(0, 0),
         ClosesAt = new TimeOnly(23, 59),
@@ -251,7 +288,7 @@ public class TestDataSource
         Status = ReservationStatus.Pending,
     };
 
-    public static readonly Reservation Reservation2 = new()
+    public static readonly Reservation ToBeDeletedReservation = new()
     {
         CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
@@ -259,9 +296,9 @@ public class TestDataSource
         Status = ReservationStatus.Pending,
     };
 
-    public static readonly Reservation Reservation3 = new()
+    public static readonly Reservation ToBeUpdatedReservation = new()
     {
-        CourtId = Court2.Id,
+        CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(DateTimeNow.AddHours(2), DateTimeNow.AddHours(3)),
         Status = ReservationStatus.Pending,
@@ -272,8 +309,8 @@ public class TestDataSource
         CourtId = DefaultCourt.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            SettedDateTime.AddHours(12),
-            SettedDateTime.AddHours(13)
+            SettedDateTime.AddHours(4),
+            SettedDateTime.AddHours(5)
         ),
         Status = ReservationStatus.Pending,
     };
@@ -283,8 +320,8 @@ public class TestDataSource
         CourtId = Court4.Id,
         UserId = UserPlayer.Id,
         Period = new TimeRange(
-            SettedDateTime.AddHours(13),
-            SettedDateTime.AddHours(14)
+            SettedDateTime.AddHours(5),
+            SettedDateTime.AddHours(6)
         ),
         Status = ReservationStatus.Pending,
     };

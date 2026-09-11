@@ -59,6 +59,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task Should_Ingress_Match_Default()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
@@ -78,6 +80,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task ShouldNot_Ingress_Match_Default_MatchDoesNotExists()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
         TestCreateIngressDTO ingress = _ingress with
         {
@@ -99,6 +103,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task ShouldNot_Ingress_Match_Default_UserDoesNotExists()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
         TestCreateIngressDTO ingress = _ingress with
         {
@@ -120,6 +126,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task Should_Ingress_Match_As_GoalKeeper()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
@@ -146,6 +154,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task ShouldNot_Ingress_Match_As_GoalKeeper_MatchDoesNotExists()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
@@ -169,6 +179,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task ShouldNot_Ingress_Match_As_GoalKeeper_UserDoesNotExists()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
@@ -192,6 +204,8 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
     public async Task ShouldNot_Ingress_Match_As_GoalKeeper_Sport_DoesNot_Have_Fixed_Goal_Keeper()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         await EnsureNoGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with

@@ -13,8 +13,7 @@ public class TestFacilitiesDelete(FourLinesFixture fixtures)
     public async Task Should_DeleteFacility()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        Facility testFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.ToBeDeletedFacility, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -22,8 +21,8 @@ public class TestFacilitiesDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await facilityHandler.Delete(new DeleteFacilityDTO()
         {
-            OwnerId = testFacility.OwnerId,
-            FacilityId = testFacility.Id
+            OwnerId = TestDataSource.ToBeDeletedFacility.OwnerId,
+            FacilityId = TestDataSource.ToBeDeletedFacility.Id
         });
 
         // Assert
@@ -34,6 +33,8 @@ public class TestFacilitiesDelete(FourLinesFixture fixtures)
     public async Task Should_Not_DeleteFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 

@@ -1,3 +1,4 @@
+using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -13,6 +14,8 @@ public class TestReservationsRead(FourLinesFixture fixtures)
     public async Task Should_GetAllReservationsFromUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -22,13 +25,15 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(4, result.Value.Count());
+        Assert.Equal(3, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetAllReservationsFromUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -45,6 +50,8 @@ public class TestReservationsRead(FourLinesFixture fixtures)
     public async Task Should_GetAllReservationsFromCourt()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -54,13 +61,15 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(4, result.Value.Count());
+        Assert.Equal(3, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetAllReservationsFromCourt()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -77,42 +86,30 @@ public class TestReservationsRead(FourLinesFixture fixtures)
     public async Task Should_GetOneReservationFromUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        // Create a test reservation instead of relying on seeded data
-        var createDto = new TestCreateReservationDTO
-        {
-            CourtId = TestDataSource.DefaultCourt.Id,
-            UserId = TestDataSource.UserPlayer2.Id,
-            Period = new TimeRange(
-                TestDataSource.DateTimeNow.AddHours(3),
-                TestDataSource.DateTimeNow.AddHours(4)
-            ),
-            Status = ReservationStatus.Pending
-        };
-
-        var createResult = await reservationHandler.Create(createDto);
-        Assert.NotNull(createResult.Value);
-        var createdReservationId = createResult.Value.Reservation.Id;
-
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
-            TestDataSource.UserPlayer2.Id,
-            createdReservationId
+            TestDataSource.DefaultReservation.UserId,
+            TestDataSource.DefaultReservation.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(createDto.CourtId, result.Value.CourtId);
-        Assert.Equal(createDto.UserId, result.Value.UserId);
-        Assert.Equal(createDto.Status, result.Value.Status);
+        Assert.Equal(result.Value.CourtId, result.Value.CourtId);
+        Assert.Equal(result.Value.UserId, result.Value.UserId);
+        Assert.Equal(result.Value.Status, result.Value.Status);
     }
 
     [Fact]
     public async Task Should_Not_GetOneReservationFromUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 

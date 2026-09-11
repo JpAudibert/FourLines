@@ -2,6 +2,7 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Facilities;
@@ -13,8 +14,11 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
     public async Task Should_GetAllFacilities()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        Facility facility2 = await DbOperations.CreateRecord<Facility>(TestDataSource.Facility2, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        Facility dummyFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.DummyFacility, context);
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -26,15 +30,14 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         Assert.NotEmpty(result.Value);
         Assert.Equal(2, result.Value.Count());
 
-        await DbOperations.RemoveRecord<Facility>(facility2.Id, context);
+        //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_GetAllFacilities()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        await DbOperations.RemoveAllRecords<Facility>(context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -45,16 +48,13 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
-
-        await DbOperations.CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
     }
 
     [Fact]
     public async Task Should_GetFacilities()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        Facility defaultFacility2 = await DbOperations.CreateRecord<Facility>(TestDataSource.DefaultFacility2, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -68,13 +68,15 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         Assert.NotEmpty(result.Value);
         Assert.Equal(2, result.Value.Count());
 
-        await DbOperations.RemoveRecord<Facility>(defaultFacility2.Id, context);
+        //await DbOperations.RemoveRecord<Facility>(defaultFacility2.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_GetFacilities()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
@@ -92,6 +94,8 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
     public async Task Should_GetFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
@@ -119,6 +123,8 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
     public async Task Should_Not_GetOwnerFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
@@ -137,11 +143,7 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await using (var context = fixtures.CreateContext())
-        {
-            await DbOperations.CreateRecord<Role>(TestDataSource.RoleOwner, context);
-            await DbOperations.CreateRecord<User>(TestDataSource.UserOwner, context);
-        }
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();

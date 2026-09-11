@@ -17,23 +17,21 @@ public class TestCourtDelete(FourLinesFixture fixtures)
 {
     private static readonly TestDeleteCourtDTO _deleteCourt = new()
     {
-        CourtId = TestDataSource.Court2.Id,
-        FacilityId = TestDataSource.Court2.FacilityId,
+        CourtId = TestDataSource.ToBeDeletedCourt.Id,
+        FacilityId = TestDataSource.ToBeDeletedCourt.FacilityId,
     };
 
     [Fact]
     public async Task Should_DeleteCourt()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.ToBeDeletedCourt, context);
-
+        await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         TestDeleteCourtDTO deleteCourt = new()
         {
-            CourtId = testCourt.Id,
-            FacilityId = testCourt.FacilityId,
+            CourtId = TestDataSource.ToBeDeletedCourt.Id,
+            FacilityId = TestDataSource.ToBeDeletedCourt.FacilityId,
         };
 
         // Act
@@ -47,6 +45,7 @@ public class TestCourtDelete(FourLinesFixture fixtures)
     public async Task Should_Not_DeleteCourt()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         TestDeleteCourtDTO inexistentCourt = _deleteCourt with { CourtId = Guid.NewGuid() };

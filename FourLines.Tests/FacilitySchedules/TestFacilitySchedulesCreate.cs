@@ -30,7 +30,8 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
     public async Task Should_CreateFacilitySchedule()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
@@ -46,13 +47,15 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         Assert.Equal(_createFacilityScheduleTest1.OpensAt, result.Value.OpensAt);
         Assert.Equal(_createFacilityScheduleTest1.ClosesAt, result.Value.ClosesAt);
 
-        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, context);
+        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_CreateFacilitySchedule()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
         TestCreateFacilityScheduleDTO scheduleWithUnknownFacility =
@@ -72,7 +75,8 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
     public async Task Should_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
@@ -113,14 +117,16 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         Assert.Equal(newSchedules[1].OpensAt, result.Value.ElementAt(1).OpensAt);
         Assert.Equal(newSchedules[1].ClosesAt, result.Value.ElementAt(1).ClosesAt);
 
-        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(0).Id, context);
-        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(1).Id, context);
+        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(0).Id, fixtures.Context);
+        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(1).Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_CreateMultipleFacilitySchedule()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 

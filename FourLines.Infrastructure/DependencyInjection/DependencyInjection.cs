@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-
-namespace FourLines.Infrastructure.DependencyInjection;
+﻿namespace FourLines.Infrastructure.DependencyInjection;
 
 public static class DependencyInjection
 {
@@ -16,9 +14,21 @@ public static class DependencyInjection
         services.AddDbContext<FourLinesContext>(
             (serviceProvider, options) =>
             {
-                options
+                if (configuration.GetValue<bool>("UseInMemory", false))
+                {
+                    options
                     .UseNpgsql(connectionString)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors()
+                    .LogTo(Console.WriteLine, LogLevel.Information)
                     .UseSnakeCaseNamingConvention();
+                }
+                else
+                {
+                    options
+                        .UseNpgsql(connectionString)
+                        .UseSnakeCaseNamingConvention();
+                }
             }
         );
 

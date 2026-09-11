@@ -2,7 +2,6 @@ using FourLines.Api.Controllers;
 using FourLines.Api.ViewModels.Users;
 using FourLines.Application.DTOs;
 using FourLines.Application.Handlers;
-using FourLines.Domain.Constants;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -19,6 +18,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_RegisterAndAuthenticateUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         Mock<ILogger<AuthController>> mockAuthLogger = new();
         Mock<ILogger<UserRegisterController>> mockUserRegisterLogger = new();
         UserRegisterViewModel newUser = new()
@@ -37,7 +38,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             Password = "Password123!",
         };
 
-        FourLinesContext context = fixtures.ServiceProvider.GetRequiredService<FourLinesContext>();
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
         if (testUser is not null)
@@ -81,6 +82,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_Not_HaveDuplicateUser()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         UserRegisterDTO createUserTest = new()
         {
             Name = "John Doe",
@@ -106,6 +109,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_Not_HaveUserRole()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         UserRegisterDTO createUserTest = new()
         {
             Name = "John Doe",
@@ -131,6 +136,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_Not_HaveUserForAuthentication()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         AuthenticationDTO authTest = new() { Email = "test@test.com", Password = "Test123!" };
 
         AuthenticationHandler authHandler =
@@ -148,6 +155,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
     public async Task Should_Not_HaveEqualPasswords()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         AuthenticationDTO authTest = new()
         {
             Email = TestDataSource.UserPlayer.Email,

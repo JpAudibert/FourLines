@@ -32,8 +32,7 @@ public class TestCourtCreate(FourLinesFixture fixtures)
     public async Task Should_CreateCourt()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-
+        await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
@@ -47,13 +46,14 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
         Assert.Equal(_createCourtTest.IsActive, result.Value.IsActive);
 
-        await DbOperations.RemoveRecord<Court>(result.Value.Id, context);
+        //await DbOperations.RemoveRecord<Court>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_HaveFacilityToCreateCourt()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
         TestCreateCourtDTO courtWithNoFacility = _createCourtTest with { FacilityId = Guid.NewGuid() };
 
@@ -69,6 +69,7 @@ public class TestCourtCreate(FourLinesFixture fixtures)
     public async Task Should_Not_HaveKnownSport()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
         TestCreateCourtDTO courtWithNoSport = _createCourtTest with { SportId = Guid.NewGuid() };
 

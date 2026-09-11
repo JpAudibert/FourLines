@@ -13,6 +13,8 @@ public class TestCourtRead(FourLinesFixture fixtures)
     public async Task Should_GetAllCourts()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
@@ -28,25 +30,26 @@ public class TestCourtRead(FourLinesFixture fixtures)
     public async Task Should_Not_GetAllCourts()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        Facility dummyFacility = await DbOperations.CreateRecord(TestDataSource.DummyFacility, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(dummyFacility.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(TestDataSource.DummyFacility.Id);
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
 
-        await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, context);
+        //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_GetFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
@@ -68,6 +71,8 @@ public class TestCourtRead(FourLinesFixture fixtures)
     public async Task Should_Not_GetFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         ICourtHandler courtHandler =
             fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 

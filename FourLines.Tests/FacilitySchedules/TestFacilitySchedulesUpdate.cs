@@ -32,10 +32,12 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
     public async Task Should_UpdateFacilitySchedule()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        FacilitySchedule scheduleToBeUpdated = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedFacilitySchedule, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
-        TestUpdateScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with { Id = scheduleToBeUpdated.Id };
+        TestUpdateScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with
+        {
+            Id = TestDataSource.ToBeUpdatedFacilitySchedule.Id
+        };
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
@@ -53,13 +55,15 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
         Assert.Equal(_updateFacilityScheduleTest.OpensAt, result.Value.OpensAt);
         Assert.Equal(_updateFacilityScheduleTest.ClosesAt, result.Value.ClosesAt);
 
-        await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, context);
+        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_FindFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
         TestUpdateScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with { FacilityId = Guid.NewGuid() };
@@ -76,6 +80,8 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
     public async Task Should_Not_AffectAnyRowFacilitySchedule()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
         TestUpdateScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with { Id = Guid.NewGuid() };

@@ -36,7 +36,8 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
     public async Task Should_CreateFacility()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
@@ -53,13 +54,15 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         Assert.Equal(_createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(_createFacilityTest.OwnerId, result.Value.OwnerId);
 
-        await DbOperations.RemoveRecord<Facility>(result.Value.Id, context);
+        //await DbOperations.RemoveRecord<Facility>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_CreateFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
         TestCreateFacilityDTO facilityWithNoOwner = _createFacilityTest with { OwnerId = Guid.NewGuid() };
 

@@ -8,6 +8,8 @@ public class ReservationHandler(
     ICourtLockStrategies courtLockStrategy) 
     : IReservationHandler
 {
+    private readonly FourLinesContext _context = context;
+
 
     private const string DefaultMatchName = "World Cup Match";
 
@@ -17,13 +19,13 @@ public class ReservationHandler(
         if (validationResult.IsFailure)
             return validationResult;
 
-        using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
         Court? court = await courtLockStrategy.GetForUpdateAsync(newReservation.CourtId);
         if (court is null)
             return Result<ConfirmReservationResponseDTO>.Failure(ReservationsErrorResults.CreationUnknownCourt);
 
-        User? user = await context.Users.FirstOrDefaultAsync(u => u.Id == newReservation.UserId);
+        User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == newReservation.UserId);
         if (user is null)
             return Result<ConfirmReservationResponseDTO>.Failure(ReservationsErrorResults.CreationUnknownUser);
 
@@ -31,7 +33,7 @@ public class ReservationHandler(
         TimeOnly reservationStartTime = TimeOnly.FromDateTime(newReservation.Period.Start.DateTime);
         TimeOnly reservationEndTime = TimeOnly.FromDateTime(newReservation.Period.End.DateTime);
 
-        FacilitySchedule? schedule = await context.FacilitySchedules
+        FacilitySchedule? schedule = await _context.FacilitySchedules
             .FirstOrDefaultAsync(s => s.FacilityId == court.FacilityId &&
                 s.DayOfWeek == dayOfWeek &&
                 s.OpensAt <= reservationStartTime &&
@@ -50,7 +52,7 @@ public class ReservationHandler(
             User = user
         };
 
-        bool overlappingReservation = await context.Reservations
+        bool overlappingReservation = await _context.Reservations
             .Where(r => 
                 r.CourtId == newReservation.CourtId &&
                 r.Period.Start < newReservation.Period.End &&
@@ -71,10 +73,10 @@ public class ReservationHandler(
             Sport = court.Sport
         };
 
-        await context.Reservations.AddAsync(reservation);
-        await context.Matches.AddAsync(newMatch);
+        await _context.Reservations.AddAsync(reservation);
+        await _context.Matches.AddAsync(newMatch);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         await transaction.CommitAsync();
 
@@ -91,7 +93,7 @@ public class ReservationHandler(
         if (!statuses.Contains(reservation.Status))
             return Result<Reservation>.Failure(ReservationsErrorResults.CreationInvalidStatus);
 
-        int affectedRows = await context.Reservations
+        int affectedRows = await _context.Reservations
             .Where(r => r.Id == reservation.Id && r.UserId == reservation.UserId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(r => r.Status, reservation.Status)
@@ -100,8 +102,6 @@ public class ReservationHandler(
         if (affectedRows <= 0)
             return Result<Reservation>.Failure(ReservationsErrorResults.UpdateReservationDoesNotExist);
 
-        await context.SaveChangesAsync();
-
         Reservation? updatedReservation = await context.Reservations.FindAsync(reservation.Id);
 
         return Result<Reservation>.Success(updatedReservation!);
@@ -109,21 +109,21 @@ public class ReservationHandler(
 
     public async Task<Result<bool>> Delete(IDeleteReservationDTO deleteDto)
     {
-        int affectedRows = await context.Reservations
+        int affectedRows = await _context.Reservations
             .Where(r => r.Id == deleteDto.ReservationId && r.UserId == deleteDto.UserId)
             .ExecuteDeleteAsync();
 
         if (affectedRows <= 0)
             return Result<bool>.Failure(ReservationsErrorResults.DeletionReservationDoesNotExist);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         return Result<bool>.Success(true);
     }
 
     public async Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromUser(Guid userId)
     {
-        IEnumerable<Reservation> reservations = await context.Reservations
+        IEnumerable<Reservation> reservations = await _context.Reservations
             .Where(r => r.UserId == userId)
             .Select(r => new Reservation
             {
@@ -143,7 +143,7 @@ public class ReservationHandler(
 
     public async Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromCourt(Guid courtId)
     {
-        IEnumerable<Reservation> reservations = await context.Reservations
+        IEnumerable<Reservation> reservations = await _context.Reservations
             .Where(r => r.CourtId == courtId)
             .Select(r => new Reservation
             {
@@ -163,7 +163,7 @@ public class ReservationHandler(
 
     public async Task<Result<Reservation>> GetOneReservationFromUser(Guid userId, Guid reservationId)
     {
-        Reservation? reservation = await context.Reservations
+        Reservation? reservation = await _context.Reservations
             .FirstOrDefaultAsync(r => r.Id == reservationId && r.UserId == userId);
 
         if (reservation is null)

@@ -13,6 +13,8 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
     public async Task Should_GetFacilitiesSchedules()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
@@ -30,6 +32,8 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
     public async Task Should_Not_GetFacilitiesSchedules()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 

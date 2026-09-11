@@ -21,7 +21,6 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateCourtDTO _updateCourt = new()
     {
-        Id = TestDataSource.Court3.Id,
         FacilityId = TestDataSource.ToBeUpdatedCourt.FacilityId,
         SportId = TestDataSource.ToBeUpdatedCourt.SportId,
         Name = "Test Updated Court",
@@ -32,14 +31,13 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
     public async Task Should_UpdateCourt()
     {
         // Arrange
-        await using var context = fixtures.CreateContext();
-        Court testCourt = await DbOperations.CreateRecord<Court>(TestDataSource.ToBeUpdatedCourt, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         TestUpdateCourtDTO updateCourtDTO = _updateCourt with
         {
-            Id = testCourt.Id,
+            Id = TestDataSource.ToBeUpdatedCourt.Id,
             Name = "Updated Court Name",
         };
 
@@ -54,13 +52,15 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
         Assert.Equal(updateCourtDTO.SportId, result.Value.SportId);
         Assert.Equal(updateCourtDTO.IsActive, result.Value.IsActive);
 
-        await DbOperations.RemoveRecord<Court>(testCourt.Id, context);
+        //await DbOperations.RemoveRecord<Court>(testCourt.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_FindFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
         TestUpdateCourtDTO courtWithNoFacility = _updateCourt with { FacilityId = Guid.NewGuid() };
 

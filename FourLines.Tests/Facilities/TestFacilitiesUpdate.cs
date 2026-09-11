@@ -24,7 +24,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
     {
-        Id = TestDataSource.Facility2.Id,
+        Id = TestDataSource.ToBeUpdatedFacility.Id,
         Name = "Test Updated Facility",
         Address = "123 Test St",
         City = "Test City",
@@ -38,37 +38,38 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
     public async Task Should_UpdateFacility()
     {
         // Arrange
-        using var context = fixtures.CreateContext();
-        Facility toBeUpdatedFacility = await DbOperations.CreateRecord(TestDataSource.ToBeUpdatedFacility, context);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with 
         {
-            Id = toBeUpdatedFacility.Id,
+            Id = TestDataSource.ToBeUpdatedFacility.Id,
         };
 
         // Act
-        Result<Facility> result = await facilityHandler.Update(_updateFacilityTest);
+        Result<Facility> result = await facilityHandler.Update(updateFacilityDTO);
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<Facility>(result.Value);
-        Assert.Equal(_updateFacilityTest.Name, result.Value.Name);
-        Assert.Equal(_updateFacilityTest.Address, result.Value.Address);
-        Assert.Equal(_updateFacilityTest.City, result.Value.City);
-        Assert.Equal(_updateFacilityTest.State, result.Value.State);
-        Assert.Equal(_updateFacilityTest.ZipCode, result.Value.ZipCode);
-        Assert.Equal(_updateFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-        Assert.Equal(_updateFacilityTest.OwnerId, result.Value.OwnerId);
+        Assert.Equal(updateFacilityDTO.Name, result.Value.Name);
+        Assert.Equal(updateFacilityDTO.Address, result.Value.Address);
+        Assert.Equal(updateFacilityDTO.City, result.Value.City);
+        Assert.Equal(updateFacilityDTO.State, result.Value.State);
+        Assert.Equal(updateFacilityDTO.ZipCode, result.Value.ZipCode);
+        Assert.Equal(updateFacilityDTO.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(updateFacilityDTO.OwnerId, result.Value.OwnerId);
 
-        await DbOperations.RemoveRecord<Facility>(toBeUpdatedFacility.Id, context);
+        //await DbOperations.RemoveRecord<Facility>(toBeUpdatedFacility.Id, fixtures.Context);
     }
 
     [Fact]
     public async Task Should_Not_FindOwnerFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
         TestUpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with { OwnerId = Guid.Empty };
 
@@ -84,6 +85,8 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
     public async Task Should_Not_AffectAnyRowFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
         TestUpdateFacilityDTO unknownFacility = _updateFacilityTest with { Id = Guid.NewGuid() };
 
