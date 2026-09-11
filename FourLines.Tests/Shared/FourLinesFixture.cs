@@ -10,50 +10,29 @@ namespace FourLines.Tests.Shared;
 
 public class FourLinesFixture : IAsyncLifetime
 {
-    public IConfiguration Configuration { get; set; }
-    public HostApplicationBuilder Builder { get; set; }
-    public IServiceProvider ServiceProvider { get; set; }
+    public IConfiguration Configuration { get; set; } = default!;
+    public HostApplicationBuilder Builder { get; set; } = default!;
+    public IServiceProvider ServiceProvider { get; set; } = default!;
 
-    private readonly PostgreSqlContainer _postgres =
-        new PostgreSqlBuilder("postgres:18")
-            .WithDatabase("fourlines_test")
-            .WithUsername("fourlines")
-            .WithPassword("fourlines")
-            .WithPortBinding(5433, 5432)
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
-                    .UntilCommandIsCompleted(
-                        "pg_isready",
-                        "-U", "fourlines",
-                        "-d", "fourlines_test"))
-            .Build();
+    private const string _databaseName = "fourlines_test";
+    private const string _username = "fourlines";
+    private const string _password = "fourlines";
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:18")
+        .WithDatabase(_databaseName)
+        .WithUsername(_username)
+        .WithPassword(_password)
+        .WithWaitStrategy(
+            Wait.ForUnixContainer()
+                .UntilCommandIsCompleted("pg_isready", "-U", _username, "-d", _databaseName)
+        )
+        .Build();
 
-    public FourLinesFixture()
-    {
-        Configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.Tests.json")
-            .AddInMemoryCollection()
-            .Build();
-
-        Builder = new HostApplicationBuilder();
-
-        Builder.Services
-            .AddInfrastructure(Configuration)
-            .AddApplication(Configuration)
-            .AddDomain();
-
-        Builder.Configuration.AddConfiguration(Configuration);
-
-        IHost host = Builder.Build();
-
-        ServiceProvider = host.Services;
-    }
+    private string _connectionString => _postgres.GetConnectionString();
 
     public async Task InitializeAsync()
     {
+        await InjectDependencies();
         await using var scope = CreateAsyncServiceScope();
-        await _postgres.StartAsync();
 
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
@@ -77,7 +56,33 @@ public class FourLinesFixture : IAsyncLifetime
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         await context.Database.EnsureDeletedAsync();
+
         await _postgres.StopAsync();
+        await _postgres.DisposeAsync();
+    }
+
+    public async Task InjectDependencies()
+    {
+        Configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.Tests.json")
+            .AddInMemoryCollection()
+            .Build();
+
+        Builder = new HostApplicationBuilder();
+
+        await _postgres.StartAsync();
+
+        Builder
+            .Services.AddInfrastructure(Configuration, _connectionString)
+            .AddApplication(Configuration)
+            .AddDomain();
+
+        Builder.Configuration.AddConfiguration(Configuration);
+
+        IHost host = Builder.Build();
+
+        ServiceProvider = host.Services;
     }
 
     public AsyncServiceScope CreateAsyncServiceScope()
@@ -126,11 +131,23 @@ public class FourLinesFixture : IAsyncLifetime
     {
         await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSunday, context);
         await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleMonday, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleTuesday, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleWednesday, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleThursday, context);
+        await CreateRecord<FacilitySchedule>(
+            TestDataSource.DefaultFacilityScheduleTuesday,
+            context
+        );
+        await CreateRecord<FacilitySchedule>(
+            TestDataSource.DefaultFacilityScheduleWednesday,
+            context
+        );
+        await CreateRecord<FacilitySchedule>(
+            TestDataSource.DefaultFacilityScheduleThursday,
+            context
+        );
         await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleFriday, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSaturday, context);
+        await CreateRecord<FacilitySchedule>(
+            TestDataSource.DefaultFacilityScheduleSaturday,
+            context
+        );
 
         await CreateRecord<FacilitySchedule>(TestDataSource.ToBeUpdatedFacilitySchedule, context);
         await CreateRecord<FacilitySchedule>(TestDataSource.ToBeDeletedFacilitySchedule, context);
@@ -144,12 +161,12 @@ public class FourLinesFixture : IAsyncLifetime
         await CreateRecord<Reservation>(TestDataSource.ToBeDeletedReservation, context);
     }
 
-    //public async Task RemoveAllRecords<T>()
-    //    where T : BaseEntity
-    //{
-    //    Context.Set<T>().RemoveRange(Context.Set<T>());
-    //    await Context.SaveChangesAsync();
-    //}
+    public async Task RemoveAllRecords<T>(FourLinesContext context)
+        where T : BaseEntity
+    {
+        context.Set<T>().RemoveRange(context.Set<T>());
+        await context.SaveChangesAsync();
+    }
 
     //public async Task RemoveRecord<T>(Guid id)
     //    where T : BaseEntity

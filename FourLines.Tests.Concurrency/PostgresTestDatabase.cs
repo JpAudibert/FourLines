@@ -11,24 +11,21 @@ public class PostgresTestDatabase : IAsyncLifetime
     private const string _databaseName = "fourlines_test";
     private const string _username = "fourlines";
     private const string _password = "fourlines";
-    private readonly PostgreSqlContainer _postgres =
-        new PostgreSqlBuilder("postgres:18")
-            .WithDatabase(_databaseName)
-            .WithUsername(_username)
-            .WithPassword(_password)
-            .WithWaitStrategy(
-                Wait.ForUnixContainer()
-                    .UntilCommandIsCompleted(
-                        "pg_isready",
-                        "-U", _username,
-                        "-d", _databaseName))
-            .Build();
-    
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:18")
+        .WithDatabase(_databaseName)
+        .WithUsername(_username)
+        .WithPassword(_password)
+        .WithWaitStrategy(
+            Wait.ForUnixContainer()
+                .UntilCommandIsCompleted("pg_isready", "-U", _username, "-d", _databaseName)
+        )
+        .Build();
+
     public async Task DisposeAsync()
     {
         await using var context = CreateContext();
         await context.Database.EnsureDeletedAsync();
-        
+
         await _postgres.StopAsync();
         await _postgres.DisposeAsync();
     }
@@ -36,7 +33,7 @@ public class PostgresTestDatabase : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
-        
+
         await using var context = CreateContext();
 
         await context.Database.EnsureDeletedAsync();
@@ -45,15 +42,11 @@ public class PostgresTestDatabase : IAsyncLifetime
 
     public FourLinesContext CreateContext()
     {
-        string host = _postgres.Hostname;
-        ushort port = _postgres.GetMappedPublicPort();
-
-        string mountedConnectionString = 
-            $"Host={host};Port={port};Database={_databaseName};Username={_username};Password={_password}";
+        string connectionString = _postgres.GetConnectionString();
 
         DbContextOptions<FourLinesContext> options = new DbContextOptionsBuilder<FourLinesContext>()
             .EnableDetailedErrors()
-            .UseNpgsql(mountedConnectionString)
+            .UseNpgsql(connectionString)
             .UseSnakeCaseNamingConvention()
             .Options;
 
