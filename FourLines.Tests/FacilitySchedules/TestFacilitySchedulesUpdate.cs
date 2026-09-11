@@ -54,8 +54,6 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
         Assert.Equal(_updateFacilityScheduleTest.DayOfWeek, result.Value.DayOfWeek);
         Assert.Equal(_updateFacilityScheduleTest.OpensAt, result.Value.OpensAt);
         Assert.Equal(_updateFacilityScheduleTest.ClosesAt, result.Value.ClosesAt);
-
-        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]

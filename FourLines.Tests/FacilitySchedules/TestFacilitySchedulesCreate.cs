@@ -46,8 +46,6 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         Assert.Equal(_createFacilityScheduleTest1.DayOfWeek, result.Value.DayOfWeek);
         Assert.Equal(_createFacilityScheduleTest1.OpensAt, result.Value.OpensAt);
         Assert.Equal(_createFacilityScheduleTest1.ClosesAt, result.Value.ClosesAt);
-
-        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]
@@ -116,9 +114,6 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         Assert.Equal(newSchedules[1].DayOfWeek, result.Value.ElementAt(1).DayOfWeek);
         Assert.Equal(newSchedules[1].OpensAt, result.Value.ElementAt(1).OpensAt);
         Assert.Equal(newSchedules[1].ClosesAt, result.Value.ElementAt(1).ClosesAt);
-
-        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(0).Id, fixtures.Context);
-        //await DbOperations.RemoveRecord<FacilitySchedule>(result.Value.ElementAt(1).Id, fixtures.Context);
     }
 
     [Fact]

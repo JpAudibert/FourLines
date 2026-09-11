@@ -45,8 +45,6 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         Assert.Equal(_createCourtTest.FacilityId, result.Value.FacilityId);
         Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
         Assert.Equal(_createCourtTest.IsActive, result.Value.IsActive);
-
-        //await DbOperations.RemoveRecord<Court>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]

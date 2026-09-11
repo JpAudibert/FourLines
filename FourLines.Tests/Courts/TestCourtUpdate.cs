@@ -51,8 +51,6 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
         Assert.Equal(updateCourtDTO.FacilityId, result.Value.FacilityId);
         Assert.Equal(updateCourtDTO.SportId, result.Value.SportId);
         Assert.Equal(updateCourtDTO.IsActive, result.Value.IsActive);
-
-        //await DbOperations.RemoveRecord<Court>(testCourt.Id, fixtures.Context);
     }
 
     [Fact]

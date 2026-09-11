@@ -52,8 +52,6 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
 
         Assert.NotNull(result.Value.Match);
         Assert.Equal(6, result.Value.Match.Code.Length);
-
-        //await DbOperations.RemoveRecord<Reservation>(result.Value.Reservation.Id, fixtures.Context);
     }
 
     [Fact]

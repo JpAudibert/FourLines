@@ -53,8 +53,6 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         Assert.Equal(_createFacilityTest.ZipCode, result.Value.ZipCode);
         Assert.Equal(_createFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(_createFacilityTest.OwnerId, result.Value.OwnerId);
-
-        //await DbOperations.RemoveRecord<Facility>(result.Value.Id, fixtures.Context);
     }
 
     [Fact]

@@ -17,7 +17,7 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        Facility dummyFacility = await DbOperations.CreateRecord<Facility>(
+        Facility dummyFacility = await fixtures.CreateRecord<Facility>(
             TestDataSource.DummyFacility,
             context
         );
@@ -31,8 +31,6 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         // Assert
         Assert.NotEmpty(result.Value);
         Assert.Equal(context.Facilities.Count(), result.Value.Count());
-
-        //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
     }
 
     [Fact]
@@ -58,8 +56,6 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         Assert.NotEmpty(result.Value);
         Assert.Equal(ownersFacilities, result.Value.Count());
-
-        //await DbOperations.RemoveRecord<Facility>(defaultFacility2.Id, fixtures.Context);
     }
 
     [Fact]

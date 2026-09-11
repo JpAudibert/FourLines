@@ -60,8 +60,6 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         Assert.Equal(updateFacilityDTO.ZipCode, result.Value.ZipCode);
         Assert.Equal(updateFacilityDTO.RegistrationNumber, result.Value.RegistrationNumber);
         Assert.Equal(updateFacilityDTO.OwnerId, result.Value.OwnerId);
-
-        //await DbOperations.RemoveRecord<Facility>(toBeUpdatedFacility.Id, fixtures.Context);
     }
 
     [Fact]

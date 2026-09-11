@@ -47,8 +47,6 @@ public class TestCourtRead(FourLinesFixture fixtures)
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
-
-        //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
     }
 
     [Fact]
