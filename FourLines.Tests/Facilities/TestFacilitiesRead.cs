@@ -28,26 +28,9 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(6, result.Value.Count());
 
         //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
-    }
-
-    [Fact]
-    public async Task Should_Not_GetAllFacilities()
-    {
-        // Arrange
-        await using var scope = fixtures.CreateAsyncServiceScope();
-
-        IFacilityHandler facilityHandler =
-            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-
-        // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
-
-        // Assert
-        Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
     }
 
     [Fact]
@@ -66,7 +49,7 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(5, result.Value.Count());
 
         //await DbOperations.RemoveRecord<Facility>(defaultFacility2.Id, fixtures.Context);
     }

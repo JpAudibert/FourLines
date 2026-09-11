@@ -109,11 +109,6 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
             })
             .ToListAsync();
 
-        if (!facilities.Any())
-            return Result<IEnumerable<Facility>>.Failure(
-                FacilitiesErrorResults.RetrieveNoFacilities
-            );
-
         return Result<IEnumerable<Facility>>.Success(facilities);
     }
 
