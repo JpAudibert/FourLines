@@ -4,12 +4,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        string defaultConnectionString = default!
     )
     {
-        string connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Postgres") ??
-            configuration.GetConnectionString("DefaultConnection") ??
-            throw new InvalidOperationException("Connection string not found.");
+        string connectionString = defaultConnectionString;
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString =
+                Environment.GetEnvironmentVariable("ConnectionStrings__Postgres")
+                ?? configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string not found.");
+        }
 
         services.AddDbContext<FourLinesContext>(
             (serviceProvider, options) =>
@@ -17,17 +24,15 @@ public static class DependencyInjection
                 if (configuration.GetValue<bool>("UseInMemory", false))
                 {
                     options
-                    .UseNpgsql(connectionString)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors()
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .UseSnakeCaseNamingConvention();
+                        .UseNpgsql(connectionString)
+                        .EnableSensitiveDataLogging()
+                        .EnableDetailedErrors()
+                        .LogTo(Console.WriteLine, LogLevel.Information)
+                        .UseSnakeCaseNamingConvention();
                 }
                 else
                 {
-                    options
-                        .UseNpgsql(connectionString)
-                        .UseSnakeCaseNamingConvention();
+                    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
                 }
             }
         );
