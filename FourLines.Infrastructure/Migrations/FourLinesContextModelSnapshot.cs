@@ -176,6 +176,97 @@ namespace FourLines.Infrastructure.Migrations
                     b.ToTable("facility_schedules", (string)null);
                 });
 
+            modelBuilder.Entity("FourLines.Domain.Models.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ReservationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reservation_id");
+
+                    b.Property<Guid>("SportId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sport_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_matches");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_matches_code");
+
+                    b.HasIndex("ReservationId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_matches_reservation_id");
+
+                    b.HasIndex("SportId")
+                        .HasDatabaseName("ix_matches_sport_id");
+
+                    b.ToTable("matches", (string)null);
+                });
+
+            modelBuilder.Entity("FourLines.Domain.Models.MatchesUsers", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsGoalKeeper")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_goal_keeper");
+
+                    b.Property<Guid>("MatchId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("match_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_matches_users");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_matches_users_user_id");
+
+                    b.HasIndex("MatchId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_matches_users_match_id_user_id");
+
+                    b.ToTable("matches_users", (string)null);
+                });
+
             modelBuilder.Entity("FourLines.Domain.Models.Reservation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -269,6 +360,10 @@ namespace FourLines.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<bool>("HasFixedGoalKeeper")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_fixed_goal_keeper");
 
                     b.Property<bool>("Indoor")
                         .HasColumnType("boolean")
@@ -420,6 +515,48 @@ namespace FourLines.Infrastructure.Migrations
                     b.Navigation("Facility");
                 });
 
+            modelBuilder.Entity("FourLines.Domain.Models.Match", b =>
+                {
+                    b.HasOne("FourLines.Domain.Models.Reservation", "Reservation")
+                        .WithOne()
+                        .HasForeignKey("FourLines.Domain.Models.Match", "ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_matches_reservations_reservation_id");
+
+                    b.HasOne("FourLines.Domain.Models.Sport", "Sport")
+                        .WithMany()
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_matches_sports_sport_id");
+
+                    b.Navigation("Reservation");
+
+                    b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("FourLines.Domain.Models.MatchesUsers", b =>
+                {
+                    b.HasOne("FourLines.Domain.Models.Match", "Match")
+                        .WithMany("MatchesUsers")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_matches_users_matches_match_id");
+
+                    b.HasOne("FourLines.Domain.Models.User", "User")
+                        .WithMany("MatchesUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_matches_users_users_user_id");
+
+                    b.Navigation("Match");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FourLines.Domain.Models.Reservation", b =>
                 {
                     b.HasOne("FourLines.Domain.Models.Court", "Court")
@@ -465,6 +602,11 @@ namespace FourLines.Infrastructure.Migrations
                     b.Navigation("Schedules");
                 });
 
+            modelBuilder.Entity("FourLines.Domain.Models.Match", b =>
+                {
+                    b.Navigation("MatchesUsers");
+                });
+
             modelBuilder.Entity("FourLines.Domain.Models.Role", b =>
                 {
                     b.Navigation("Users");
@@ -478,6 +620,8 @@ namespace FourLines.Infrastructure.Migrations
             modelBuilder.Entity("FourLines.Domain.Models.User", b =>
                 {
                     b.Navigation("Facilities");
+
+                    b.Navigation("MatchesUsers");
 
                     b.Navigation("Reservations");
                 });

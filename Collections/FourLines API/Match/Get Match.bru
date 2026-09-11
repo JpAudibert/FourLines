@@ -1,0 +1,21 @@
+meta {
+  name: Get Match
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/match/:matchId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  matchId: 83a79c32-f9c6-4b6e-b949-97913cf53423
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

@@ -1,8 +1,9 @@
-﻿namespace FourLines.Application.DTOs.FacilitySchedules;
+﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
 
-public record DeleteFacilityScheduleDTO
+namespace FourLines.Application.DTOs.FacilitySchedules;
+
+public record DeleteFacilityScheduleDTO : IDeleteFacilityScheduleDTO
 {
-    public Guid OwnerId { get; init; }
     public Guid FacilityId { get; init; }
     public Guid ScheduleId { get; init; }
 }

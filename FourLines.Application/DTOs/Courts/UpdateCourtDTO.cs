@@ -1,6 +1,8 @@
-﻿namespace FourLines.Application.DTOs.Courts;
+﻿using FourLines.Application.DTOs.Courts.Interfaces;
 
-public record UpdateCourtDTO
+namespace FourLines.Application.DTOs.Courts;
+
+public record UpdateCourtDTO : IUpdateCourtDTO
 {
     public Guid Id { get; init; } = default!;
     public Guid OwnerId { get; init; } = default!;

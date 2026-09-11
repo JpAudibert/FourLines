@@ -1,0 +1,27 @@
+meta {
+  name: Update Match Name
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/match/:matchId/update-match-name
+  body: json
+  auth: inherit
+}
+
+params:path {
+  matchId: 83a79c32-f9c6-4b6e-b949-97913cf53423
+}
+
+body:json {
+  {
+    "name": "GREnal"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

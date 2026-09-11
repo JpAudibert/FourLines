@@ -2,80 +2,70 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
 
-public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitiesRead(FourLinesFixture fixtures)
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_GetAllFacilities()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2);
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        Facility dummyFacility = await fixtures.CreateRecord<Facility>(
+            TestDataSource.DummyFacility,
+            context
+        );
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
-    }
-
-    [Fact]
-    public async Task Should_Not_GetAllFacilities()
-    {
-        // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
-
-        IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-
-        // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
-
-        // Assert
-        Assert.Null(result.Value);
-        Assert.Equal(FacilitiesErrorResults.RetrieveNoFacilities, result.Error);
+        Assert.Equal(context.Facilities.Count(), result.Value.Count());
     }
 
     [Fact]
     public async Task Should_GetFacilities()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility2);
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
-            InMemoryDataSource.UserOwner.Id
+            TestDataSource.DefaultFacility.OwnerId
         );
 
         // Assert
+        int ownersFacilities = context
+            .Facilities.Where(f => f.OwnerId == TestDataSource.DefaultFacility.OwnerId)
+            .Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(ownersFacilities, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetFacilities()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
@@ -91,39 +81,39 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.UserOwner.Id,
-            InMemoryDataSource.Facility1.Id
+            TestDataSource.UserOwner.Id,
+            TestDataSource.DefaultFacility.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(InMemoryDataSource.Facility1.Name, result.Value.Name);
-        Assert.Equal(InMemoryDataSource.Facility1.Address, result.Value.Address);
-        Assert.Equal(InMemoryDataSource.Facility1.City, result.Value.City);
-        Assert.Equal(InMemoryDataSource.Facility1.State, result.Value.State);
-        Assert.Equal(InMemoryDataSource.Facility1.ZipCode, result.Value.ZipCode);
+        Assert.Equal(TestDataSource.DefaultFacility.Name, result.Value.Name);
+        Assert.Equal(TestDataSource.DefaultFacility.Address, result.Value.Address);
+        Assert.Equal(TestDataSource.DefaultFacility.City, result.Value.City);
+        Assert.Equal(TestDataSource.DefaultFacility.State, result.Value.State);
+        Assert.Equal(TestDataSource.DefaultFacility.ZipCode, result.Value.ZipCode);
         Assert.Equal(
-            InMemoryDataSource.Facility1.RegistrationNumber,
+            TestDataSource.DefaultFacility.RegistrationNumber,
             result.Value.RegistrationNumber
         );
-        Assert.Equal(InMemoryDataSource.Facility1.OwnerId, result.Value.OwnerId);
+        Assert.Equal(TestDataSource.DefaultFacility.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
     public async Task Should_Not_GetOwnerFacility()
     {
         // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
@@ -140,15 +130,14 @@ public class TestFacilitiesRead(InMemoryFixtures fixtures) : IClassFixture<InMem
     public async Task Should_Not_GetFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            InMemoryDataSource.UserOwner.Id,
+            TestDataSource.DefaultFacility.OwnerId,
             Guid.NewGuid()
         );
 

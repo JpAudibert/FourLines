@@ -1,76 +1,78 @@
-using FourLines.Application.DTOs.Facilities;
+using FourLines.Application.DTOs.Facilities.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Facilities;
 
-public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+public record TestUpdateFacilityDTO : IUpdateFacilityDTO
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
+    public Guid Id { get; init; } = default!;
+    public Guid OwnerId { get; init; } = default!;
+    public string Name { get; init; } = default!;
+    public string Address { get; init; } = default!;
+    public string City { get; init; } = default!;
+    public string State { get; init; } = default!;
+    public string ZipCode { get; init; } = default!;
+    public string RegistrationNumber { get; init; } = default!;
+}
+
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitiesUpdate(FourLinesFixture fixtures)
+{
+    private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
+    {
+        Id = TestDataSource.ToBeUpdatedFacility.Id,
+        Name = "Test Updated Facility",
+        Address = "123 Test St",
+        City = "Test City",
+        State = "TS",
+        ZipCode = "12345",
+        RegistrationNumber = "1111111111",
+        OwnerId = TestDataSource.UserOwner.Id,
+    };
 
     [Fact]
     public async Task Should_UpdateFacility()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
-        UpdateFacilityDTO updateFacilityTest = new()
+        TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with 
         {
-            Id = InMemoryDataSource.Facility1.Id,
-            Name = "Test Updated Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = InMemoryDataSource.UserOwner.Id,
+            Id = TestDataSource.ToBeUpdatedFacility.Id,
         };
 
         // Act
-        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
+        Result<Facility> result = await facilityHandler.Update(updateFacilityDTO);
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<Facility>(result.Value);
-        Assert.Equal(updateFacilityTest.Name, result.Value.Name);
-        Assert.Equal(updateFacilityTest.Address, result.Value.Address);
-        Assert.Equal(updateFacilityTest.City, result.Value.City);
-        Assert.Equal(updateFacilityTest.State, result.Value.State);
-        Assert.Equal(updateFacilityTest.ZipCode, result.Value.ZipCode);
-        Assert.Equal(updateFacilityTest.RegistrationNumber, result.Value.RegistrationNumber);
-        Assert.Equal(updateFacilityTest.OwnerId, result.Value.OwnerId);
+        Assert.Equal(updateFacilityDTO.Name, result.Value.Name);
+        Assert.Equal(updateFacilityDTO.Address, result.Value.Address);
+        Assert.Equal(updateFacilityDTO.City, result.Value.City);
+        Assert.Equal(updateFacilityDTO.State, result.Value.State);
+        Assert.Equal(updateFacilityDTO.ZipCode, result.Value.ZipCode);
+        Assert.Equal(updateFacilityDTO.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(updateFacilityDTO.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
     public async Task Should_Not_FindOwnerFacility()
     {
         // Arrange
-        IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
-        UpdateFacilityDTO updateFacilityTest = new()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test Updated Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = Guid.Empty,
-        };
+        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        TestUpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with { OwnerId = Guid.Empty };
 
         // Act
-        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
+        Result<Facility> result = await facilityHandler.Update(facilityWithNoOwnerId);
 
         // Assert
         Assert.Null(result.Value);
@@ -81,23 +83,13 @@ public class TestFacilitiesUpdate(InMemoryFixtures fixtures) : IClassFixture<InM
     public async Task Should_Not_AffectAnyRowFacility()
     {
         // Arrange
-        IFacilityHandler facilityHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
-        UpdateFacilityDTO updateFacilityTest = new()
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test Updated Facility",
-            Address = "123 Test St",
-            City = "Test City",
-            State = "TS",
-            ZipCode = "12345",
-            RegistrationNumber = "1234567890",
-            OwnerId = Guid.NewGuid(),
-        };
+        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        TestUpdateFacilityDTO unknownFacility = _updateFacilityTest with { Id = Guid.NewGuid() };
 
         // Act
-        Result<Facility> result = await facilityHandler.Update(updateFacilityTest);
+        Result<Facility> result = await facilityHandler.Update(unknownFacility);
 
         // Assert
         Assert.Null(result.Value);

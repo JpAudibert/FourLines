@@ -1,32 +1,38 @@
-﻿using Microsoft.Data.Sqlite;
-
-namespace FourLines.Infrastructure.DependencyInjection;
+﻿namespace FourLines.Infrastructure.DependencyInjection;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
+        IConfiguration configuration,
+        string defaultConnectionString = default!
     )
     {
+        string connectionString = defaultConnectionString;
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString =
+                Environment.GetEnvironmentVariable("ConnectionStrings__Postgres")
+                ?? configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string not found.");
+        }
+
         services.AddDbContext<FourLinesContext>(
             (serviceProvider, options) =>
             {
-                // Allow tests to opt-in to an in-memory provider using configuration
                 if (configuration.GetValue<bool>("UseInMemory", false))
                 {
                     options
-                        .UseSqlite(serviceProvider.GetService<SqliteConnection>()!)
-                        .UseSnakeCaseNamingConvention()
+                        .UseNpgsql(connectionString)
                         .EnableSensitiveDataLogging()
                         .EnableDetailedErrors()
-                        .LogTo(Console.WriteLine, LogLevel.Information);
+                        .LogTo(Console.WriteLine, LogLevel.Information)
+                        .UseSnakeCaseNamingConvention();
                 }
                 else
                 {
-                    options
-                        .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
-                        .UseSnakeCaseNamingConvention();
+                    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
                 }
             }
         );

@@ -1,22 +1,29 @@
-using FourLines.Application.DTOs.Courts;
+using FourLines.Application.DTOs.Courts.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.Courts;
 
-public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+public record TestCreateCourtDTO : ICreateCourtDTO
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
+    public Guid FacilityId { get; init; }
+    public bool IsActive { get; init; }
+    public string Name { get; init; } = default!;
+    public Guid OwnerId { get; init; }
+    public Guid SportId { get; init; }
+}
 
-    private static CreateCourtDTO _createCourtTest = new()
+[Collection(FourLinesCollection.Name)]
+public class TestCourtCreate(FourLinesFixture fixtures)
+{
+    private static readonly TestCreateCourtDTO _createCourtTest = new()
     {
-        OwnerId = InMemoryDataSource.UserOwner.Id,
-        FacilityId = InMemoryDataSource.Facility1.Id,
-        SportId = InMemoryDataSource.TestSport.Id,
+        OwnerId = TestDataSource.UserOwner.Id,
+        FacilityId = TestDataSource.DefaultFacility.Id,
+        SportId = TestDataSource.DefaultSport.Id,
         Name = "Test Court",
         IsActive = true,
     };
@@ -25,16 +32,11 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_CreateCourt()
     {
         // Arrange
-
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-
-        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<Domain.Models.Court> result = await courtHandler.Create(_createCourtTest);
+        Result<Court> result = await courtHandler.Create(_createCourtTest);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -49,15 +51,12 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_HaveFacilityToCreateCourt()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
-        await _fixtures.RemoveDataFromMemory<Facility>(InMemoryDataSource.Facility1.Id);
-
-        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        TestCreateCourtDTO courtWithNoFacility = _createCourtTest with { FacilityId = Guid.NewGuid() };
 
         // Act
-        Result<Court> result = await courtHandler.Create(_createCourtTest);
+        Result<Court> result = await courtHandler.Create(courtWithNoFacility);
 
         // Assert
         Assert.Null(result.Value);
@@ -68,15 +67,12 @@ public class TestCourtCreate(InMemoryFixtures fixtures) : IClassFixture<InMemory
     public async Task Should_Not_HaveKnownSport()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.RemoveAllDataFromMemory<Sport>();
-
-        ICourtHandler courtHandler = _fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        TestCreateCourtDTO courtWithNoSport = _createCourtTest with { SportId = Guid.NewGuid() };
 
         // Act
-        Result<Court> result = await courtHandler.Create(_createCourtTest);
+        Result<Court> result = await courtHandler.Create(courtWithNoSport);
 
         // Assert
         Assert.Null(result.Value);

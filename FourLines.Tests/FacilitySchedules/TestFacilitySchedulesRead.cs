@@ -1,57 +1,44 @@
-using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-public class TestFacilitySchedulesRead(InMemoryFixtures fixtures) : IClassFixture<InMemoryFixtures>
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
-
     [Fact]
     public async Task Should_GetFacilitiesSchedules()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule1
-        );
-        await _fixtures.CreateEntityInMemory<FacilitySchedule>(
-            InMemoryDataSource.FacilitySchedule2
-        );
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
-            InMemoryDataSource.UserOwner.Id,
-            InMemoryDataSource.Facility1.Id
+            TestDataSource.DefaultFacility.Id
         );
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(2, result.Value.Count());
+        Assert.Equal(7, result.Value.Count());
     }
 
     [Fact]
     public async Task Should_Not_GetFacilitiesSchedules()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
-            Guid.NewGuid(),
             Guid.NewGuid()
         );
 

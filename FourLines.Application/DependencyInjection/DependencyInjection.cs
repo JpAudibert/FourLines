@@ -20,17 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IFacilityScheduleHandler, FacilityScheduleHandler>();
         services.AddScoped<ICourtHandler, CourtHandler>();
 
-        if (configuration.GetValue<bool>("UseInMemory", false))
-        {
-            services.AddScoped<ICourtLockStrategies, SqliteCourtLockStrategy>();
-        }
-        else
-        {
-            services.AddScoped<ICourtLockStrategies, PostgresCourtLockStrategy>();
-        }
-
+        services.AddScoped<ICourtLockStrategies, PostgresCourtLockStrategy>();
         services.AddScoped<IReservationValidator, ReservationValidator>();
         services.AddScoped<IReservationHandler, ReservationHandler>();
+        services.AddScoped<IMatchHandler, MatchHandler>();
 
         services.AddScoped<SeederHandler>();
 

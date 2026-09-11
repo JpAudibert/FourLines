@@ -1,13 +1,15 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+
+namespace FourLines.Application.Handlers;
 
 public class FacilityScheduleHandler(FourLinesContext context) : IFacilityScheduleHandler
 {
     private readonly FourLinesContext _context = context;
 
-    public async Task<Result<FacilitySchedule>> Create(CreateFacilityScheduleDTO newSchedule)
+    public async Task<Result<FacilitySchedule>> Create(ICreateFacilityScheduleDTO newSchedule)
     {
         Facility? facility = await _context.Facilities
-            .FirstOrDefaultAsync(f => f.Id == newSchedule.FacilityId && f.OwnerId == newSchedule.OwnerId);
+            .FirstOrDefaultAsync(f => f.Id == newSchedule.FacilityId);
         if (facility is null)
             return Result<FacilitySchedule>.Failure(FacilitySchedulesErrorResults.CreateFacilitySchedules);
 
@@ -26,10 +28,10 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
         return Result<FacilitySchedule>.Success(schedule);
     }
 
-    public async Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(List<CreateFacilityScheduleDTO> newSchedules)
+    public async Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(List<ICreateFacilityScheduleDTO> newSchedules)
     {
         Facility? facility = await _context.Facilities
-            .FirstOrDefaultAsync(f => f.Id == newSchedules[0].FacilityId && f.OwnerId == newSchedules[0].OwnerId);
+            .FirstOrDefaultAsync(f => f.Id == newSchedules[0].FacilityId);
         if (facility is null)
             return Result<IEnumerable<FacilitySchedule>>.Failure(FacilitySchedulesErrorResults.CreateFacilitySchedules);
 
@@ -53,12 +55,12 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     }
 
 
-    public async Task<Result<FacilitySchedule>> Update(UpdateFacilityScheduleDTO schedule)
+    public async Task<Result<FacilitySchedule>> Update(IUpdateFacilityScheduleDTO schedule)
     {
         Facility? facility = await _context.Facilities
-            .FirstOrDefaultAsync(f => f.Id == schedule.FacilityId && f.OwnerId == schedule.OwnerId);
+            .FirstOrDefaultAsync(f => f.Id == schedule.FacilityId);
         if (facility is null)
-            return Result<FacilitySchedule>.Failure(FacilitySchedulesErrorResults.UpdateFacilitySchedules);
+            return Result<FacilitySchedule>.Failure(FacilitySchedulesErrorResults.UpdateUnknownFacility);
 
         int affectedRows = await _context.FacilitySchedules
             .Where(fs => fs.Id == schedule.Id && fs.FacilityId == schedule.FacilityId)
@@ -80,15 +82,14 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
         return Result<FacilitySchedule>.Success(updatedSchedule!);
     }
 
-    public async Task<Result<bool>> Delete(DeleteFacilityScheduleDTO deleteDto)
+    public async Task<Result<bool>> Delete(IDeleteFacilityScheduleDTO deleteDto)
     {
         bool deleted = false;
 
         int affectedRows = await _context.FacilitySchedules
             .Where(fs => 
                 fs.Id == deleteDto.ScheduleId && 
-                fs.FacilityId == deleteDto.FacilityId && 
-                fs.Facility.OwnerId == deleteDto.OwnerId)
+                fs.FacilityId == deleteDto.FacilityId)
             .ExecuteDeleteAsync();
 
         if (affectedRows <= 0)
@@ -100,10 +101,10 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
         return Result<bool>.Success(deleted);
     }
 
-    public async Task<Result<IEnumerable<FacilitySchedule>>> GetSchedules(Guid ownerId, Guid facilityId)
+    public async Task<Result<IEnumerable<FacilitySchedule>>> GetSchedules(Guid facilityId)
     {
         IEnumerable<FacilitySchedule>? schedules = await _context.FacilitySchedules
-            .Where(fs => fs.FacilityId == facilityId && fs.Facility.OwnerId == ownerId)
+            .Where(fs => fs.FacilityId == facilityId)
             .AsNoTracking()
             .Select(fs => new FacilitySchedule()
             {

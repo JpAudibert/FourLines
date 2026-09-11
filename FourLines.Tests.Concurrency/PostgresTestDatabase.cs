@@ -1,43 +1,48 @@
-﻿using FourLines.Domain.Models;
+﻿using DotNet.Testcontainers.Builders;
+using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
+using Testcontainers.PostgreSql;
 
 namespace FourLines.Tests.Concurrency;
 
 public class PostgresTestDatabase : IAsyncLifetime
 {
-    private readonly IConfiguration _configuration;
-
-    public PostgresTestDatabase()
-    {
-        _configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.Tests.json")
-            .AddInMemoryCollection()
-            .Build();
-    }
+    private const string _databaseName = "fourlines_test";
+    private const string _username = "fourlines";
+    private const string _password = "fourlines";
+    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:18")
+        .WithDatabase(_databaseName)
+        .WithUsername(_username)
+        .WithPassword(_password)
+        .WithWaitStrategy(
+            Wait.ForUnixContainer()
+                .UntilCommandIsCompleted("pg_isready", "-U", _username, "-d", _databaseName)
+        )
+        .Build();
 
     public async Task DisposeAsync()
     {
         await using var context = CreateContext();
         await context.Database.EnsureDeletedAsync();
+
+        await _postgres.StopAsync();
+        await _postgres.DisposeAsync();
     }
 
     public async Task InitializeAsync()
     {
+        await _postgres.StartAsync();
+
         await using var context = CreateContext();
 
-        await context.Database.MigrateAsync();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
     }
 
     public FourLinesContext CreateContext()
     {
-        string connectionString =
-            Environment.GetEnvironmentVariable("ConnectionStrings__Postgres") ??
-            _configuration.GetConnectionString("DefaultConnection") ??
-            throw new InvalidOperationException("Connection string not found.");
+        string connectionString = _postgres.GetConnectionString();
 
         DbContextOptions<FourLinesContext> options = new DbContextOptionsBuilder<FourLinesContext>()
             .EnableDetailedErrors()

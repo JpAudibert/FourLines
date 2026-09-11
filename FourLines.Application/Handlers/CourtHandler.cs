@@ -1,10 +1,12 @@
-﻿namespace FourLines.Application.Handlers;
+﻿using FourLines.Application.DTOs.Courts.Interfaces;
+
+namespace FourLines.Application.Handlers;
 
 public class CourtHandler(FourLinesContext context) : ICourtHandler
 {
     private readonly FourLinesContext _context = context;
 
-    public async Task<Result<Court>> Create(CreateCourtDTO newCourt)
+    public async Task<Result<Court>> Create(ICreateCourtDTO newCourt)
     {
         Facility? facility = await _context.Facilities.FirstOrDefaultAsync(f =>
             f.Id == newCourt.FacilityId && f.OwnerId == newCourt.OwnerId
@@ -32,7 +34,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
         return Result<Court>.Success(court);
     }
 
-    public async Task<Result<Court>> Update(UpdateCourtDTO court)
+    public async Task<Result<Court>> Update(IUpdateCourtDTO court)
     {
         Facility? facility = await _context.Facilities.FirstOrDefaultAsync(f =>
             f.Id == court.FacilityId
@@ -44,12 +46,12 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
             .Courts.Where(c =>
                 c.Id == court.Id
                 && c.Facility.Id == court.FacilityId
-                && c.Facility.OwnerId == court.OwnerId
             )
             .ExecuteUpdateAsync(setters =>
                 setters
                     .SetProperty(c => c.Name, court.Name)
                     .SetProperty(c => c.IsActive, court.IsActive)
+                    .SetProperty(c => c.SportId, court.SportId)
             );
 
         if (affectedRows <= 0)
@@ -62,14 +64,13 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
         return Result<Court>.Success(updatedCourt!);
     }
 
-    public async Task<Result<bool>> Delete(DeleteCourtDTO deleteDto)
+    public async Task<Result<bool>> Delete(IDeleteCourtDTO deleteDto)
     {
         bool deleted = false;
         int affectedRows = await _context
             .Courts.Where(c =>
                 c.Id == deleteDto.CourtId && 
-                c.Facility.Id == deleteDto.FacilityId && 
-                c.Facility.OwnerId == deleteDto.OwnerId
+                c.Facility.Id == deleteDto.FacilityId
             )
             .ExecuteDeleteAsync();
 
@@ -82,10 +83,10 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
         return Result<bool>.Success(deleted);
     }
 
-    public async Task<Result<Court>> GetFacility(Guid ownerId, Guid facilityId, Guid courtId)
+    public async Task<Result<Court>> GetCourtFromFacility(Guid facilityId, Guid courtId)
     {
         Court? court = await _context.Courts.FirstOrDefaultAsync(c =>
-            c.Id == courtId && c.Facility.Id == facilityId && c.Facility.OwnerId == ownerId
+            c.Id == courtId && c.Facility.Id == facilityId
         );
 
         if (court is null)
@@ -95,12 +96,11 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(
-        Guid ownerId,
         Guid facilityId
     )
     {
         IEnumerable<Court?> courts = await _context
-            .Courts.Where(c => c.Facility.Id == facilityId && c.Facility.OwnerId == ownerId)
+            .Courts.Where(c => c.Facility.Id == facilityId)
             .ToListAsync();
 
         if (courts is null || !courts.Any())

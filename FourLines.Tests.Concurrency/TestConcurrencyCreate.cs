@@ -20,12 +20,16 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
         // Arrange
         Mock<IReservationValidator> validator = new();
         validator.Setup(v => v.ValidateAsync(It.IsAny<CreateReservationDTO>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((CreateReservationDTO dto, CancellationToken _) => Result<Reservation>.Success(new Reservation
+            .ReturnsAsync((CreateReservationDTO dto, CancellationToken _) => Result<ConfirmReservationResponseDTO>.Success(new ConfirmReservationResponseDTO
             {
-                Id = Guid.NewGuid(),
-                CourtId = dto.CourtId,
-                UserId = dto.UserId,
-                Period = dto.Period
+                Match = default!,
+                Reservation = new Reservation
+                {
+                    Id = Guid.NewGuid(),
+                    CourtId = dto.CourtId,
+                    UserId = dto.UserId,
+                    Period = dto.Period
+                }
             }));
 
         await using (var context = _database.CreateContext())
@@ -40,7 +44,7 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
             await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Facility1SettedSchedule, context);
         }
 
-        async Task<Result<Reservation>> MakeReservation()
+        async Task<Result<ConfirmReservationResponseDTO>> MakeReservation()
         {
             await using var reservationContext = _database.CreateContext();
 
@@ -64,16 +68,16 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
             }
             catch (PostgresException)
             {
-                return Result<Reservation>.Failure(new Error("Failed to create reservation."));
+                return Result<ConfirmReservationResponseDTO>.Failure(new Error("Failed to create reservation."));
             }
         }
 
         // Act
-        Result<Reservation>[] results = await Task.WhenAll(MakeReservation(), MakeReservation());
+        Result<ConfirmReservationResponseDTO>[] results = await Task.WhenAll(MakeReservation(), MakeReservation());
 
         // Assert
-        Result<Reservation> result1 = results[0];
-        Result<Reservation> result2 = results[1];
+        Result<ConfirmReservationResponseDTO> result1 = results[0];
+        Result<ConfirmReservationResponseDTO> result2 = results[1];
 
         Assert.True(result1.IsSuccess ^ result2.IsSuccess, "Only one reservation should succeed.");
 

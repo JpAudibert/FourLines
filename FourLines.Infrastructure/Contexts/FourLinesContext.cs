@@ -9,6 +9,8 @@ public class FourLinesContext(DbContextOptions<FourLinesContext> options) : DbCo
     public DbSet<Court> Courts { get; set; } = default!;
     public DbSet<FacilitySchedule> FacilitySchedules { get; set; } = default!;
     public DbSet<Reservation> Reservations { get; set; } = default!;
+    public DbSet<Match> Matches { get; set; } = default!;
+    public DbSet<MatchesUsers> MatchesUsers { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

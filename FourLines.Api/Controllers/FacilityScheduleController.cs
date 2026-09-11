@@ -1,4 +1,5 @@
-﻿using FourLines.Application.Interfaces;
+﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+using FourLines.Application.Interfaces;
 
 namespace FourLines.Api.Controllers;
 
@@ -27,7 +28,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         StartStopwatch();
 
-        Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(ownerId, facilityId);
+        Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(facilityId);
 
         return HandleResult(result);
     }
@@ -50,7 +51,6 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Create(new CreateFacilityScheduleDTO()
         {
-            OwnerId = ownerId,
             FacilityId = facilityId,
             DayOfWeek = newFacilitySchedule.DayOfWeek,
             OpensAt = newFacilitySchedule.OpensAt,
@@ -76,13 +76,12 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         StartStopwatch();
 
-        List<CreateFacilityScheduleDTO> schedules = [];
+        List<ICreateFacilityScheduleDTO> schedules = [];
 
         foreach (var schedule in newFacilitySchedules)
         {
             CreateFacilityScheduleDTO facilityScheduleDTO = new()
             {
-                OwnerId = ownerId,
                 FacilityId = facilityId,
                 DayOfWeek = schedule.DayOfWeek,
                 OpensAt = schedule.OpensAt,
@@ -118,7 +117,6 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         Result<FacilitySchedule> result = await _facilityScheduleHandler.Update(new UpdateFacilityScheduleDTO()
         {
             Id = scheduleId,
-            OwnerId = ownerId,
             FacilityId = facilityId,
             DayOfWeek = updateFacilitySchedule.DayOfWeek,
             OpensAt = updateFacilitySchedule.OpensAt,
@@ -147,7 +145,6 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
 
         Result<bool> result = await _facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
-            OwnerId = ownerId,
             FacilityId = facilityId,
             ScheduleId = scheduleId
         });

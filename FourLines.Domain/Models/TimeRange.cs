@@ -6,7 +6,6 @@ public record TimeRange(DateTimeOffset Start, DateTimeOffset End)
 
     public bool AreDatesValid() => End > Start;
     public bool StartAndEndAreInThePast() => Start < DateTimeOffset.Now && End < DateTimeOffset.Now;
-    public bool StartAndEndAreInTheSameDay() => Start.Date == End.Date;
 
     public bool Overlaps(TimeRange other) => Start < other.End && End > other.Start;
 

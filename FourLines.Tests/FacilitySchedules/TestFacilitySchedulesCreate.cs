@@ -1,33 +1,27 @@
-using FourLines.Application.DTOs.FacilitySchedules;
-using FourLines.Application.Handlers;
+using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
-    : IClassFixture<InMemoryFixtures>
+public record TestCreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
 {
-    private readonly InMemoryFixtures _fixtures = fixtures;
+    public TimeOnly ClosesAt { get; init; }
+    public DayOfWeek DayOfWeek { get; init; }
+    public Guid FacilityId { get; init; }
+    public TimeOnly OpensAt { get; init; }
+}
 
-    private static CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
+[Collection(FourLinesCollection.Name)]
+public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
+{
+    private readonly static TestCreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
-        FacilityId = InMemoryDataSource.Facility1.Id,
-        OwnerId = InMemoryDataSource.UserOwner.Id,
+        FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
         DayOfWeek = DayOfWeek.Monday,
-        OpensAt = new TimeOnly(9, 0),
-        ClosesAt = new TimeOnly(17, 0),
-    };
-
-    private static CreateFacilityScheduleDTO _createFacilityScheduleTest2 = new()
-    {
-        FacilityId = InMemoryDataSource.Facility1.Id,
-        OwnerId = InMemoryDataSource.UserOwner.Id,
-        DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(9, 0),
         ClosesAt = new TimeOnly(17, 0),
     };
@@ -36,13 +30,9 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -62,15 +52,16 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_Not_CreateFacilitySchedule()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
-        await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility =
+            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
-            _createFacilityScheduleTest1
+            scheduleWithUnknownFacility
         );
 
         // Assert
@@ -82,19 +73,27 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        await _fixtures.CreateEntityInMemory<Role>(InMemoryDataSource.RoleOwner);
-        await _fixtures.CreateEntityInMemory<User>(InMemoryDataSource.UserOwner);
-        await _fixtures.CreateEntityInMemory<Facility>(InMemoryDataSource.Facility1);
-        await _fixtures.CreateEntityInMemory<Sport>(InMemoryDataSource.TestSport);
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
+        TestCreateFacilityScheduleDTO schedule2 = _createFacilityScheduleTest1 with
         {
-            _createFacilityScheduleTest1,
-            _createFacilityScheduleTest2,
+            FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
+            DayOfWeek = DayOfWeek.Tuesday
         };
+        TestCreateFacilityScheduleDTO schedule3 = _createFacilityScheduleTest1 with
+        {
+            FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
+            DayOfWeek = DayOfWeek.Wednesday
+        };
+
+        List<ICreateFacilityScheduleDTO> newSchedules =
+        [
+            schedule2,
+            schedule3
+        ];
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.CreateMultiple(
@@ -121,17 +120,22 @@ public class TestFacilitySchedulesCreate(InMemoryFixtures fixtures)
     public async Task Should_Not_CreateMultipleFacilitySchedule()
     {
         // Arrange
-        await _fixtures.RemoveAllDataFromMemory<Facility>();
-        await _fixtures.RemoveAllDataFromMemory<FacilitySchedule>();
+        await using var scope = fixtures.CreateAsyncServiceScope();
 
         IFacilityScheduleHandler facilityScheduleHandler =
-            _fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        List<CreateFacilityScheduleDTO> newSchedules = new List<CreateFacilityScheduleDTO>
-        {
-            _createFacilityScheduleTest1,
-            _createFacilityScheduleTest2,
-        };
+        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility1 =
+            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
+        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility2 =
+            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
+
+
+        List<ICreateFacilityScheduleDTO> newSchedules =
+        [
+            scheduleWithUnknownFacility1,
+            scheduleWithUnknownFacility2
+        ];
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.CreateMultiple(
