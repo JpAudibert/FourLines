@@ -15,10 +15,12 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
     {
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
-
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        Facility dummyFacility = await DbOperations.CreateRecord<Facility>(TestDataSource.DummyFacility, context);
+        Facility dummyFacility = await DbOperations.CreateRecord<Facility>(
+            TestDataSource.DummyFacility,
+            context
+        );
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -28,7 +30,7 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.NotEmpty(result.Value);
-        Assert.Equal(6, result.Value.Count());
+        Assert.Equal(context.Facilities.Count(), result.Value.Count());
 
         //await DbOperations.RemoveRecord<Facility>(dummyFacility.Id, fixtures.Context);
     }
@@ -39,6 +41,8 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
@@ -48,8 +52,12 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         );
 
         // Assert
+        int ownersFacilities = context
+            .Facilities.Where(f => f.OwnerId == TestDataSource.DefaultFacility.OwnerId)
+            .Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(5, result.Value.Count());
+        Assert.Equal(ownersFacilities, result.Value.Count());
 
         //await DbOperations.RemoveRecord<Facility>(defaultFacility2.Id, fixtures.Context);
     }

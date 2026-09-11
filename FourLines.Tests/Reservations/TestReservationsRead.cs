@@ -1,8 +1,10 @@
+using DotNet.Testcontainers.Configurations;
 using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Reservations;
@@ -16,16 +18,21 @@ public class TestReservationsRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+        Guid userId = TestDataSource.UserPlayer.Id;
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromUser(TestDataSource.UserPlayer.Id);
+            await reservationHandler.GetAllReservationsFromUser(userId);
 
         // Assert
+        int reservationsFromUser = context.Reservations.Where(r => r.UserId == userId).Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(3, result.Value.Count());
+        Assert.Equal(reservationsFromUser, result.Value.Count());
     }
 
     [Fact]
@@ -52,6 +59,9 @@ public class TestReservationsRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+        Guid courtId = TestDataSource.DefaultCourt.Id;
+
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
@@ -60,8 +70,10 @@ public class TestReservationsRead(FourLinesFixture fixtures)
             await reservationHandler.GetAllReservationsFromCourt(TestDataSource.DefaultCourt.Id);
 
         // Assert
+        int reservationsFromCourt = context.Reservations.Where(r => r.CourtId == courtId).Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(3, result.Value.Count());
+        Assert.Equal(reservationsFromCourt, result.Value.Count());
     }
 
     [Fact]

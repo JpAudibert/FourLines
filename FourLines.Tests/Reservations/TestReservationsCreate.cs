@@ -155,7 +155,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         DateTimeOffset testDateTime = new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
         TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
-            CourtId = TestDataSource.CourtWithNoSchedule.Id,
+            CourtId = TestDataSource.CourtWithNoSchedule2.Id,
             Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(1)),
         };
 

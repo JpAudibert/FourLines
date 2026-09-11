@@ -2,6 +2,7 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Courts;
@@ -15,15 +16,19 @@ public class TestCourtRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        ICourtHandler courtHandler =
-            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        Guid facilityId = TestDataSource.DefaultFacility.Id;
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(TestDataSource.DefaultFacility.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(facilityId);
 
         // Assert
+        int courtsFromFacility = context.Courts.Where(c => c.FacilityId == facilityId).Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(3, result.Value.Count());
+        Assert.Equal(courtsFromFacility, result.Value.Count());
     }
 
     [Fact]
@@ -35,7 +40,9 @@ public class TestCourtRead(FourLinesFixture fixtures)
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(TestDataSource.DummyFacility.Id);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
+            TestDataSource.DummyFacility.Id
+        );
 
         // Assert
         Assert.Null(result.Value);
@@ -50,12 +57,12 @@ public class TestCourtRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        ICourtHandler courtHandler =
-            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
-            TestDataSource.DefaultCourt.FacilityId, TestDataSource.DefaultCourt.Id
+            TestDataSource.DefaultCourt.FacilityId,
+            TestDataSource.DefaultCourt.Id
         );
 
         // Assert
@@ -73,17 +80,16 @@ public class TestCourtRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        ICourtHandler courtHandler =
-            fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
-            Guid.NewGuid(), TestDataSource.DefaultCourt.Id
+            Guid.NewGuid(),
+            TestDataSource.DefaultCourt.Id
         );
 
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
     }
-
 }
