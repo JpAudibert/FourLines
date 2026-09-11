@@ -19,39 +19,11 @@ public record TestCreateIngressDTO : ICreateIngressDTO
 [Collection(FourLinesCollection.Name)]
 public class TestMatchesIngress(FourLinesFixture fixtures)
 {
-    private bool _isGoalKeeperReservationCreated = false;
-    private bool _isNoGoalKeeperReservationCreated = false;
-    private static Result<ConfirmReservationResponseDTO> GoalKeeperReservationResult = default!;
-    private static Result<ConfirmReservationResponseDTO> NoGoalKeeperReservationResult = default!;
-    private async Task EnsureGoalKeeperReservationCreatedAsync()
+    private TestCreateIngressDTO _ingress = new()
     {
-        if (!_isGoalKeeperReservationCreated)
-        {
-            IReservationHandler reservationHandler =
-                fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
-            GoalKeeperReservationResult = await reservationHandler.Create(TestDataSource.CreateGoalKeeperReservationTest);
-
-            _isGoalKeeperReservationCreated = true;
-        }
-    }
-
-    private async Task EnsureNoGoalKeeperReservationCreatedAsync()
-    {
-        if (!_isNoGoalKeeperReservationCreated)
-        {
-            IReservationHandler reservationHandler =
-                fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
-            NoGoalKeeperReservationResult = await reservationHandler.Create(TestDataSource.CreateNoGoalKeeperReservationTest);
-
-            _isNoGoalKeeperReservationCreated = true;
-        }
-    }
-
-    TestCreateIngressDTO _ingress = new()
-    {
-        MatchId = GoalKeeperReservationResult.Value.Match.Id,
-        UserId = GoalKeeperReservationResult.Value.Reservation.UserId,
-        Code = GoalKeeperReservationResult.Value.Match.Code,
+        MatchId = Guid.NewGuid(),
+        UserId = Guid.NewGuid(),
+        Code = "000000",
         IngressAsGoalKeeper = false,
     };
 
@@ -61,19 +33,27 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
+        TestCreateIngressDTO ingress = new()
+        {
+            MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
+            UserId = fixtures.GoalKeeperReservationResult.Value.Reservation.UserId,
+            Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
+            IngressAsGoalKeeper = false,
+        };
+
         // Act
-        Result<MatchesUsers> result = await matchHandler.Ingress(_ingress);
+        Result<MatchesUsers> result = await matchHandler.Ingress(ingress);
 
         // Assert
         Assert.NotNull(result.Value);
         Assert.IsType<MatchesUsers>(result.Value);
 
-        Assert.Equal(_ingress.MatchId, result.Value.MatchId);
-        Assert.Equal(_ingress.UserId, result.Value.UserId);
-        Assert.Equal(_ingress.IngressAsGoalKeeper, result.Value.IsGoalKeeper);
+        Assert.Equal(ingress.MatchId, result.Value.MatchId);
+        Assert.Equal(ingress.UserId, result.Value.UserId);
+        Assert.Equal(ingress.IngressAsGoalKeeper, result.Value.IsGoalKeeper);
     }
 
     [Fact]
@@ -82,11 +62,9 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
-        TestCreateIngressDTO ingress = _ingress with
-        {
-            MatchId = Guid.NewGuid(),
-        };
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
+
+        TestCreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
@@ -105,10 +83,12 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
         TestCreateIngressDTO ingress = _ingress with
         {
+            MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
+            Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
@@ -128,18 +108,20 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
         {
+            MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = TestDataSource.UserPlayer2.Id,
+            Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
             IngressAsGoalKeeper = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.Ingress(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -156,7 +138,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
         {
@@ -167,7 +149,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.Ingress(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
 
         // Assert
         Assert.NotNull(result.Error);
@@ -181,18 +163,20 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
         TestCreateIngressDTO ingress = _ingress with
         {
+            MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
+            Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
             IngressAsGoalKeeper = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.Ingress(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
 
         // Assert
         Assert.NotNull(result.Error);
@@ -206,14 +190,14 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        await EnsureNoGoalKeeperReservationCreatedAsync();
+        await fixtures.EnsureNoGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with
+        TestCreateIngressDTO ingress = new()
         {
-            MatchId = NoGoalKeeperReservationResult.Value.Match.Id,
+            MatchId = fixtures.NoGoalKeeperReservationResult.Value.Match.Id,
             UserId = TestDataSource.UserPlayer3.Id,
-            Code = NoGoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = false,
+            Code = fixtures.NoGoalKeeperReservationResult.Value.Match.Code,
+            IngressAsGoalKeeper = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
@@ -224,6 +208,9 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         // Assert
         Assert.NotNull(result.Error);
         Assert.True(result.IsFailure);
-        Assert.Equal(MatchesErrorResults.IngressSportDoesNotHaveFixedGoalKeeper.Code, result.Error.Code);
+        Assert.Equal(
+            MatchesErrorResults.IngressSportDoesNotHaveFixedGoalKeeper.Code,
+            result.Error.Code
+        );
     }
 }
