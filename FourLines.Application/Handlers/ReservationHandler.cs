@@ -80,7 +80,7 @@ public class ReservationHandler(
             ReservationId = reservation.Id,
             SportId = court.SportId,
             Name = DefaultMatchName,
-            Code = Random.Shared.Next(0, 1000000).ToString("D6"),
+            Code = Match.GenerateMatchCode(),
             Reservation = reservation,
             Sport = court.Sport,
         };

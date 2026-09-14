@@ -2,6 +2,7 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
+using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.FacilitySchedules;
@@ -14,18 +15,25 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
     {
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
+        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
+        Guid facilityId = TestDataSource.DefaultFacility.Id;
+
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
-            TestDataSource.DefaultFacility.Id
+            facilityId
         );
 
         // Assert
+        int facilitySchedules = context
+            .FacilitySchedules.Where(s => s.FacilityId == facilityId)
+            .Count();
+
         Assert.NotEmpty(result.Value);
-        Assert.Equal(7, result.Value.Count());
+        Assert.Equal(facilitySchedules, result.Value.Count());
     }
 
     [Fact]

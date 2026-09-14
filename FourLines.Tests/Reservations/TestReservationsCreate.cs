@@ -49,9 +49,8 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         Assert.Equal(_createReservationTest.Period, result.Value.Reservation.Period);
         Assert.Equal(_createReservationTest.Status, result.Value.Reservation.Status);
 
-
         Assert.NotNull(result.Value.Match);
-        Assert.Equal(6, result.Value.Match.Code.Length);
+        Assert.Equal(Match.MATCH_CODE_LENGTH, result.Value.Match.Code.Length);
     }
 
     [Fact]
