@@ -31,6 +31,8 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
             .Include(s => s.Sport)
             .FirstAsync(m => m.Id == updateMatchName.MatchId);
 
+        updatedMatch.Name = updateMatchName.NewName;
+
         return Result<Match>.Success(updatedMatch);
     }
 
