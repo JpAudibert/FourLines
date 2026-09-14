@@ -1,7 +1,4 @@
-﻿using FourLines.Domain.Models;
-using FourLines.Infrastructure.Contexts;
-using FourLines.Infrastructure.Repositories;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using FourLines.Infrastructure.Contexts;
 
 namespace FourLines.Tests;
 

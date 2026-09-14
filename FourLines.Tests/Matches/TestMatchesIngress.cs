@@ -1,5 +1,4 @@
 ﻿using FourLines.Application.DTOs.Matches.Interfaces;
-using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;

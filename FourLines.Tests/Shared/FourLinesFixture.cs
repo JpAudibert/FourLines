@@ -7,7 +7,6 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
-using FourLines.Tests.Matches;
 using Testcontainers.PostgreSql;
 
 namespace FourLines.Tests.Shared;

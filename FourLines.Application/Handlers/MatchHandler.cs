@@ -5,17 +5,14 @@ namespace FourLines.Application.Handlers;
 
 public class MatchHandler(FourLinesContext context) : IMatchHandler
 {
-    public async Task<Result<Match>> GetMatch(Guid matchId)
+    public async Task<Result<Match?>> GetMatch(Guid matchId)
     {
         Match? match = await context.Matches
             .Include(r => r.Reservation)
             .Include(s => s.Sport)
             .FirstOrDefaultAsync(m => m.Id == matchId);
 
-        if (match is null)
-            return Result<Match>.Failure(MatchesErrorResults.MatchNotFound);
-
-        return Result<Match>.Success(match);
+        return Result<Match?>.Success(match);
     }
 
     public async Task<Result<Match>> UpdateMatchName(UpdateMatchNameDTO updateMatchName)
