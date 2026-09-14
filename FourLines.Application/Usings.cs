@@ -1,7 +1,4 @@
 ﻿global using FourLines.Application.DTOs;
-global using FourLines.Application.DTOs.Courts;
-global using FourLines.Application.DTOs.Facilities;
-global using FourLines.Application.DTOs.FacilitySchedules;
 global using FourLines.Application.DTOs.Reservations;
 global using FourLines.Application.Handlers;
 global using FourLines.Application.Interfaces;

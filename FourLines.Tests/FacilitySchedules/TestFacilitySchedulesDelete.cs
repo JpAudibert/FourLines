@@ -1,6 +1,5 @@
 using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Interfaces;
-using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
 

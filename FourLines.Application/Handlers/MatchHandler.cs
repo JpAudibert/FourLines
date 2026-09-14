@@ -5,17 +5,14 @@ namespace FourLines.Application.Handlers;
 
 public class MatchHandler(FourLinesContext context) : IMatchHandler
 {
-    public async Task<Result<Match>> GetMatch(Guid matchId)
+    public async Task<Result<Match?>> GetMatch(Guid matchId)
     {
         Match? match = await context.Matches
             .Include(r => r.Reservation)
             .Include(s => s.Sport)
             .FirstOrDefaultAsync(m => m.Id == matchId);
 
-        if (match is null)
-            return Result<Match>.Failure(MatchesErrorResults.MatchNotFound);
-
-        return Result<Match>.Success(match);
+        return Result<Match?>.Success(match);
     }
 
     public async Task<Result<Match>> UpdateMatchName(UpdateMatchNameDTO updateMatchName)
@@ -33,6 +30,8 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
             .Include(r => r.Reservation)
             .Include(s => s.Sport)
             .FirstAsync(m => m.Id == updateMatchName.MatchId);
+
+        updatedMatch.Name = updateMatchName.NewName;
 
         return Result<Match>.Success(updatedMatch);
     }
@@ -94,15 +93,15 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
 
     public async Task<Result<bool>> LeaveMatch(LeaveMatchDTO leaveMatch)
     {
-        MatchesUsers? matchesUsers = await context.MatchesUsers
+        MatchesUsers? userInTheMatch = await context.MatchesUsers
             .FirstOrDefaultAsync(mu =>
                 mu.MatchId == leaveMatch.MatchId &&
                 mu.UserId == leaveMatch.UserId);
 
-        if (matchesUsers is null)
+        if (userInTheMatch is null)
             return Result<bool>.Failure(MatchesErrorResults.LeaveMatchNotFound);
 
-        context.MatchesUsers.Remove(matchesUsers);
+        context.MatchesUsers.Remove(userInTheMatch);
         await context.SaveChangesAsync();
 
         return Result<bool>.Success(true);

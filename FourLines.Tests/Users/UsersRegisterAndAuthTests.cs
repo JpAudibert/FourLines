@@ -8,6 +8,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using Moq;
 
 namespace FourLines.Tests.Users;
 

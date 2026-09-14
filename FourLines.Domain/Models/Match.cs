@@ -5,7 +5,7 @@ public record Match : BaseEntity
     public Guid ReservationId { get; init; }
     public Guid SportId { get; init; }
     public string Code { get; init; } = default!;
-    public string? Name { get; init; }
+    public string? Name { get; set; }
 
     public Reservation Reservation { get; init; } = default!;
     public Sport Sport { get; init; } = default!;
