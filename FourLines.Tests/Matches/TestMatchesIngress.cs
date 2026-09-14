@@ -1,19 +1,10 @@
-﻿using FourLines.Application.DTOs.Matches.Interfaces;
-using FourLines.Application.Interfaces;
+﻿using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
 
 namespace FourLines.Tests.Matches;
-
-public record TestCreateIngressDTO : ICreateIngressDTO
-{
-    public Guid MatchId { get; init; }
-    public Guid UserId { get; init; }
-    public string Code { get; init; } = default!;
-    public bool IngressAsGoalKeeper { get; init; }
-}
 
 [Collection(FourLinesCollection.Name)]
 public class TestMatchesIngress(FourLinesFixture fixtures)

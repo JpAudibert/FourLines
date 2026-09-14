@@ -91,15 +91,15 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
 
     public async Task<Result<bool>> LeaveMatch(LeaveMatchDTO leaveMatch)
     {
-        MatchesUsers? matchesUsers = await context.MatchesUsers
+        MatchesUsers? userInTheMatch = await context.MatchesUsers
             .FirstOrDefaultAsync(mu =>
                 mu.MatchId == leaveMatch.MatchId &&
                 mu.UserId == leaveMatch.UserId);
 
-        if (matchesUsers is null)
+        if (userInTheMatch is null)
             return Result<bool>.Failure(MatchesErrorResults.LeaveMatchNotFound);
 
-        context.MatchesUsers.Remove(matchesUsers);
+        context.MatchesUsers.Remove(userInTheMatch);
         await context.SaveChangesAsync();
 
         return Result<bool>.Success(true);
