@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
@@ -24,14 +25,14 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
     {
-        Id = TestDataSource.ToBeUpdatedFacility.Id,
+        Id = FacilitySeed.ToBeUpdated.Id,
         Name = "Test Updated Facility",
         Address = "123 Test St",
         City = "Test City",
         State = "TS",
         ZipCode = "12345",
         RegistrationNumber = "1111111111",
-        OwnerId = TestDataSource.UserOwner.Id,
+        OwnerId = FacilitySeed.ToBeUpdated.OwnerId,
     };
 
     [Fact]
@@ -44,7 +45,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 
         TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with 
         {
-            Id = TestDataSource.ToBeUpdatedFacility.Id,
+            Id = FacilitySeed.ToBeUpdated.Id,
         };
 
         // Act

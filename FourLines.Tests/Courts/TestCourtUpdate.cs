@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
@@ -14,6 +15,9 @@ public record TestUpdateCourtDTO : IUpdateCourtDTO
     public bool IsActive { get; init; }
     public string Name { get; init; } = default!;
     public Guid SportId { get; init; }
+    public Money DefaultPrice { get; init; } = default!;
+    public int RentingPeriodInMinutes { get; init; }
+    public int MaintenancePeriodInMinutes { get; init; }
 }
 
 [Collection(FourLinesCollection.Name)]
@@ -21,10 +25,13 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateCourtDTO _updateCourt = new()
     {
-        FacilityId = TestDataSource.ToBeUpdatedCourt.FacilityId,
-        SportId = TestDataSource.ToBeUpdatedCourt.SportId,
+        FacilityId = CourtSeed.ToBeUpdated.FacilityId,
+        SportId = CourtSeed.ToBeUpdated.SportId,
         Name = "Test Updated Court",
         IsActive = true,
+        DefaultPrice = new Money(100.00m, "BRL"),
+        RentingPeriodInMinutes = 50,
+        MaintenancePeriodInMinutes = 10,
     };
 
     [Fact]
@@ -37,7 +44,7 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 
         TestUpdateCourtDTO updateCourtDTO = _updateCourt with
         {
-            Id = TestDataSource.ToBeUpdatedCourt.Id,
+            Id = CourtSeed.ToBeUpdated.Id,
             Name = "Updated Court Name",
         };
 
@@ -51,6 +58,13 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
         Assert.Equal(updateCourtDTO.FacilityId, result.Value.FacilityId);
         Assert.Equal(updateCourtDTO.SportId, result.Value.SportId);
         Assert.Equal(updateCourtDTO.IsActive, result.Value.IsActive);
+        Assert.Equal(updateCourtDTO.DefaultPrice.Amount, result.Value.DefaultPrice.Amount);
+        Assert.Equal(updateCourtDTO.DefaultPrice.Currency, result.Value.DefaultPrice.Currency);
+        Assert.Equal(updateCourtDTO.RentingPeriodInMinutes, result.Value.RentingPeriodInMinutes);
+        Assert.Equal(
+            updateCourtDTO.MaintenancePeriodInMinutes,
+            result.Value.MaintenancePeriodInMinutes
+        );
     }
 
     [Fact]

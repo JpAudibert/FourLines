@@ -10,4 +10,7 @@ public record UpdateCourtDTO : IUpdateCourtDTO
     public Guid SportId { get; init; } = default!;
     public string Name { get; init; } = default!;
     public bool IsActive { get; init; }
+    public Money DefaultPrice { get; init; } = default!;
+    public int RentingPeriodInMinutes { get; init; }
+    public int MaintenancePeriodInMinutes { get; init; }
 }

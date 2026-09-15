@@ -3,10 +3,10 @@ using FourLines.Application.DependencyInjection;
 using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.DependencyInjection;
-using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Infrastructure.DependencyInjection;
+using FourLines.Tests.Shared.Seed;
 using Testcontainers.PostgreSql;
 
 namespace FourLines.Tests.Shared;
@@ -47,15 +47,7 @@ public class FourLinesFixture : IAsyncLifetime
         await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
-        await SeedDefaultRoles(context);
-        await SeedDefaultSports(context);
-        await SeedDefaultUsers(context);
-        await SeedDefaultFacilities(context);
-        await SeedDefaultCourts(context);
-        await SeedDefaultFacilitySchedules(context);
-        await SeedDefaultReservations(context);
-
-        Console.WriteLine();
+        await TestDataSeeder.SeedAsync(context);
     }
 
     public async Task DisposeAsync()
@@ -98,116 +90,6 @@ public class FourLinesFixture : IAsyncLifetime
         return ServiceProvider.CreateAsyncScope();
     }
 
-    public async Task SeedDefaultRoles(FourLinesContext context)
-    {
-        await CreateRecord<Role>(TestDataSource.RoleOwner, context);
-        await CreateRecord<Role>(TestDataSource.RolePlayer, context);
-    }
-
-    public async Task SeedDefaultSports(FourLinesContext context)
-    {
-        await CreateRecord<Sport>(TestDataSource.DefaultSport, context);
-        await CreateRecord<Sport>(TestDataSource.SportWithoutGoalkeeper, context);
-    }
-
-    public async Task SeedDefaultUsers(FourLinesContext context)
-    {
-        await CreateRecord<User>(TestDataSource.UserOwner, context);
-        await CreateRecord<User>(TestDataSource.UserPlayer, context);
-        await CreateRecord<User>(TestDataSource.UserPlayer2, context);
-        await CreateRecord<User>(TestDataSource.UserPlayer3, context);
-    }
-
-    public async Task SeedDefaultFacilities(FourLinesContext context)
-    {
-        await CreateRecord<Facility>(TestDataSource.DefaultFacility, context);
-        await CreateRecord<Facility>(TestDataSource.DefaultFacility2, context);
-        await CreateRecord<Facility>(TestDataSource.DefaultNoSchedulesFacility, context);
-        await CreateRecord<Facility>(TestDataSource.DefaultNoSchedulesFacility2, context);
-
-        await CreateRecord<Facility>(TestDataSource.ToBeUpdatedFacility, context);
-        await CreateRecord<Facility>(TestDataSource.ToBeDeletedFacility, context);
-    }
-
-    public async Task SeedDefaultCourts(FourLinesContext context)
-    {
-        await CreateRecord<Court>(TestDataSource.DefaultCourt, context);
-        await CreateRecord<Court>(TestDataSource.CourtWithNoSchedule, context);
-        await CreateRecord<Court>(TestDataSource.CourtWithNoSchedule2, context);
-
-        await CreateRecord<Court>(TestDataSource.ToBeUpdatedCourt, context);
-        await CreateRecord<Court>(TestDataSource.ToBeDeletedCourt, context);
-
-        await CreateRecord<Court>(TestDataSource.CourtWithSportWithoutGoalkeeper, context);
-    }
-
-    public async Task SeedDefaultFacilitySchedules(FourLinesContext context)
-    {
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleSunday, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleMonday, context);
-        await CreateRecord<FacilitySchedule>(
-            TestDataSource.DefaultFacilityScheduleTuesday,
-            context
-        );
-        await CreateRecord<FacilitySchedule>(
-            TestDataSource.DefaultFacilityScheduleWednesday,
-            context
-        );
-        await CreateRecord<FacilitySchedule>(
-            TestDataSource.DefaultFacilityScheduleThursday,
-            context
-        );
-        await CreateRecord<FacilitySchedule>(TestDataSource.DefaultFacilityScheduleFriday, context);
-        await CreateRecord<FacilitySchedule>(
-            TestDataSource.DefaultFacilityScheduleSaturday,
-            context
-        );
-
-        await CreateRecord<FacilitySchedule>(TestDataSource.ToBeUpdatedFacilitySchedule, context);
-        await CreateRecord<FacilitySchedule>(TestDataSource.ToBeDeletedFacilitySchedule, context);
-    }
-
-    public async Task SeedDefaultReservations(FourLinesContext context)
-    {
-        await CreateRecord<Reservation>(TestDataSource.DefaultReservation, context);
-
-        await CreateRecord<Reservation>(TestDataSource.ToBeUpdatedReservation, context);
-        await CreateRecord<Reservation>(TestDataSource.ToBeDeletedReservation, context);
-    }
-
-    public async Task RemoveAllRecords<T>(FourLinesContext context)
-        where T : BaseEntity
-    {
-        context.Set<T>().RemoveRange(context.Set<T>());
-        await context.SaveChangesAsync();
-    }
-
-    public async Task RemoveRecord<T>(Guid id, FourLinesContext context)
-        where T : BaseEntity
-    {
-        T? entity = await context.Set<T>().FindAsync(id);
-
-        if (entity != null)
-        {
-            context.Set<T>().Remove(entity);
-            await context.SaveChangesAsync();
-        }
-    }
-
-    public async Task<T> CreateRecord<T>(T entity, FourLinesContext context)
-        where T : BaseEntity
-    {
-        T? objectexists = await context.FindAsync<T>(entity.Id);
-
-        if (objectexists is null)
-        {
-            await context.Set<T>().AddAsync(entity);
-            await context.SaveChangesAsync();
-        }
-
-        return entity;
-    }
-
     public async Task EnsureGoalKeeperReservationCreatedAsync()
     {
         if (!_isGoalKeeperReservationCreated)
@@ -215,7 +97,7 @@ public class FourLinesFixture : IAsyncLifetime
             IReservationHandler reservationHandler =
                 ServiceProvider.GetRequiredService<IReservationHandler>();
             GoalKeeperReservationResult = await reservationHandler.Create(
-                TestDataSource.CreateGoalKeeperReservationTest
+                ReservationSeed.CreateGoalKeeperReservationTest
             );
 
             _isGoalKeeperReservationCreated = true;
@@ -229,7 +111,7 @@ public class FourLinesFixture : IAsyncLifetime
             IReservationHandler reservationHandler =
                 ServiceProvider.GetRequiredService<IReservationHandler>();
             NoGoalKeeperReservationResult = await reservationHandler.Create(
-                TestDataSource.CreateNoGoalKeeperReservationTest
+                ReservationSeed.CreateNoGoalKeeperReservationTest
             );
 
             _isNoGoalKeeperReservationCreated = true;

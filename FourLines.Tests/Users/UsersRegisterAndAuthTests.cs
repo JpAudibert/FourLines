@@ -8,6 +8,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 using Moq;
 
 namespace FourLines.Tests.Users;
@@ -68,7 +69,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         // Act
         ActionResult<User> userRegisterResult = await userRegisterController.Register(
-            TestDataSource.RolePlayer.Id,
+            RoleSeed.Player.Id,
             newUser
         );
         ActionResult<string> authResult = await authController.Authenticate(loginRequest);
@@ -93,7 +94,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
             RegistrationNumber = "383.975.210-89",
-            RoleId = TestDataSource.RoleOwner.Id,
+            RoleId = RoleSeed.Owner.Id,
         };
 
         UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
@@ -160,7 +161,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         AuthenticationDTO authTest = new()
         {
-            Email = TestDataSource.UserPlayer.Email,
+            Email = UserSeed.Player.Email,
             Password = "testingPassword",
         };
 
