@@ -57,6 +57,7 @@ public class ReservationHandler(
             UserId = newReservation.UserId,
             Period = newReservation.Period,
             Status = ReservationStatus.Pending,
+            Price = newReservation.Price,
             Court = court,
             User = user,
         };
@@ -168,6 +169,7 @@ public class ReservationHandler(
                 UserId = r.UserId,
                 Period = r.Period,
                 Status = r.Status,
+                Price = r.Price,
             })
             .ToListAsync();
 

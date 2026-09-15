@@ -24,6 +24,9 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
             SportId = newCourt.SportId,
             Name = newCourt.Name,
             IsActive = newCourt.IsActive,
+            DefaultPrice = newCourt.DefaultPrice,
+            RentingPeriodInMinutes = newCourt.RentingPeriodInMinutes,
+            MaintenancePeriodInMinutes = newCourt.MaintenancePeriodInMinutes,
             Facility = facility,
             Sport = sport,
         };
@@ -43,15 +46,15 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
             return Result<Court>.Failure(CourtsErrorResults.UpdateUnknownFacility);
 
         int affectedRows = await _context
-            .Courts.Where(c =>
-                c.Id == court.Id
-                && c.Facility.Id == court.FacilityId
-            )
+            .Courts.Where(c => c.Id == court.Id && c.Facility.Id == court.FacilityId)
             .ExecuteUpdateAsync(setters =>
                 setters
                     .SetProperty(c => c.Name, court.Name)
                     .SetProperty(c => c.IsActive, court.IsActive)
                     .SetProperty(c => c.SportId, court.SportId)
+                    .SetProperty(c => c.DefaultPrice, court.DefaultPrice)
+                    .SetProperty(c => c.RentingPeriodInMinutes, court.RentingPeriodInMinutes)
+                    .SetProperty(c => c.MaintenancePeriodInMinutes, court.MaintenancePeriodInMinutes)
             );
 
         if (affectedRows <= 0)
@@ -68,10 +71,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     {
         bool deleted = false;
         int affectedRows = await _context
-            .Courts.Where(c =>
-                c.Id == deleteDto.CourtId && 
-                c.Facility.Id == deleteDto.FacilityId
-            )
+            .Courts.Where(c => c.Id == deleteDto.CourtId && c.Facility.Id == deleteDto.FacilityId)
             .ExecuteDeleteAsync();
 
         if (affectedRows <= 0)
@@ -95,9 +95,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
         return Result<Court>.Success(court);
     }
 
-    public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(
-        Guid facilityId
-    )
+    public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(Guid facilityId)
     {
         IEnumerable<Court?> courts = await _context
             .Courts.Where(c => c.Facility.Id == facilityId)

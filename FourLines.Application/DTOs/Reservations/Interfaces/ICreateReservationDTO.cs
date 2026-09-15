@@ -5,6 +5,7 @@
         Guid CourtId { get; init; }
         TimeRange Period { get; init; }
         ReservationStatus Status { get; init; }
+        Money Price { get; init; }
         Guid UserId { get; init; }
     }
 }

@@ -8,4 +8,5 @@ public record CreateReservationDTO : ICreateReservationDTO
     public Guid UserId { get; init; }
     public TimeRange Period { get; init; } = default!;
     public ReservationStatus Status { get; init; } = default!;
+    public Money Price { get; init; } = default!;
 }
