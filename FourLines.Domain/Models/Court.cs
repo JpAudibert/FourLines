@@ -6,6 +6,7 @@ public record Court : BaseEntity
     public Guid SportId { get; init; }
     public string Name { get; init; } = default!;
     public bool IsActive { get; init; }
+    public Money DefaultPrice { get; init; } = default!;
 
     public Sport Sport { get; init; } = default!;
     public Facility Facility { get; init; } = default!;
