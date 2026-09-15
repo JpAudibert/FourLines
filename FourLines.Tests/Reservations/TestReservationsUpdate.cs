@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
@@ -19,8 +20,8 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateStatusFromReservationDTO _updateReservationTest = new()
     {
-        Id = TestDataSource.ToBeUpdatedReservation.Id,
-        UserId = TestDataSource.UserPlayer.Id,
+        Id = ReservationSeed.ToBeUpdated.Id,
+        UserId = UserSeed.Player.Id,
         Status = ReservationStatus.Confirmed,
     };
 
@@ -34,8 +35,8 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
 
         TestUpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
         {
-            Id = TestDataSource.ToBeUpdatedReservation.Id,
-            UserId = TestDataSource.ToBeUpdatedReservation.UserId,
+            Id = ReservationSeed.ToBeUpdated.Id,
+            UserId = ReservationSeed.ToBeUpdated.UserId,
         };
 
         // Act

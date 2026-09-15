@@ -5,6 +5,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
@@ -14,6 +15,7 @@ public record TestCreateReservationDTO : ICreateReservationDTO
     public TimeRange Period { get; init; } = default!;
     public ReservationStatus Status { get; init; }
     public Guid UserId { get; init; }
+    public Money Price { get; init; } = default!;
 }
 
 [Collection(FourLinesCollection.Name)]
@@ -21,13 +23,11 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
 {
     private static readonly TestCreateReservationDTO _createReservationTest = new()
     {
-        CourtId = TestDataSource.DefaultCourt.Id,
-        UserId = TestDataSource.UserPlayer.Id,
-        Period = new TimeRange(
-            TestDataSource.DateTimeNow.AddHours(1),
-            TestDataSource.DateTimeNow.AddHours(2)
-        ),
+        CourtId = CourtSeed.Default.Id,
+        UserId = UserSeed.Player.Id,
+        Period = new TimeRange(TestDates.Now.AddHours(8), TestDates.Now.AddHours(9)),
         Status = ReservationStatus.Pending,
+        Price = new Money(100.00m, "BRL"),
     };
 
     [Fact]
@@ -36,10 +36,13 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IReservationHandler reservationHandler = fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+        IReservationHandler reservationHandler =
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(_createReservationTest);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
+            _createReservationTest
+        );
 
         // Assert
         Assert.NotNull(result.Value);
@@ -61,15 +64,15 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
 
         TestCreateReservationDTO reservationWithInvalidDate = _createReservationTest with
         {
-            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(-2)),
+            Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(-2)),
         };
         TestCreateReservationDTO reservationWithInvalidPastDate = _createReservationTest with
         {
-            Period = new TimeRange(TestDataSource.DateTimeNow.AddHours(-2), TestDataSource.DateTimeNow),
+            Period = new TimeRange(TestDates.Now.AddHours(-2), TestDates.Now),
         };
         TestCreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
         {
-            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(2)),
+            Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(2)),
         };
         TestCreateReservationDTO reservationWithInvalidStatus = _createReservationTest with
         {
@@ -80,10 +83,18 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(reservationWithInvalidDate);
-        Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(reservationWithInvalidPastDate);
-        Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(reservationWithInvalidDuration);
-        Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(reservationWithInvalidStatus);
+        Result<ConfirmReservationResponseDTO> resultDate = await reservationHandler.Create(
+            reservationWithInvalidDate
+        );
+        Result<ConfirmReservationResponseDTO> resultPastDate = await reservationHandler.Create(
+            reservationWithInvalidPastDate
+        );
+        Result<ConfirmReservationResponseDTO> resultDuration = await reservationHandler.Create(
+            reservationWithInvalidDuration
+        );
+        Result<ConfirmReservationResponseDTO> resultStatus = await reservationHandler.Create(
+            reservationWithInvalidStatus
+        );
 
         // Assert
         Assert.Null(resultDate.Value);
@@ -114,7 +125,9 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithInvalidCourt);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
+            reservationWithInvalidCourt
+        );
 
         // Assert
         Assert.Null(result.Value);
@@ -136,7 +149,9 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithInvalidUser);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
+            reservationWithInvalidUser
+        );
 
         // Assert
         Assert.Null(result.Value);
@@ -149,18 +164,27 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        DateTimeOffset testDateTime = new(DateOnly.FromDateTime(DateTime.Today), new TimeOnly(22, 0), TimeSpan.Zero);
+        DateTimeOffset testDateTime = new(
+            DateOnly.FromDateTime(DateTime.Today),
+            new TimeOnly(22, 0),
+            TimeSpan.Zero
+        );
         TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
-            CourtId = TestDataSource.CourtWithNoSchedule2.Id,
-            Period = new TimeRange(TestDataSource.DateTimeNow, TestDataSource.DateTimeNow.AddHours(1)),
+            CourtId = CourtSeed.CourtWithNoSchedule2.Id,
+            Period = new TimeRange(
+                TestDates.Now,
+                TestDates.Now.AddHours(1)
+            ),
         };
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
-        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(reservationWithSchedule);
+        Result<ConfirmReservationResponseDTO> result = await reservationHandler.Create(
+            reservationWithSchedule
+        );
 
         // AssertDefaultFacilitySchedule
         Assert.Null(result.Value);
@@ -179,8 +203,8 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         TestCreateReservationDTO reservationWithOverlapping = _createReservationTest with
         {
             Period = new TimeRange(
-                TestDataSource.DateTimeNow.AddMinutes(30),
-                TestDataSource.DateTimeNow.AddHours(1).AddMinutes(30)
+                TestDates.Now.AddMinutes(30),
+                TestDates.Now.AddHours(1).AddMinutes(30)
             ),
         };
 

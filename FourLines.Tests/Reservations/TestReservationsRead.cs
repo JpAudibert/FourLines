@@ -4,6 +4,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
@@ -20,7 +21,7 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
-        Guid userId = TestDataSource.UserPlayer.Id;
+        Guid userId = UserSeed.Player.Id;
 
         // Act
         Result<IEnumerable<Reservation>> result =
@@ -58,14 +59,14 @@ public class TestReservationsRead(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
 
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
-        Guid courtId = TestDataSource.DefaultCourt.Id;
+        Guid courtId = CourtSeed.Default.Id;
 
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(TestDataSource.DefaultCourt.Id);
+            await reservationHandler.GetAllReservationsFromCourt(CourtSeed.Default.Id);
 
         // Assert
         int reservationsFromCourt = context.Reservations.Where(r => r.CourtId == courtId).Count();
@@ -103,8 +104,8 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         // Act
         Result<Reservation> result = await reservationHandler.GetOneReservationFromUser(
-            TestDataSource.DefaultReservation.UserId,
-            TestDataSource.DefaultReservation.Id
+            ReservationSeed.Default.UserId,
+            ReservationSeed.Default.Id
         );
 
         // Assert

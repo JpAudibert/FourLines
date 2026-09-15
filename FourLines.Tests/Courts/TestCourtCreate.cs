@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
@@ -14,6 +15,9 @@ public record TestCreateCourtDTO : ICreateCourtDTO
     public string Name { get; init; } = default!;
     public Guid OwnerId { get; init; }
     public Guid SportId { get; init; }
+    public Money DefaultPrice { get; init; } = default!;
+    public int RentingPeriodInMinutes { get; init; }
+    public int MaintenancePeriodInMinutes { get; init; }
 }
 
 [Collection(FourLinesCollection.Name)]
@@ -21,11 +25,14 @@ public class TestCourtCreate(FourLinesFixture fixtures)
 {
     private static readonly TestCreateCourtDTO _createCourtTest = new()
     {
-        OwnerId = TestDataSource.UserOwner.Id,
-        FacilityId = TestDataSource.DefaultFacility.Id,
-        SportId = TestDataSource.DefaultSport.Id,
+        OwnerId = UserSeed.Owner.Id,
+        FacilityId = FacilitySeed.Default.Id,
+        SportId = SportSeed.Default.Id,
         Name = "Test Court",
         IsActive = true,
+        DefaultPrice = new Money(100.00m, "BRL"),
+        RentingPeriodInMinutes = 50,
+        MaintenancePeriodInMinutes = 10,
     };
 
     [Fact]
@@ -45,6 +52,13 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         Assert.Equal(_createCourtTest.FacilityId, result.Value.FacilityId);
         Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
         Assert.Equal(_createCourtTest.IsActive, result.Value.IsActive);
+        Assert.Equal(_createCourtTest.DefaultPrice.Amount, result.Value.DefaultPrice.Amount);
+        Assert.Equal(_createCourtTest.DefaultPrice.Currency, result.Value.DefaultPrice.Currency);
+        Assert.Equal(_createCourtTest.RentingPeriodInMinutes, result.Value.RentingPeriodInMinutes);
+        Assert.Equal(
+            _createCourtTest.MaintenancePeriodInMinutes,
+            result.Value.MaintenancePeriodInMinutes
+        );
     }
 
     [Fact]
@@ -53,7 +67,10 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
-        TestCreateCourtDTO courtWithNoFacility = _createCourtTest with { FacilityId = Guid.NewGuid() };
+        TestCreateCourtDTO courtWithNoFacility = _createCourtTest with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
 
         // Act
         Result<Court> result = await courtHandler.Create(courtWithNoFacility);

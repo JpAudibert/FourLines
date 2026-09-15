@@ -2,6 +2,7 @@ using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.FacilitySchedules;
 
@@ -20,8 +21,8 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
-            FacilityId = TestDataSource.ToBeDeletedFacilitySchedule.FacilityId,
-            ScheduleId = TestDataSource.ToBeDeletedFacilitySchedule.Id
+            FacilityId = FacilityScheduleSeed.ToBeDeleted.FacilityId,
+            ScheduleId = FacilityScheduleSeed.ToBeDeleted.Id
         });
 
         // Assert
