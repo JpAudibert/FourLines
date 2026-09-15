@@ -7,6 +7,8 @@ public record Court : BaseEntity
     public string Name { get; init; } = default!;
     public bool IsActive { get; init; }
     public Money DefaultPrice { get; init; } = default!;
+    public int RentingPeriodInMinutes { get; init; }
+    public int MaintenancePeriodInMinutes { get; init; }
 
     public Sport Sport { get; init; } = default!;
     public Facility Facility { get; init; } = default!;
