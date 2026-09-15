@@ -4,13 +4,15 @@ using FourLines.Application.Interfaces;
 using FourLines.Application.Strategies;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
+using FourLines.Tests.Concurrency.Seed;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Npgsql;
 
 namespace FourLines.Tests.Concurrency;
 
-public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixture<PostgresTestDatabase>
+public class TestConcurrencyCreate(PostgresTestDatabase database)
+    : IClassFixture<PostgresTestDatabase>
 {
     private readonly PostgresTestDatabase _database = database;
 
@@ -19,61 +21,65 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
     {
         // Arrange
         Mock<IReservationValidator> validator = new();
-        validator.Setup(v => v.ValidateAsync(It.IsAny<CreateReservationDTO>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((CreateReservationDTO dto, CancellationToken _) => Result<ConfirmReservationResponseDTO>.Success(new ConfirmReservationResponseDTO
-            {
-                Match = default!,
-                Reservation = new Reservation
-                {
-                    Id = Guid.NewGuid(),
-                    CourtId = dto.CourtId,
-                    UserId = dto.UserId,
-                    Period = dto.Period
-                }
-            }));
-
-        await using (var context = _database.CreateContext())
-        {
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.RoleOwner, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.RolePlayer, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.UserOwner, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.UserPlayer, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Facility1, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.TestSport, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Court1, context);
-            await PostgresTestDatabase.CreateEntityInMemory(InMemoryDataSource.Facility1SettedSchedule, context);
-        }
+        validator
+            .Setup(v =>
+                v.ValidateAsync(It.IsAny<CreateReservationDTO>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(
+                (CreateReservationDTO dto, CancellationToken _) =>
+                    Result<ConfirmReservationResponseDTO>.Success(
+                        new ConfirmReservationResponseDTO
+                        {
+                            Match = default!,
+                            Reservation = new Reservation
+                            {
+                                Id = Guid.NewGuid(),
+                                CourtId = dto.CourtId,
+                                UserId = dto.UserId,
+                                Period = dto.Period,
+                            },
+                        }
+                    )
+            );
 
         async Task<Result<ConfirmReservationResponseDTO>> MakeReservation()
         {
             await using var reservationContext = _database.CreateContext();
 
-            IReservationHandler reservationHandler =
-                new ReservationHandler(
-                    reservationContext,
-                    validator.Object,
-                    new PostgresCourtLockStrategy(reservationContext));
+            IReservationHandler reservationHandler = new ReservationHandler(
+                reservationContext,
+                validator.Object,
+                new PostgresCourtLockStrategy(reservationContext)
+            );
 
             try
             {
-                return await reservationHandler.Create(new CreateReservationDTO
-                {
-                    CourtId = InMemoryDataSource.Court1.Id,
-                    UserId = InMemoryDataSource.UserPlayer.Id,
-                    Period = new TimeRange(
-                        InMemoryDataSource.SettedDateTime.AddHours(1),
-                        InMemoryDataSource.SettedDateTime.AddHours(2)
-                    )
-                });
+                return await reservationHandler.Create(
+                    new CreateReservationDTO
+                    {
+                        CourtId = CourtSeed.Default.Id,
+                        UserId = UserSeed.Player.Id,
+                        Period = new TimeRange(
+                            TestDates.Future.AddHours(1),
+                            TestDates.Future.AddHours(2)
+                        ),
+                        Price = new Money(50.00m, "BRL"),
+                    }
+                );
             }
             catch (PostgresException)
             {
-                return Result<ConfirmReservationResponseDTO>.Failure(new Error("Failed to create reservation."));
+                return Result<ConfirmReservationResponseDTO>.Failure(
+                    new Error("Failed to create reservation.")
+                );
             }
         }
 
         // Act
-        Result<ConfirmReservationResponseDTO>[] results = await Task.WhenAll(MakeReservation(), MakeReservation());
+        Result<ConfirmReservationResponseDTO>[] results = await Task.WhenAll(
+            MakeReservation(),
+            MakeReservation()
+        );
 
         // Assert
         Result<ConfirmReservationResponseDTO> result1 = results[0];
@@ -83,9 +89,9 @@ public class TestConcurrencyCreate(PostgresTestDatabase database) : IClassFixtur
 
         await using var verificationContext = _database.CreateContext();
 
-        List<Reservation> reservations = await verificationContext.Reservations
-                .Where(x => x.CourtId == InMemoryDataSource.Court1.Id)
-                .ToListAsync();
+        List<Reservation> reservations = await verificationContext
+            .Reservations.Where(x => x.CourtId == CourtSeed.Default.Id)
+            .ToListAsync();
 
         Assert.Single(reservations);
     }

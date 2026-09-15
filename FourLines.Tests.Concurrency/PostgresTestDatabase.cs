@@ -1,6 +1,7 @@
 ﻿using DotNet.Testcontainers.Builders;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
+using FourLines.Tests.Concurrency.Seed;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 
@@ -37,7 +38,9 @@ public class PostgresTestDatabase : IAsyncLifetime
         await using var context = CreateContext();
 
         await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
+        await context.Database.MigrateAsync();
+
+        await TestDataSeeder.SeedAsync(context);
     }
 
     public FourLinesContext CreateContext()
@@ -51,17 +54,5 @@ public class PostgresTestDatabase : IAsyncLifetime
             .Options;
 
         return new FourLinesContext(options);
-    }
-
-    public static async Task<T> CreateEntityInMemory<T>(T entity, FourLinesContext pgContext)
-        where T : BaseEntity
-    {
-        if (await pgContext.FindAsync<T>(entity.Id) == null)
-        {
-            await pgContext.Set<T>().AddAsync(entity);
-            await pgContext.SaveChangesAsync();
-        }
-
-        return entity;
     }
 }
