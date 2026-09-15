@@ -34,6 +34,10 @@ public class CourtMap : IEntityTypeConfiguration<Court>
             }
         );
 
+        builder.Property(c => c.RentingPeriodInMinutes).IsRequired();
+        
+        builder.Property(c => c.MaintenancePeriodInMinutes).IsRequired().HasDefaultValue(0);
+
         builder.Property(c => c.CreatedAt).IsRequired();
 
         builder.Property(c => c.UpdatedAt).IsRequired();
