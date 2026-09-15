@@ -8,42 +8,52 @@ public sealed class ReservationMap : IEntityTypeConfiguration<Reservation>
 
         builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.Id)
-            .HasColumnName("id");
+        builder.Property(r => r.Id).HasColumnName("id");
 
-        builder.Property(r => r.CourtId)
-            .HasColumnName("court_id")
-            .IsRequired();
+        builder.Property(r => r.CourtId).HasColumnName("court_id").IsRequired();
 
-        builder.Property(r => r.UserId)
-            .HasColumnName("user_id")
-            .IsRequired();
+        builder.Property(r => r.UserId).HasColumnName("user_id").IsRequired();
 
-        builder.Property(r => r.Status)
-            .HasColumnName("status")
-            .HasConversion<int>()
-            .IsRequired();
+        builder.Property(r => r.Status).HasColumnName("status").HasConversion<int>().IsRequired();
 
-        builder.ComplexProperty(r => r.Period, period =>
-        {
-            period.Property(p => p.Start)
-                .HasColumnName("starts_at")
-                .IsRequired();
+        builder.ComplexProperty(
+            r => r.Period,
+            period =>
+            {
+                period.Property(p => p.Start).HasColumnName("starts_at").IsRequired();
 
-            period.Property(p => p.End)
-                .HasColumnName("ends_at")
-                .IsRequired();
-        });
+                period.Property(p => p.End).HasColumnName("ends_at").IsRequired();
+            }
+        );
 
-        builder.HasOne(r => r.User)
+        builder.ComplexProperty(
+            r => r.Price,
+            price =>
+            {
+                price
+                    .Property(p => p.Amount)
+                    .HasColumnName("amount")
+                    .HasPrecision(19, 4)
+                    .IsRequired();
+
+                price
+                    .Property(p => p.Currency)
+                    .HasColumnName("currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+            }
+        );
+
+        builder
+            .HasOne(r => r.User)
             .WithMany(u => u.Reservations)
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(r => r.Court)
+        builder
+            .HasOne(r => r.Court)
             .WithMany(c => c.Reservations)
             .HasForeignKey(r => r.CourtId)
             .OnDelete(DeleteBehavior.Cascade);
-
     }
 }
