@@ -6,17 +6,17 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilityController(ILogger<FacilityController> logger, IFacilityHandler facilityHandler)
+public class FacilitiesController(ILogger<FacilitiesController> logger, IFacilityHandler facilityHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<FacilityController> _logger = logger;
+    private readonly ILogger<FacilitiesController> _logger = logger;
     private readonly IFacilityHandler _facilityHandler = facilityHandler;
 
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromFacilities()
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(GetAllFromFacilities)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromFacilities)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -33,7 +33,7 @@ public class FacilityController(ILogger<FacilityController> logger, IFacilityHan
     [EndpointName("GetAllFromOwner")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(GetAllFromOwner)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromOwner)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -51,7 +51,7 @@ public class FacilityController(ILogger<FacilityController> logger, IFacilityHan
     [EndpointName("GetFacilityFromOwner")]
     public async Task<ActionResult<Facility>> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(GetFacilityFromOwner)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(GetFacilityFromOwner)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -70,7 +70,7 @@ public class FacilityController(ILogger<FacilityController> logger, IFacilityHan
     [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(Create)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(Create)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -100,7 +100,7 @@ public class FacilityController(ILogger<FacilityController> logger, IFacilityHan
         [FromRoute] Guid facilityId,
         [FromBody] UpdateFacilityViewModel facility)
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(Update)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(Update)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -129,7 +129,7 @@ public class FacilityController(ILogger<FacilityController> logger, IFacilityHan
     [EndpointName("Delete")]
     public async Task<ActionResult<bool>> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
     {
-        const string operation = $"{nameof(FacilityController)}.{nameof(Delete)}";
+        const string operation = $"{nameof(FacilitiesController)}.{nameof(Delete)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,

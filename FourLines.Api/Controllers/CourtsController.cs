@@ -6,10 +6,10 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class CourtController(ILogger<CourtController> logger, ICourtHandler courtHandler) 
+public class CourtsController(ILogger<CourtsController> logger, ICourtHandler courtHandler) 
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<CourtController> _logger = logger;
+    private readonly ILogger<CourtsController> _logger = logger;
     private readonly ICourtHandler _courtHandler = courtHandler;
 
     [HttpGet]
@@ -17,7 +17,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
     {
-        const string operation = $"{nameof(CourtController)}.{nameof(GetAllCourtsFromFacility)}";
+        const string operation = $"{nameof(CourtsController)}.{nameof(GetAllCourtsFromFacility)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -38,7 +38,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId)
     {
-        const string operation = $"{nameof(CourtController)}.{nameof(GetById)}";
+        const string operation = $"{nameof(CourtsController)}.{nameof(GetById)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -60,7 +60,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
         [FromRoute] Guid facilityId,
         [FromBody] CreateCourtViewModel newCourt)
     {
-        const string operation = $"{nameof(CourtController)}.{nameof(Create)}";
+        const string operation = $"{nameof(CourtsController)}.{nameof(Create)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -89,7 +89,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
         [FromRoute] Guid courtId,
         [FromBody] UpdateCourtViewModel updateCourt)
     {
-        const string operation = $"{nameof(CourtController)}.{nameof(Update)}";
+        const string operation = $"{nameof(CourtsController)}.{nameof(Update)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -119,7 +119,7 @@ public class CourtController(ILogger<CourtController> logger, ICourtHandler cour
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId)
     {
-        const string operation = $"{nameof(CourtController)}.{nameof(Delete)}";
+        const string operation = $"{nameof(CourtsController)}.{nameof(Delete)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,

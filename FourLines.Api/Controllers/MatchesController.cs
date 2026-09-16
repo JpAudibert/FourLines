@@ -8,13 +8,13 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class MatchController(ILogger<MatchController> logger, IMatchHandler matchHandler)
+public class MatchesController(ILogger<MatchesController> logger, IMatchHandler matchHandler)
     : ApiControllerBase(logger)
 {
     [HttpGet("{matchId}")]
     public async Task<ActionResult<Match?>> GetMatch([FromRoute] Guid matchId)
     {
-        const string operation = $"{nameof(MatchController)}.{nameof(GetMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
         );
@@ -33,7 +33,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
         [FromBody] CreateIngressViewModel newIngress
     )
     {
-        const string operation = $"{nameof(MatchController)}.{nameof(GetMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
@@ -65,7 +65,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
         [FromBody] CreateIngressViewModel newIngress
     )
     {
-        const string operation = $"{nameof(MatchController)}.{nameof(GetMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
@@ -96,7 +96,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
         [FromRoute] Guid userId
     )
     {
-        const string operation = $"{nameof(MatchController)}.{nameof(LeaveMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(LeaveMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
@@ -121,7 +121,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
         [FromBody] UpdateMatchNameViewModel updateMatchName
     )
     {
-        const string operation = $"{nameof(MatchController)}.{nameof(UpdateMatchName)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(UpdateMatchName)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
         );

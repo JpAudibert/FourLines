@@ -7,10 +7,10 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class FacilityScheduleController(ILogger<FacilityScheduleController> logger, IFacilityScheduleHandler facilityScheduleHandler)
+public class FacilitySchedulesController(ILogger<FacilitySchedulesController> logger, IFacilityScheduleHandler facilityScheduleHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<FacilityScheduleController> _logger = logger;
+    private readonly ILogger<FacilitySchedulesController> _logger = logger;
     private readonly IFacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
 
     [HttpGet]
@@ -18,7 +18,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId)
     {
-        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(GetScheduleFromFacility)}";
+        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(GetScheduleFromFacility)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -39,7 +39,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleViewModel newFacilitySchedule)
     {
-        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Create)}";
+        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Create)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -66,7 +66,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules)
     {
-        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(CreateMultiple)}";
+        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(CreateMultiple)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -103,7 +103,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         [FromRoute] Guid scheduleId,
         [FromBody] UpdateFacilityScheduleViewModel updateFacilitySchedule)
     {
-        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Update)}";
+        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Update)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -132,7 +132,7 @@ public class FacilityScheduleController(ILogger<FacilityScheduleController> logg
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId)
     {
-        const string operation = $"{nameof(FacilityScheduleController)}.{nameof(Delete)}";
+        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Delete)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,

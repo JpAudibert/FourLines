@@ -6,17 +6,17 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/user/{userId}/[controller]")]
-public class ReservationController(ILogger<ReservationController> logger, IReservationHandler reservationHandler)
+public class ReservationsController(ILogger<ReservationsController> logger, IReservationHandler reservationHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<ReservationController> _logger = logger;
+    private readonly ILogger<ReservationsController> _logger = logger;
     private readonly IReservationHandler _reservationHandler = reservationHandler;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(
         [FromRoute] Guid userId)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(GetAllReservationsFromUser)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(GetAllReservationsFromUser)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -34,7 +34,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
         [FromRoute] Guid courtId)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(GetAllReservationsFromCourt)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(GetAllReservationsFromCourt)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -53,7 +53,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(GetOneReservationsFromUser)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(GetOneReservationsFromUser)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -73,7 +73,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
         [FromRoute] Guid userId,
         [FromBody] CreateReservationViewModel newReservation)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(CreateAReservationForUser)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(CreateAReservationForUser)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -100,7 +100,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
         [FromRoute] Guid reservationId,
         [FromBody] UpdateReservationStatusViewModel updateReservation)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(UpdateStatusFromReservation)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(UpdateStatusFromReservation)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
@@ -125,7 +125,7 @@ public class ReservationController(ILogger<ReservationController> logger, IReser
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId)
     {
-        const string operation = $"{nameof(ReservationController)}.{nameof(DeleteAReservationFromUser)}";
+        const string operation = $"{nameof(ReservationsController)}.{nameof(DeleteAReservationFromUser)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,

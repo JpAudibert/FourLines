@@ -23,7 +23,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
 
         Mock<ILogger<AuthController>> mockAuthLogger = new();
-        Mock<ILogger<UserRegisterController>> mockUserRegisterLogger = new();
+        Mock<ILogger<UsersController>> mockUserRegisterLogger = new();
         UserRegisterViewModel newUser = new()
         {
             Name = "John Doe",
@@ -61,14 +61,14 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             jwtTokenProvider
         );
 
-        UserRegisterController userRegisterController = new(
+        UsersController UsersController = new(
             mockUserRegisterLogger.Object,
             userHandler
         );
         AuthController authController = new(mockAuthLogger.Object, authenticationHandler);
 
         // Act
-        ActionResult<User> userRegisterResult = await userRegisterController.Register(
+        ActionResult<User> userRegisterResult = await UsersController.Register(
             RoleSeed.Player.Id,
             newUser
         );

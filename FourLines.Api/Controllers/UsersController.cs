@@ -3,16 +3,16 @@
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UserRegisterController(ILogger<UserRegisterController> logger, UserHandler userHandler)
+public class UsersController(ILogger<UsersController> logger, UserHandler userHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<UserRegisterController> _logger = logger;
+    private readonly ILogger<UsersController> _logger = logger;
     private readonly UserHandler _userHandler = userHandler;
 
     [HttpPost("{roleId}")]
     public async Task<ActionResult<User>> Register([FromRoute] Guid roleId, [FromBody] UserRegisterViewModel request)
     {
-        const string operation = $"{nameof(UserRegisterController)}.{nameof(Register)}";
+        const string operation = $"{nameof(UsersController)}.{nameof(Register)}";
         using var scope = _logger.BeginScope(new Dictionary<string, object>
         {
             ["operation"] = operation,
