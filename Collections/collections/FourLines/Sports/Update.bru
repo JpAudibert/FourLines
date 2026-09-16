@@ -1,11 +1,11 @@
 meta {
-  name: "Sport - Create"
+  name: "Sport - Update"
   type: http
-  seq: 18
+  seq: 19
 }
 
-post {
-  url: {{BaseUrl}}/api/v1/Sport
+put {
+  url: {{BaseUrl}}/api/v1/Sports/1
   auth: inherit
 }
 
@@ -15,6 +15,7 @@ headers {
 
 body:json {
   {
+    "id": 1,
     "name": "Tennis",
     "indoor": true,
     "startingPlayersCount": 2,
