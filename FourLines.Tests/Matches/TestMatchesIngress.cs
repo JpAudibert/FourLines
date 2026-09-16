@@ -15,7 +15,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         MatchId = Guid.NewGuid(),
         UserId = Guid.NewGuid(),
         Code = "000000",
-        IngressAsGoalKeeper = false,
+        IngressAsFixedPosition = false,
     };
 
     [Fact]
@@ -32,7 +32,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = fixtures.GoalKeeperReservationResult.Value.Reservation.UserId,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = false,
+            IngressAsFixedPosition = false,
         };
 
         // Act
@@ -44,7 +44,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         Assert.Equal(ingress.MatchId, result.Value.MatchId);
         Assert.Equal(ingress.UserId, result.Value.UserId);
-        Assert.Equal(ingress.IngressAsGoalKeeper, result.Value.IsGoalKeeper);
+        Assert.Equal(ingress.IngressAsFixedPosition, result.Value.IsFixedPosition);
     }
 
     [Fact]
@@ -106,13 +106,13 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player2.Id,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = true,
+            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsFixedPosition(ingress);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -120,7 +120,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         Assert.Equal(ingress.MatchId, result.Value.MatchId);
         Assert.Equal(ingress.UserId, result.Value.UserId);
-        Assert.Equal(ingress.IngressAsGoalKeeper, result.Value.IsGoalKeeper);
+        Assert.Equal(ingress.IngressAsFixedPosition, result.Value.IsFixedPosition);
     }
 
     [Fact]
@@ -134,13 +134,13 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         TestCreateIngressDTO ingress = _ingress with
         {
             MatchId = Guid.NewGuid(),
-            IngressAsGoalKeeper = true,
+            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsFixedPosition(ingress);
 
         // Assert
         Assert.NotNull(result.Error);
@@ -161,13 +161,13 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = true,
+            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsFixedPosition(ingress);
 
         // Assert
         Assert.NotNull(result.Error);
@@ -188,13 +188,13 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.NoGoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player3.Id,
             Code = fixtures.NoGoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = true,
+            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<MatchesUsers> result = await matchHandler.IngressAsGoalKeeper(ingress);
+        Result<MatchesUsers> result = await matchHandler.IngressAsFixedPosition(ingress);
 
         // Assert
         Assert.NotNull(result.Error);

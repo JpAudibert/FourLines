@@ -50,7 +50,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
             MatchId = matchId,
             UserId = userId,
             Code = newIngress.Code,
-            IngressAsGoalKeeper = false,
+            IngressAsFixedPosition = false,
         };
 
         Result<MatchesUsers> matchesUsers = await matchHandler.Ingress(ingress);
@@ -59,7 +59,7 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
     }
 
     [HttpPost("{matchId}/ingress/{userId}/ingress-as-goal-keeper")]
-    public async Task<ActionResult<MatchesUsers>> IngressAsGoalKeeper(
+    public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
         [FromBody] CreateIngressViewModel newIngress
@@ -82,10 +82,10 @@ public class MatchController(ILogger<MatchController> logger, IMatchHandler matc
             MatchId = matchId,
             UserId = userId,
             Code = newIngress.Code,
-            IngressAsGoalKeeper = true,
+            IngressAsFixedPosition = true,
         };
 
-        Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsGoalKeeper(ingress);
+        Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsFixedPosition(ingress);
 
         return HandleResult(matchesUsers);
     }

@@ -7,7 +7,7 @@ namespace FourLines.Application.Interfaces
     {
         Task<Result<Match?>> GetMatch(Guid matchId);
         Task<Result<MatchesUsers>> Ingress(ICreateIngressDTO ingress);
-        Task<Result<MatchesUsers>> IngressAsGoalKeeper(ICreateIngressDTO ingress);
+        Task<Result<MatchesUsers>> IngressAsFixedPosition(ICreateIngressDTO ingress);
         Task<Result<bool>> LeaveMatch(LeaveMatchDTO leaveMatch);
         Task<Result<Match>> UpdateMatchName(UpdateMatchNameDTO updateMatchName);
     }
