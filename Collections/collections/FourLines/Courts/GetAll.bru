@@ -1,11 +1,11 @@
 meta {
-  name: "Court - Delete"
+  name: "Court - Get All"
   type: http
-  seq: 5
+  seq: 1
 }
 
-delete {
-  url: {{BaseUrl}}/api/v1/Court/1
+get {
+  url: {{BaseUrl}}/api/v1/Courts
   auth: inherit
 }
 
