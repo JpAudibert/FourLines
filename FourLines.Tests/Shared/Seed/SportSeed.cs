@@ -23,9 +23,18 @@ public static class SportSeed
         HasFixedPosition = false,
     };
 
+    public static readonly Sport SportToShuffle = new()
+    {
+        Name = "Sport to shuffle players",
+        Indoor = true,
+        StartingPlayersCount = 4,
+        MaxPlayersCount = 8,
+        HasFixedPosition = true,
+    };
+
     public static async Task SeedAsync(FourLinesContext context)
     {
-        await context.Sports.AddRangeAsync(Default, WithoutGoalkeeper);
+        await context.Sports.AddRangeAsync(Default, WithoutGoalkeeper, SportToShuffle);
 
         await context.SaveChangesAsync();
     }

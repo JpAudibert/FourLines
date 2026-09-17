@@ -51,6 +51,15 @@ public static class ReservationSeed
         Price = new Money(50.00m, "BRL"),
     };
 
+    public static readonly CreateReservationDTO ReservationToShuffle = new()
+    {
+        CourtId = CourtSeed.Default.Id,
+        UserId = UserSeed.PlayerToShuffle1.Id,
+        Period = new TimeRange(TestDates.Future.AddHours(15), TestDates.Future.AddHours(16)),
+        Status = ReservationStatus.Pending,
+        Price = new Money(50.00m, "BRL"),
+    };
+
     public static async Task SeedAsync(FourLinesContext context)
     {
         context.Reservations.AddRange(Default, ToBeDeleted, ToBeUpdated);

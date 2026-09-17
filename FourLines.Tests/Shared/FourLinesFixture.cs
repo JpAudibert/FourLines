@@ -19,8 +19,10 @@ public class FourLinesFixture : IAsyncLifetime
 
     private bool _isGoalKeeperReservationCreated = false;
     private bool _isNoGoalKeeperReservationCreated = false;
+    private bool _isShuffleReservationCreated = false;
     public Result<ConfirmReservationResponseDTO> GoalKeeperReservationResult = default!;
     public Result<ConfirmReservationResponseDTO> NoGoalKeeperReservationResult = default!;
+    public Result<ConfirmReservationResponseDTO> ShuffleReservationResult = default!;
 
     private const string _databaseName = "fourlines_test";
     private const string _username = "fourlines";
@@ -115,6 +117,20 @@ public class FourLinesFixture : IAsyncLifetime
             );
 
             _isNoGoalKeeperReservationCreated = true;
+        }
+    }
+
+    public async Task EnsureShuffleReservationCreatedAsync()
+    {
+        if (!_isShuffleReservationCreated)
+        {
+            IReservationHandler reservationHandler =
+                ServiceProvider.GetRequiredService<IReservationHandler>();
+            ShuffleReservationResult = await reservationHandler.Create(
+                ReservationSeed.ReservationToShuffle
+            );
+
+            _isShuffleReservationCreated = true;
         }
     }
 }
