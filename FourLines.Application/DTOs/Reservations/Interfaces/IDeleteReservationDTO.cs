@@ -1,8 +1,7 @@
-﻿namespace FourLines.Application.DTOs.Reservations.Interfaces
+﻿namespace FourLines.Application.DTOs.Reservations.Interfaces;
+
+public interface IDeleteReservationDTO
 {
-    public interface IDeleteReservationDTO
-    {
-        Guid ReservationId { get; init; }
-        Guid UserId { get; init; }
-    }
+    Guid ReservationId { get; init; }
+    Guid UserId { get; init; }
 }

@@ -1,10 +1,8 @@
 using FourLines.Application.DTOs.Matches;
 using FourLines.Application.Interfaces;
-using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
-using Org.BouncyCastle.Bcpg;
 
 namespace FourLines.Tests.Matches;
 
@@ -28,7 +26,6 @@ public class TestMatchesLeave(FourLinesFixture fixtures)
             MatchId = matchId,
             UserId = userId,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsFixedPosition = false,
         };
 
         await handler.Ingress(ingressDTO);

@@ -25,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<IReservationHandler, ReservationHandler>();
         services.AddScoped<IMatchHandler, MatchHandler>();
 
+        services.AddScoped<IShuffleHandler, ShuffleHandler>();
+
         services.AddScoped<SeederHandler>();
 
         return services;

@@ -1,20 +1,19 @@
 ﻿#nullable disable
 
-namespace FourLines.Infrastructure.Migrations
+namespace FourLines.Infrastructure.Migrations;
+
+/// <inheritdoc />
+public partial class AddConcurrencyTestSchema : Migration
 {
     /// <inheritdoc />
-    public partial class AddConcurrencyTestSchema : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
 
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
 
-        }
     }
 }

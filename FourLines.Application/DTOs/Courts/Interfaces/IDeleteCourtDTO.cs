@@ -1,10 +1,9 @@
-﻿namespace FourLines.Application.DTOs.Courts.Interfaces
-{
-    public interface IDeleteCourtDTO
-    {
-        Guid CourtId { get; init; }
-        Guid FacilityId { get; init; }
+﻿namespace FourLines.Application.DTOs.Courts.Interfaces;
 
-        string ToString();
-    }
+public interface IDeleteCourtDTO
+{
+    Guid CourtId { get; init; }
+    Guid FacilityId { get; init; }
+
+    string ToString();
 }

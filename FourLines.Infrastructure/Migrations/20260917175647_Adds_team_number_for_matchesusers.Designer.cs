@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Infrastructure.Migrations;
 
 [DbContext(typeof(FourLinesContext))]
-[Migration("20260915120411_Add_price_for_courts_and_reservations")]
-partial class Add_price_for_courts_and_reservations
+[Migration("20260917175647_Adds_team_number_for_matchesusers")]
+partial class Adds_team_number_for_matchesusers
 {
     /// <inheritdoc />
     protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,11 +45,21 @@ partial class Add_price_for_courts_and_reservations
                     .HasColumnType("boolean")
                     .HasColumnName("is_active");
 
+                b.Property<int>("MaintenancePeriodInMinutes")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasDefaultValue(0)
+                    .HasColumnName("maintenance_period_in_minutes");
+
                 b.Property<string>("Name")
                     .IsRequired()
                     .HasMaxLength(200)
                     .HasColumnType("character varying(200)")
                     .HasColumnName("name");
+
+                b.Property<int>("RentingPeriodInMinutes")
+                    .HasColumnType("integer")
+                    .HasColumnName("renting_period_in_minutes");
 
                 b.Property<Guid>("SportId")
                     .HasColumnType("uuid")
@@ -257,13 +267,17 @@ partial class Add_price_for_courts_and_reservations
                     .HasColumnType("timestamp with time zone")
                     .HasColumnName("created_at");
 
-                b.Property<bool>("IsGoalKeeper")
+                b.Property<bool>("IsFixedPosition")
                     .HasColumnType("boolean")
-                    .HasColumnName("is_goal_keeper");
+                    .HasColumnName("is_fixed_position");
 
                 b.Property<Guid>("MatchId")
                     .HasColumnType("uuid")
                     .HasColumnName("match_id");
+
+                b.Property<int>("TeamNumber")
+                    .HasColumnType("integer")
+                    .HasColumnName("team_number");
 
                 b.Property<DateTimeOffset>("UpdatedAt")
                     .HasColumnType("timestamp with time zone")
@@ -396,9 +410,13 @@ partial class Add_price_for_courts_and_reservations
                     .HasColumnType("timestamp with time zone")
                     .HasColumnName("created_at");
 
-                b.Property<bool>("HasFixedGoalKeeper")
+                b.Property<int>("FixedPositionQuantity")
+                    .HasColumnType("integer")
+                    .HasColumnName("fixed_position_quantity");
+
+                b.Property<bool>("HasFixedPosition")
                     .HasColumnType("boolean")
-                    .HasColumnName("has_fixed_goal_keeper");
+                    .HasColumnName("has_fixed_position");
 
                 b.Property<bool>("Indoor")
                     .HasColumnType("boolean")

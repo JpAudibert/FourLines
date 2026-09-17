@@ -1,10 +1,8 @@
-﻿namespace FourLines.Application.DTOs.Matches.Interfaces
+﻿namespace FourLines.Application.DTOs.Matches.Interfaces;
+
+public interface ICreateIngressDTO
 {
-    public interface ICreateIngressDTO
-    {
-        string Code { get; init; }
-        bool IngressAsFixedPosition { get; init; }
-        Guid MatchId { get; init; }
-        Guid UserId { get; init; }
-    }
+    string Code { get; init; }
+    Guid MatchId { get; init; }
+    Guid UserId { get; init; }
 }
