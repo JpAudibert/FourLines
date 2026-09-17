@@ -15,7 +15,6 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         MatchId = Guid.NewGuid(),
         UserId = Guid.NewGuid(),
         Code = "000000",
-        IngressAsFixedPosition = false,
     };
 
     [Fact]
@@ -32,7 +31,6 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = fixtures.GoalKeeperReservationResult.Value.Reservation.UserId,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsFixedPosition = false,
         };
 
         // Act
@@ -44,7 +42,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         Assert.Equal(ingress.MatchId, result.Value.MatchId);
         Assert.Equal(ingress.UserId, result.Value.UserId);
-        Assert.Equal(ingress.IngressAsFixedPosition, result.Value.IsFixedPosition);
+        Assert.False(result.Value.IsFixedPosition);
     }
 
     [Fact]
@@ -106,7 +104,6 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player2.Id,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
@@ -120,7 +117,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         Assert.Equal(ingress.MatchId, result.Value.MatchId);
         Assert.Equal(ingress.UserId, result.Value.UserId);
-        Assert.Equal(ingress.IngressAsFixedPosition, result.Value.IsFixedPosition);
+        Assert.True(result.Value.IsFixedPosition);
     }
 
     [Fact]
@@ -131,11 +128,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with
-        {
-            MatchId = Guid.NewGuid(),
-            IngressAsFixedPosition = true,
-        };
+        TestCreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
@@ -161,7 +154,6 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
@@ -188,7 +180,6 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
             MatchId = fixtures.NoGoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player3.Id,
             Code = fixtures.NoGoalKeeperReservationResult.Value.Match.Code,
-            IngressAsFixedPosition = true,
         };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();

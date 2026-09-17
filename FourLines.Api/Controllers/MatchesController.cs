@@ -50,7 +50,6 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
             MatchId = matchId,
             UserId = userId,
             Code = newIngress.Code,
-            IngressAsFixedPosition = false,
         };
 
         Result<MatchesUsers> matchesUsers = await matchHandler.Ingress(ingress);
@@ -82,7 +81,6 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
             MatchId = matchId,
             UserId = userId,
             Code = newIngress.Code,
-            IngressAsFixedPosition = true,
         };
 
         Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsFixedPosition(ingress);

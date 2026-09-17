@@ -50,7 +50,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         {
             MatchId = ingress.MatchId,
             UserId = ingress.UserId,
-            IsFixedPosition = ingress.IngressAsFixedPosition,
+            IsFixedPosition = false,
             Match = match,
             User = user
         };
@@ -80,7 +80,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         {
             MatchId = ingress.MatchId,
             UserId = ingress.UserId,
-            IsFixedPosition = ingress.IngressAsFixedPosition,
+            IsFixedPosition = true,
             Match = match,
             User = user
         };

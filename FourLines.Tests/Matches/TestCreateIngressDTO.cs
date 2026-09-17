@@ -7,5 +7,4 @@ public record TestCreateIngressDTO : ICreateIngressDTO
     public Guid MatchId { get; init; }
     public Guid UserId { get; init; }
     public string Code { get; init; } = default!;
-    public bool IngressAsFixedPosition { get; init; }
 }
