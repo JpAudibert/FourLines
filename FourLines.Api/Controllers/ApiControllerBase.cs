@@ -1,34 +1,33 @@
-﻿namespace FourLines.Api.Controllers
+﻿namespace FourLines.Api.Controllers;
+
+public class ApiControllerBase(ILogger logger) : ControllerBase
 {
-    public class ApiControllerBase(ILogger logger) : ControllerBase
+    private readonly ILogger _logger = logger;
+    private readonly Stopwatch _sw = new();
+
+    protected void StartStopwatch()
     {
-        private readonly ILogger _logger = logger;
-        private readonly Stopwatch _sw = new();
+        _sw.Restart();
+    }
 
-        protected void StartStopwatch()
+    protected ActionResult<T> HandleResult<T>(
+        Result<T> result,
+        int failingStatusCodes = StatusCodes.Status400BadRequest)
+    {
+        if (result.IsFailure)
         {
-            _sw.Restart();
+            _logger.LogWarning("Failed with result: {code} - {description}",
+                result.Error.Code,
+                result.Error.Description);
+
+            return Problem(
+                title: result.Error.Code,
+                detail: result.Error.Description,
+                statusCode: failingStatusCodes);
         }
 
-        protected ActionResult<T> HandleResult<T>(
-            Result<T> result,
-            int failingStatusCodes = StatusCodes.Status400BadRequest)
-        {
-            if (result.IsFailure)
-            {
-                _logger.LogWarning("Failed with result: {code} - {description}",
-                    result.Error.Code,
-                    result.Error.Description);
+        _logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
 
-                return Problem(
-                    title: result.Error.Code,
-                    detail: result.Error.Description,
-                    statusCode: failingStatusCodes);
-            }
-
-            _logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
-
-            return result.Value;
-        }
+        return result.Value;
     }
 }

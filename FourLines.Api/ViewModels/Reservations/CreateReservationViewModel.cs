@@ -1,9 +1,8 @@
-﻿namespace FourLines.Api.ViewModels.Reservations
+﻿namespace FourLines.Api.ViewModels.Reservations;
+
+public class CreateReservationViewModel
 {
-    public class CreateReservationViewModel
-    {
-        public Guid CourtId { get; init; }
-        public TimeRange Period { get; init; } = default!;
-        public ReservationStatus Status { get; init; } = default!;
-    }
+    public Guid CourtId { get; init; }
+    public TimeRange Period { get; init; } = default!;
+    public ReservationStatus Status { get; init; } = default!;
 }
