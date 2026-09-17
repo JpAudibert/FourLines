@@ -17,6 +17,9 @@ public sealed class MatchesUsersMap : IEntityTypeConfiguration<MatchesUsers>
         builder.Property(x => x.IsFixedPosition)
             .IsRequired();
 
+        builder.Property(x => x.TeamNumber)
+            .IsRequired();
+
         builder.HasOne(x => x.Match)
             .WithMany(x => x.MatchesUsers)
             .HasForeignKey(x => x.MatchId)
