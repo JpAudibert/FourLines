@@ -28,7 +28,7 @@ public class TestMatchesLeave(FourLinesFixture fixtures)
             MatchId = matchId,
             UserId = userId,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
-            IngressAsGoalKeeper = false,
+            IngressAsFixedPosition = false,
         };
 
         await handler.Ingress(ingressDTO);

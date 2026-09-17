@@ -50,7 +50,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         {
             MatchId = ingress.MatchId,
             UserId = ingress.UserId,
-            IsGoalKeeper = ingress.IngressAsGoalKeeper,
+            IsFixedPosition = ingress.IngressAsFixedPosition,
             Match = match,
             User = user
         };
@@ -61,7 +61,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         return Result<MatchesUsers>.Success(matchesUsers);
     }
 
-    public async Task<Result<MatchesUsers>> IngressAsGoalKeeper(ICreateIngressDTO ingress)
+    public async Task<Result<MatchesUsers>> IngressAsFixedPosition(ICreateIngressDTO ingress)
     {
         Match? match = await context.Matches
             .Include(s => s.Sport)
@@ -69,7 +69,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         if (match is null)
             return Result<MatchesUsers>.Failure(MatchesErrorResults.IngressMatchNotFound);
 
-        if(!match.Sport.HasFixedGoalKeeper)
+        if(!match.Sport.HasFixedPosition)
             return Result<MatchesUsers>.Failure(MatchesErrorResults.IngressSportDoesNotHaveFixedGoalKeeper);
 
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Id == ingress.UserId);
@@ -80,7 +80,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         {
             MatchId = ingress.MatchId,
             UserId = ingress.UserId,
-            IsGoalKeeper = ingress.IngressAsGoalKeeper,
+            IsFixedPosition = ingress.IngressAsFixedPosition,
             Match = match,
             User = user
         };

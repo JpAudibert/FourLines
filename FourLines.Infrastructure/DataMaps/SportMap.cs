@@ -18,7 +18,10 @@ public class SportMap : IEntityTypeConfiguration<Sport>
         builder.Property(s => s.Indoor)
             .IsRequired();
 
-        builder.Property(s => s.HasFixedGoalKeeper)
+        builder.Property(s => s.HasFixedPosition)
+            .IsRequired();
+
+        builder.Property(s => s.FixedPositionQuantity)
             .IsRequired();
 
         builder.Property(s => s.StartingPlayersCount)

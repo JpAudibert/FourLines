@@ -11,7 +11,8 @@ public static class SportSeed
         Indoor = true,
         StartingPlayersCount = 5,
         MaxPlayersCount = 10,
-        HasFixedGoalKeeper = true,
+        HasFixedPosition = true,
+        FixedPositionQuantity = 2,
     };
 
     public static readonly Sport WithoutGoalkeeper = new()
@@ -20,7 +21,8 @@ public static class SportSeed
         Indoor = true,
         StartingPlayersCount = 5,
         MaxPlayersCount = 10,
-        HasFixedGoalKeeper = false,
+        HasFixedPosition = false,
+        FixedPositionQuantity = 0,
     };
 
     public static async Task SeedAsync(FourLinesContext context)
