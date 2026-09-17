@@ -2,6 +2,7 @@ using FourLines.Application.DTOs.Courts.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
@@ -16,8 +17,8 @@ public class TestCourtDelete(FourLinesFixture fixtures)
 {
     private static readonly TestDeleteCourtDTO _deleteCourt = new()
     {
-        CourtId = TestDataSource.ToBeDeletedCourt.Id,
-        FacilityId = TestDataSource.ToBeDeletedCourt.FacilityId,
+        CourtId = CourtSeed.ToBeDeleted.Id,
+        FacilityId = CourtSeed.ToBeDeleted.FacilityId,
     };
 
     [Fact]
@@ -27,14 +28,8 @@ public class TestCourtDelete(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
-        TestDeleteCourtDTO deleteCourt = new()
-        {
-            CourtId = TestDataSource.ToBeDeletedCourt.Id,
-            FacilityId = TestDataSource.ToBeDeletedCourt.FacilityId,
-        };
-
         // Act
-        Result<bool> result = await courtHandler.Delete(deleteCourt);
+        Result<bool> result = await courtHandler.Delete(_deleteCourt);
 
         // Assert
         Assert.True(result.Value);

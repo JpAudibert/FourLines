@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.FacilitySchedules;
 
@@ -21,8 +22,8 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 {
     private static readonly TestUpdateScheduleDTO _updateFacilityScheduleTest = new()
     {
-        Id = TestDataSource.ToBeUpdatedFacilitySchedule.Id,
-        FacilityId = TestDataSource.DefaultNoSchedulesFacility.Id,
+        Id = FacilityScheduleSeed.ToBeUpdated.Id,
+        FacilityId = FacilitySeed.NoSchedules.Id,
         DayOfWeek = DayOfWeek.Friday,
         OpensAt = new TimeOnly(10, 0),
         ClosesAt = new TimeOnly(18, 0),
@@ -36,7 +37,7 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 
         TestUpdateScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with
         {
-            Id = TestDataSource.ToBeUpdatedFacilitySchedule.Id
+            Id = FacilityScheduleSeed.ToBeUpdated.Id
         };
 
         IFacilityScheduleHandler facilityScheduleHandler =

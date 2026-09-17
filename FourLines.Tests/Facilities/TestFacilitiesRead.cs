@@ -4,6 +4,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
@@ -16,11 +17,6 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
-
-        Facility dummyFacility = await fixtures.CreateRecord<Facility>(
-            TestDataSource.DummyFacility,
-            context
-        );
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
@@ -46,12 +42,12 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
-            TestDataSource.DefaultFacility.OwnerId
+            FacilitySeed.Default.OwnerId
         );
 
         // Assert
         int ownersFacilities = context
-            .Facilities.Where(f => f.OwnerId == TestDataSource.DefaultFacility.OwnerId)
+            .Facilities.Where(f => f.OwnerId == FacilitySeed.Default.OwnerId)
             .Count();
 
         Assert.NotEmpty(result.Value);
@@ -88,22 +84,19 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            TestDataSource.UserOwner.Id,
-            TestDataSource.DefaultFacility.Id
+            FacilitySeed.Default.OwnerId,
+            FacilitySeed.Default.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(TestDataSource.DefaultFacility.Name, result.Value.Name);
-        Assert.Equal(TestDataSource.DefaultFacility.Address, result.Value.Address);
-        Assert.Equal(TestDataSource.DefaultFacility.City, result.Value.City);
-        Assert.Equal(TestDataSource.DefaultFacility.State, result.Value.State);
-        Assert.Equal(TestDataSource.DefaultFacility.ZipCode, result.Value.ZipCode);
-        Assert.Equal(
-            TestDataSource.DefaultFacility.RegistrationNumber,
-            result.Value.RegistrationNumber
-        );
-        Assert.Equal(TestDataSource.DefaultFacility.OwnerId, result.Value.OwnerId);
+        Assert.Equal(FacilitySeed.Default.Name, result.Value.Name);
+        Assert.Equal(FacilitySeed.Default.Address, result.Value.Address);
+        Assert.Equal(FacilitySeed.Default.City, result.Value.City);
+        Assert.Equal(FacilitySeed.Default.State, result.Value.State);
+        Assert.Equal(FacilitySeed.Default.ZipCode, result.Value.ZipCode);
+        Assert.Equal(FacilitySeed.Default.RegistrationNumber, result.Value.RegistrationNumber);
+        Assert.Equal(FacilitySeed.Default.OwnerId, result.Value.OwnerId);
     }
 
     [Fact]
@@ -137,7 +130,7 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
 
         // Act
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
-            TestDataSource.DefaultFacility.OwnerId,
+            FacilitySeed.Default.OwnerId,
             Guid.NewGuid()
         );
 

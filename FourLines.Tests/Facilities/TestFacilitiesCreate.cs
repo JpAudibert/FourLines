@@ -4,6 +4,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
@@ -29,7 +30,7 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         State = "TS",
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
-        OwnerId = TestDataSource.UserOwner.Id,
+        OwnerId = UserSeed.Owner.Id,
     };
 
     [Fact]

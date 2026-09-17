@@ -4,6 +4,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
@@ -11,7 +12,7 @@ namespace FourLines.Tests.Courts;
 public class TestCourtRead(FourLinesFixture fixtures)
 {
     [Fact]
-    public async Task Should_GetAllCourts()
+    public async Task Should_GetAllCourts_FromFacility()
     {
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
@@ -19,7 +20,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
         FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
-        Guid facilityId = TestDataSource.DefaultFacility.Id;
+        Guid facilityId = FacilitySeed.Default.Id;
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(facilityId);
@@ -41,7 +42,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
-            TestDataSource.DummyFacility.Id
+            FacilitySeed.Dummy.Id
         );
 
         // Assert
@@ -50,7 +51,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
     }
 
     [Fact]
-    public async Task Should_GetFacility()
+    public async Task Should_GetCourtFromFacility()
     {
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
@@ -59,17 +60,17 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
-            TestDataSource.DefaultCourt.FacilityId,
-            TestDataSource.DefaultCourt.Id
+            CourtSeed.Default.FacilityId,
+            CourtSeed.Default.Id
         );
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(TestDataSource.DefaultCourt.Id, result.Value.Id);
-        Assert.Equal(TestDataSource.DefaultCourt.Name, result.Value.Name);
-        Assert.Equal(TestDataSource.DefaultCourt.IsActive, result.Value.IsActive);
-        Assert.Equal(TestDataSource.DefaultCourt.FacilityId, result.Value.FacilityId);
-        Assert.Equal(TestDataSource.DefaultCourt.SportId, result.Value.SportId);
+        Assert.Equal(CourtSeed.Default.Id, result.Value.Id);
+        Assert.Equal(CourtSeed.Default.Name, result.Value.Name);
+        Assert.Equal(CourtSeed.Default.IsActive, result.Value.IsActive);
+        Assert.Equal(CourtSeed.Default.FacilityId, result.Value.FacilityId);
+        Assert.Equal(CourtSeed.Default.SportId, result.Value.SportId);
     }
 
     [Fact]
@@ -83,7 +84,7 @@ public class TestCourtRead(FourLinesFixture fixtures)
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
             Guid.NewGuid(),
-            TestDataSource.DefaultCourt.Id
+            CourtSeed.Default.Id
         );
 
         // Assert

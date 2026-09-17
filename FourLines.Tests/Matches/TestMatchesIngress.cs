@@ -3,6 +3,7 @@ using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Matches;
 
@@ -103,7 +104,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         TestCreateIngressDTO ingress = _ingress with
         {
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
-            UserId = TestDataSource.UserPlayer2.Id,
+            UserId = UserSeed.Player2.Id,
             Code = fixtures.GoalKeeperReservationResult.Value.Match.Code,
             IngressAsGoalKeeper = true,
         };
@@ -185,7 +186,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         TestCreateIngressDTO ingress = new()
         {
             MatchId = fixtures.NoGoalKeeperReservationResult.Value.Match.Id,
-            UserId = TestDataSource.UserPlayer3.Id,
+            UserId = UserSeed.Player3.Id,
             Code = fixtures.NoGoalKeeperReservationResult.Value.Match.Code,
             IngressAsGoalKeeper = true,
         };

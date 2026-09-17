@@ -6,6 +6,7 @@ public record Reservation : BaseEntity
     public Guid UserId { get; init; }
     public TimeRange Period { get; init; } = default!;
     public ReservationStatus Status { get; init; } = default!;
+    public Money Price { get; init; } = default!;
 
     public Court Court { get; init; } = default!;
     public User User { get; init; } = default!;
@@ -15,5 +16,5 @@ public enum ReservationStatus
 {
     Pending,
     Confirmed,
-    Cancelled
+    Cancelled,
 }

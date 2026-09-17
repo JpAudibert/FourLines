@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FourLines.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FourLines.Infrastructure.Migrations
 {
     [DbContext(typeof(FourLinesContext))]
-    partial class FourLinesContextModelSnapshot : ModelSnapshot
+    [Migration("20260915120411_Add_price_for_courts_and_reservations")]
+    partial class Add_price_for_courts_and_reservations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,21 +45,11 @@ namespace FourLines.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
-                    b.Property<int>("MaintenancePeriodInMinutes")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("maintenance_period_in_minutes");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
-
-                    b.Property<int>("RentingPeriodInMinutes")
-                        .HasColumnType("integer")
-                        .HasColumnName("renting_period_in_minutes");
 
                     b.Property<Guid>("SportId")
                         .HasColumnType("uuid")

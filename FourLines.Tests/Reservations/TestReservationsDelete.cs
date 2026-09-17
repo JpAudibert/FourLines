@@ -2,6 +2,7 @@ using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
@@ -20,8 +21,8 @@ public class TestReservationsDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await reservationHandler.Delete(new DeleteReservationDTO
         {
-            UserId = TestDataSource.ToBeDeletedReservation.UserId,
-            ReservationId = TestDataSource.ToBeDeletedReservation.Id
+            UserId = ReservationSeed.ToBeDeleted.UserId,
+            ReservationId = ReservationSeed.ToBeDeleted.Id
         });
 
         // Assert

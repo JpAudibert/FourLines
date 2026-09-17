@@ -4,6 +4,7 @@ using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.FacilitySchedules;
 
@@ -20,7 +21,7 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        Guid facilityId = TestDataSource.DefaultFacility.Id;
+        Guid facilityId = FacilitySeed.Default.Id;
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
