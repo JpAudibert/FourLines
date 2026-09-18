@@ -3,34 +3,32 @@
 [ExcludeFromCodeCoverage]
 public class SeederHandler(FourLinesContext context)
 {
-    private readonly FourLinesContext _context = context;
-
-    public async Task Seed()
+    public async Task Seed(CancellationToken cancellationToken = default)
     {
-        using (var transaction = await _context.Database.BeginTransactionAsync())
-        using (_context)
+        using (var transaction = await context.Database.BeginTransactionAsync(cancellationToken))
+        using (context)
         {
             try
             {
-                await SeedRolesAsync();
-                await SeedSportsAsync();
-                await SeedUsers();
-                await SeedFacilities();
-                await SeedCourts();
-                await SeedFacilitySchedules();
-                await transaction.CommitAsync();
+                await SeedRolesAsync(cancellationToken);
+                await SeedSportsAsync(cancellationToken);
+                await SeedUsers(cancellationToken);
+                await SeedFacilities(cancellationToken);
+                await SeedCourts(cancellationToken);
+                await SeedFacilitySchedules(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(cancellationToken);
                 throw;
             }
         }
     }
 
-    public async Task SeedRolesAsync()
+    public async Task SeedRolesAsync(CancellationToken cancellationToken = default)
     {
-        if (!await ValidateIsEmpty<Role>())
+        if (!await ValidateIsEmpty<Role>(cancellationToken))
             return;
 
         var roles = new List<Role>
@@ -39,39 +37,75 @@ public class SeederHandler(FourLinesContext context)
             new() { Name = "Player" },
             new() { Name = "Facility Owner" },
             new() { Name = "Coach" },
-            new() { Name = "Manager" }
+            new() { Name = "Manager" },
         };
 
-        await _context.Roles.AddRangeAsync(roles);
-        await _context.SaveChangesAsync();
+        await context.Roles.AddRangeAsync(roles, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task SeedSportsAsync()
+    public async Task SeedSportsAsync(CancellationToken cancellationToken = default)
     {
-        if (!await ValidateIsEmpty<Sport>())
+        if (!await ValidateIsEmpty<Sport>(cancellationToken))
             return;
 
         var sports = new List<Sport>
         {
-            new() { Name = "Football", Indoor = false, StartingPlayersCount = 22, MaxPlayersCount = 26},
-            new() { Name = "Futsal", Indoor = true, StartingPlayersCount = 10, MaxPlayersCount = 14 },
-            new() { Name = "Basketball", Indoor = true, StartingPlayersCount = 10, MaxPlayersCount = 14 },
-            new() { Name = "Volleyball", Indoor = true, StartingPlayersCount = 12, MaxPlayersCount = 16 },
-            new() { Name = "Tennis", Indoor = false, StartingPlayersCount = 2, MaxPlayersCount = 4 },
-            new() { Name = "Padel", Indoor = true, StartingPlayersCount = 4, MaxPlayersCount = 6 }
+            new()
+            {
+                Name = "Football",
+                Indoor = false,
+                StartingPlayersCount = 22,
+                MaxPlayersCount = 26,
+            },
+            new()
+            {
+                Name = "Futsal",
+                Indoor = true,
+                StartingPlayersCount = 10,
+                MaxPlayersCount = 14,
+            },
+            new()
+            {
+                Name = "Basketball",
+                Indoor = true,
+                StartingPlayersCount = 10,
+                MaxPlayersCount = 14,
+            },
+            new()
+            {
+                Name = "Volleyball",
+                Indoor = true,
+                StartingPlayersCount = 12,
+                MaxPlayersCount = 16,
+            },
+            new()
+            {
+                Name = "Tennis",
+                Indoor = false,
+                StartingPlayersCount = 2,
+                MaxPlayersCount = 4,
+            },
+            new()
+            {
+                Name = "Padel",
+                Indoor = true,
+                StartingPlayersCount = 4,
+                MaxPlayersCount = 6,
+            },
         };
 
-        await _context.Sports.AddRangeAsync(sports);
-        await _context.SaveChangesAsync();
+        await context.Sports.AddRangeAsync(sports, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task SeedUsers()
+    public async Task SeedUsers(CancellationToken cancellationToken = default)
     {
-        if (await ValidateIsEmpty<User>() == false)
+        if (await ValidateIsEmpty<User>(cancellationToken) == false)
             return;
 
-        int rolesCount = _context.Roles.Count();
-        List<Role> roles = [.. _context.Roles];
+        int rolesCount = context.Roles.Count();
+        List<Role> roles = [.. context.Roles];
         int maxUsersPerRole = 3;
         List<User> users = [];
 
@@ -88,7 +122,7 @@ public class SeederHandler(FourLinesContext context)
                     Birthday = new DateOnly(1990 + i, 1, 1),
                     Phone = $"+55 11 99999-00{(i * rolesCount) + j + 1:D2}",
                     RegistrationNumber = $"USR{(i * rolesCount) + j + 1:D6}",
-                    IsActive = true
+                    IsActive = true,
                 };
                 newUser.PasswordHash = new PasswordHasher<User>().HashPassword(newUser, password);
 
@@ -96,17 +130,17 @@ public class SeederHandler(FourLinesContext context)
             }
         }
 
-        await _context.Users.AddRangeAsync(users);
-        await _context.SaveChangesAsync();
+        await context.Users.AddRangeAsync(users, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task SeedFacilities()
+    public async Task SeedFacilities(CancellationToken cancellationToken = default)
     {
-        if (!await ValidateIsEmpty<Facility>())
+        if (!await ValidateIsEmpty<Facility>(cancellationToken))
             return;
 
-        int sportsCount = _context.Sports.Count();
-        List<User> facilityOwners = [.. _context.Users.Where(u => u.Role.Name == "Facility Owner")];
+        int sportsCount = context.Sports.Count();
+        List<User> facilityOwners = [.. context.Users.Where(u => u.Role.Name == "Facility Owner")];
         List<Facility> facilities = [];
 
         for (int i = 0; i < facilityOwners.Count; i++)
@@ -121,71 +155,78 @@ public class SeederHandler(FourLinesContext context)
                     City = $"City {i + 1}",
                     State = $"State {i + 1}",
                     ZipCode = $"00000-00{(i * sportsCount) + j + 1:D2}",
-                    RegistrationNumber = $"FAC{(i * sportsCount) + j + 1:D6}"
+                    RegistrationNumber = $"FAC{(i * sportsCount) + j + 1:D6}",
                 };
 
                 facilities.Add(facility);
             }
         }
 
-        await _context.Facilities.AddRangeAsync(facilities);
-        await _context.SaveChangesAsync();
+        await context.Facilities.AddRangeAsync(facilities, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task SeedCourts()
+    public async Task SeedCourts(CancellationToken cancellationToken = default)
     {
-        if (!await ValidateIsEmpty<Court>())
+        if (!await ValidateIsEmpty<Court>(cancellationToken))
             return;
 
-        int sportsCount = _context.Sports.Count();
-        List<Facility> facilities = [.. _context.Facilities];
+        int sportsCount = context.Sports.Count();
+        List<Facility> facilities = [.. context.Facilities];
         int maxCourtsPerSport = 3;
         List<Court> courts = [];
         for (int i = 0; i < sportsCount; i++)
         {
             for (int j = 0; j < maxCourtsPerSport; j++)
             {
-                courts.Add(new Court()
-                {
-                    FacilityId = facilities.ElementAtOrDefault(j % facilities.Count)?.Id ?? Guid.NewGuid(),
-                    SportId = _context.Sports.ElementAtOrDefault(i)?.Id ?? Guid.NewGuid(),
-                    Name = $"Court {i + 1} - {facilities[i].Name}",
-                    IsActive = true,
-                });
+                courts.Add(
+                    new Court()
+                    {
+                        FacilityId =
+                            facilities.ElementAtOrDefault(j % facilities.Count)?.Id
+                            ?? Guid.NewGuid(),
+                        SportId = context.Sports.ElementAtOrDefault(i)?.Id ?? Guid.NewGuid(),
+                        Name = $"Court {i + 1} - {facilities[i].Name}",
+                        IsActive = true,
+                    }
+                );
             }
         }
-        await _context.Courts.AddRangeAsync(courts);
-        await _context.SaveChangesAsync();
+        await context.Courts.AddRangeAsync(courts, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task SeedFacilitySchedules()
+    public async Task SeedFacilitySchedules(CancellationToken cancellationToken = default)
     {
-        if (!await ValidateIsEmpty<FacilitySchedule>())
+        if (!await ValidateIsEmpty<FacilitySchedule>(cancellationToken))
             return;
 
-        List<Facility> facilities = [.. _context.Facilities];
+        List<Facility> facilities = [.. context.Facilities];
         List<FacilitySchedule> schedules = [];
 
         foreach (var facility in facilities)
         {
             for (int day = 1; day < 7; day++)
             {
-                schedules.Add(new FacilitySchedule()
-                {
-                    FacilityId = facility.Id,
-                    DayOfWeek = (DayOfWeek)day,
-                    OpensAt = new TimeOnly(8, 0),
-                    ClosesAt = new TimeOnly(22, 0)
-                });
+                schedules.Add(
+                    new FacilitySchedule()
+                    {
+                        FacilityId = facility.Id,
+                        DayOfWeek = (DayOfWeek)day,
+                        OpensAt = new TimeOnly(8, 0),
+                        ClosesAt = new TimeOnly(22, 0),
+                    }
+                );
             }
         }
 
-        await _context.FacilitySchedules.AddRangeAsync(schedules);
-        await _context.SaveChangesAsync();
+        await context.FacilitySchedules.AddRangeAsync(schedules, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> ValidateIsEmpty<T>() where T : class
+    public async Task<bool> ValidateIsEmpty<T>(CancellationToken cancellationToken = default)
+        where T : class
     {
-        return await _context.Set<T>().AnyAsync() == false;
+        return await context.Set<T>().AnyAsync(cancellationToken: cancellationToken) == false;
     }
 }
