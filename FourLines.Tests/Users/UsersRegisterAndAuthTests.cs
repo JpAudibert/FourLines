@@ -2,6 +2,7 @@ using FourLines.Api.Controllers;
 using FourLines.Api.ViewModels.Users;
 using FourLines.Application.DTOs;
 using FourLines.Application.Handlers;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -55,24 +56,21 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         ITokenProvider jwtTokenProvider =
             fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
 
-        AuthenticationHandler authenticationHandler = new(
-            context,
-            passwordHashProvider,
-            jwtTokenProvider
-        );
+        IAuthenticationHandler handler =
+            fixtures.ServiceProvider.GetRequiredService<IAuthenticationHandler>();
 
-        UsersController UsersController = new(
-            mockUserRegisterLogger.Object,
-            userHandler
-        );
-        AuthController authController = new(mockAuthLogger.Object, authenticationHandler);
+        UsersController UsersController = new(mockUserRegisterLogger.Object, userHandler);
+        AuthController authController = new(mockAuthLogger.Object, handler);
 
         // Act
         ActionResult<User> userRegisterResult = await UsersController.Register(
             RoleSeed.Player.Id,
             newUser
         );
-        ActionResult<string> authResult = await authController.Authenticate(loginRequest);
+        ActionResult<string> authResult = await authController.Authenticate(
+            loginRequest,
+            CancellationToken.None
+        );
 
         // Assert
         Assert.NotNull(userRegisterResult.Value);
@@ -142,11 +140,11 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         AuthenticationDTO authTest = new() { Email = "test@test.com", Password = "Test123!" };
 
-        AuthenticationHandler authHandler =
-            fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
+        IAuthenticationHandler authHandler =
+            fixtures.ServiceProvider.GetRequiredService<IAuthenticationHandler>();
 
         // Act
-        Result<String> result = await authHandler.Authenticate(authTest);
+        Result<string> result = await authHandler.Authenticate(authTest);
 
         // Assert
         Assert.Null(result.Value);
@@ -165,8 +163,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             Password = "testingPassword",
         };
 
-        AuthenticationHandler authHandler =
-            fixtures.ServiceProvider.GetRequiredService<AuthenticationHandler>();
+        IAuthenticationHandler authHandler =
+            fixtures.ServiceProvider.GetRequiredService<IAuthenticationHandler>();
 
         // Act
         Result<string> result = await authHandler.Authenticate(authTest);
