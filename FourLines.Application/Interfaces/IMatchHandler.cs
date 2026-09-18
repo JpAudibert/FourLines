@@ -5,9 +5,21 @@ namespace FourLines.Application.Interfaces;
 
 public interface IMatchHandler
 {
-    Task<Result<Match?>> GetMatch(Guid matchId);
-    Task<Result<MatchesUsers>> Ingress(ICreateIngressDTO ingress);
-    Task<Result<MatchesUsers>> IngressAsFixedPosition(ICreateIngressDTO ingress);
-    Task<Result<bool>> LeaveMatch(LeaveMatchDTO leaveMatch);
-    Task<Result<Match>> UpdateMatchName(UpdateMatchNameDTO updateMatchName);
+    Task<Result<Match?>> GetMatch(Guid matchId, CancellationToken cancellationToken = default);
+    Task<Result<MatchesUsers>> Ingress(
+        ICreateIngressDTO ingress,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<MatchesUsers>> IngressAsFixedPosition(
+        ICreateIngressDTO ingress,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<bool>> LeaveMatch(
+        LeaveMatchDTO leaveMatch,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<Match>> UpdateMatchName(
+        UpdateMatchNameDTO updateMatchName,
+        CancellationToken cancellationToken = default
+    );
 }
