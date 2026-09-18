@@ -24,8 +24,8 @@ try
     var secretKey = jwtSettings["Secret"];
 
     // Add services to the container.
-    builder.Services
-        .AddControllers()
+    builder
+        .Services.AddControllers()
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -33,10 +33,7 @@ try
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
-    builder.Services
-        .AddDomain()
-        .AddApplication(builder.Configuration)
-        .AddInfrastructure(builder.Configuration);
+    builder.Services.AddDomain().AddApplication().AddInfrastructure(builder.Configuration);
 
     builder.Services.AddApiVersioning(options =>
     {
@@ -45,7 +42,11 @@ try
         options.ReportApiVersions = true;
     });
 
-    builder.Services.ConfigureJwtAuthentication(jwtSettings["Issuer"]!, jwtSettings["Audience"]!, secretKey!);
+    builder.Services.ConfigureJwtAuthentication(
+        jwtSettings["Issuer"]!,
+        jwtSettings["Audience"]!,
+        secretKey!
+    );
 
     builder.Services.AddAuthorization();
 
@@ -59,17 +60,19 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
-        app.MapScalarApiReference(options => options.AddDocument("v1", "API Version 1", isDefault: true));
+        app.MapScalarApiReference(options =>
+            options.AddDocument("v1", "API Version 1", isDefault: true)
+        );
     }
 
     app.UseAuthorization();
 
     app.MapControllers();
 
-    app.MapHealthChecks("/_health", new HealthCheckOptions()
-    {
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
+    app.MapHealthChecks(
+        "/_health",
+        new HealthCheckOptions() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse }
+    );
 
     Log.Information("Application started successfully");
 
