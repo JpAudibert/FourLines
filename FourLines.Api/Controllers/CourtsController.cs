@@ -6,28 +6,32 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class CourtsController(ILogger<CourtsController> logger, ICourtHandler courtHandler) 
+public class CourtsController(ILogger<CourtsController> logger, ICourtHandler courtHandler)
     : ApiControllerBase(logger)
 {
-    private readonly ILogger<CourtsController> _logger = logger;
-    private readonly ICourtHandler _courtHandler = courtHandler;
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Court>>> GetAllCourtsFromFacility(
         [FromRoute] Guid ownerId,
-        [FromRoute] Guid facilityId)
+        [FromRoute] Guid facilityId,
+        CancellationToken cancellationToken
+    )
     {
         const string operation = $"{nameof(CourtsController)}.{nameof(GetAllCourtsFromFacility)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<IEnumerable<Court>> result = await _courtHandler.GetAllCourtsFromFacility(facilityId);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
+            facilityId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -36,20 +40,28 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
     public async Task<ActionResult<Court>> GetById(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromRoute] Guid courtId)
+        [FromRoute] Guid courtId,
+        CancellationToken cancellationToken
+    )
     {
         const string operation = $"{nameof(CourtsController)}.{nameof(GetById)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-            ["courtId"] = courtId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+                ["courtId"] = courtId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<Court> result = await _courtHandler.GetCourtFromFacility(facilityId, courtId);
+        Result<Court> result = await courtHandler.GetCourtFromFacility(
+            facilityId,
+            courtId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -58,26 +70,33 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
     public async Task<ActionResult<Court>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateCourtViewModel newCourt)
+        [FromBody] CreateCourtViewModel newCourt,
+        CancellationToken cancellationToken
+    )
     {
         const string operation = $"{nameof(CourtsController)}.{nameof(Create)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<Court> result = await _courtHandler.Create(new CreateCourtDTO()
-        {
-            OwnerId = ownerId,
-            FacilityId = facilityId,
-            SportId = newCourt.SportId,
-            Name = newCourt.Name,
-            IsActive = newCourt.IsActive,
-        });
+        Result<Court> result = await courtHandler.Create(
+            new CreateCourtDTO()
+            {
+                OwnerId = ownerId,
+                FacilityId = facilityId,
+                SportId = newCourt.SportId,
+                Name = newCourt.Name,
+                IsActive = newCourt.IsActive,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -87,28 +106,35 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId,
-        [FromBody] UpdateCourtViewModel updateCourt)
+        [FromBody] UpdateCourtViewModel updateCourt,
+        CancellationToken cancellationToken
+    )
     {
         const string operation = $"{nameof(CourtsController)}.{nameof(Update)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-            ["courtId"] = courtId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+                ["courtId"] = courtId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<Court> result = await _courtHandler.Update(new UpdateCourtDTO()
-        {
-            Id = courtId,
-            OwnerId = ownerId,
-            FacilityId = facilityId,
-            SportId = updateCourt.SportId,
-            Name = updateCourt.Name,
-            IsActive = updateCourt.IsActive,
-        });
+        Result<Court> result = await courtHandler.Update(
+            new UpdateCourtDTO()
+            {
+                Id = courtId,
+                OwnerId = ownerId,
+                FacilityId = facilityId,
+                SportId = updateCourt.SportId,
+                Name = updateCourt.Name,
+                IsActive = updateCourt.IsActive,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -117,24 +143,27 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromRoute] Guid courtId)
+        [FromRoute] Guid courtId,
+        CancellationToken cancellationToken
+    )
     {
         const string operation = $"{nameof(CourtsController)}.{nameof(Delete)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-            ["courtId"] = courtId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+                ["courtId"] = courtId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<bool> result = await _courtHandler.Delete(new DeleteCourtDTO
-        {
-            FacilityId = facilityId,
-            CourtId = courtId
-        });
+        Result<bool> result = await courtHandler.Delete(
+            new DeleteCourtDTO { FacilityId = facilityId, CourtId = courtId },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }

@@ -6,89 +6,110 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
-public class FacilitiesController(ILogger<FacilitiesController> logger, IFacilityHandler facilityHandler)
-    : ApiControllerBase(logger)
+public class FacilitiesController(
+    ILogger<FacilitiesController> logger,
+    IFacilityHandler facilityHandler
+) : ApiControllerBase(logger)
 {
-    private readonly ILogger<FacilitiesController> _logger = logger;
-    private readonly IFacilityHandler _facilityHandler = facilityHandler;
-
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
-    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromFacilities()
+    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromFacilities(
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromFacilities)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation }
+        );
 
         StartStopwatch();
 
-        Result<IEnumerable<Facility>> result = await _facilityHandler.GetAllFacilities();
+        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities(
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
 
     [HttpGet]
     [EndpointName("GetAllFromOwner")]
-    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner([FromRoute] Guid ownerId)
+    public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner(
+        [FromRoute] Guid ownerId,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromOwner)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["ownerId"] = ownerId }
+        );
 
         StartStopwatch();
 
-        Result<IEnumerable<Facility>> result = await _facilityHandler.GetFacilitiesFromOwner(ownerId);
+        Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
+            ownerId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
 
     [HttpGet("{facilityId}")]
     [EndpointName("GetFacilityFromOwner")]
-    public async Task<ActionResult<Facility>> GetFacilityFromOwner([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
+    public async Task<ActionResult<Facility>> GetFacilityFromOwner(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetFacilityFromOwner)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<Facility> result = await _facilityHandler.GetFacilityFromOwner(ownerId, facilityId);
+        Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
+            ownerId,
+            facilityId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
 
     [HttpPost]
     [EndpointName("Create")]
-    public async Task<ActionResult<Facility>> Create([FromRoute] Guid ownerId, [FromBody] CreateFacilityViewModel request)
+    public async Task<ActionResult<Facility>> Create(
+        [FromRoute] Guid ownerId,
+        [FromBody] CreateFacilityViewModel request,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Create)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["ownerId"] = ownerId }
+        );
 
         StartStopwatch();
 
-        Result<Facility> result = await _facilityHandler.Create(new CreateFacilityDTO()
-        {
-            OwnerId = ownerId,
-            Name = request.Name,
-            Address = request.Address,
-            City = request.City,
-            State = request.State,
-            ZipCode = request.ZipCode,
-            RegistrationNumber = request.RegistrationNumber,
-        });
+        Result<Facility> result = await facilityHandler.Create(
+            new CreateFacilityDTO()
+            {
+                OwnerId = ownerId,
+                Name = request.Name,
+                Address = request.Address,
+                City = request.City,
+                State = request.State,
+                ZipCode = request.ZipCode,
+                RegistrationNumber = request.RegistrationNumber,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -98,52 +119,64 @@ public class FacilitiesController(ILogger<FacilitiesController> logger, IFacilit
     public async Task<ActionResult<Facility>> Update(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] UpdateFacilityViewModel facility)
+        [FromBody] UpdateFacilityViewModel facility,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Update)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<Facility> result = await _facilityHandler.Update(new UpdateFacilityDTO()
-        {
-            Id = facilityId,
-            OwnerId = ownerId,
-            Name = facility.Name,
-            Address = facility.Address,
-            City = facility.City,
-            State = facility.State,
-            ZipCode = facility.ZipCode,
-            RegistrationNumber = facility.RegistrationNumber
-        });
+        Result<Facility> result = await facilityHandler.Update(
+            new UpdateFacilityDTO()
+            {
+                Id = facilityId,
+                OwnerId = ownerId,
+                Name = facility.Name,
+                Address = facility.Address,
+                City = facility.City,
+                State = facility.State,
+                ZipCode = facility.ZipCode,
+                RegistrationNumber = facility.RegistrationNumber,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
 
     [HttpDelete("{facilityId}")]
     [EndpointName("Delete")]
-    public async Task<ActionResult<bool>> Delete([FromRoute] Guid ownerId, [FromRoute] Guid facilityId)
+    public async Task<ActionResult<bool>> Delete(
+        [FromRoute] Guid ownerId,
+        [FromRoute] Guid facilityId,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Delete)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<bool> result = await _facilityHandler.Delete(new DeleteFacilityDTO()
-        {
-            OwnerId = ownerId,
-            FacilityId = facilityId
-        });
+        Result<bool> result = await facilityHandler.Delete(
+            new DeleteFacilityDTO() { OwnerId = ownerId, FacilityId = facilityId },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }

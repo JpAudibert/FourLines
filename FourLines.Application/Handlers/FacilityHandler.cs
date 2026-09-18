@@ -4,12 +4,14 @@ namespace FourLines.Application.Handlers;
 
 public class FacilityHandler(FourLinesContext context) : IFacilityHandler
 {
-    private readonly FourLinesContext _context = context;
-
-    public async Task<Result<Facility>> Create(ICreateFacilityDTO createDto)
+    public async Task<Result<Facility>> Create(
+        ICreateFacilityDTO createDto,
+        CancellationToken cancellationToken = default
+    )
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Id == createDto.OwnerId && u.Role.Name == RoleConstants.FacilityOwner
+        User? owner = await context.Users.FirstOrDefaultAsync(
+            u => u.Id == createDto.OwnerId && u.Role.Name == RoleConstants.FacilityOwner,
+            cancellationToken: cancellationToken
         );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.CreateOwnerDoesNotExists);
@@ -26,39 +28,46 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
             Owner = owner,
         };
 
-        await _context.Facilities.AddAsync(facility);
-        await _context.SaveChangesAsync();
+        await context.Facilities.AddAsync(facility, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return Result<Facility>.Success(facility);
     }
 
-    public async Task<Result<bool>> Delete(IDeleteFacilityDTO deleteDto)
+    public async Task<Result<bool>> Delete(
+        IDeleteFacilityDTO deleteDto,
+        CancellationToken cancellationToken = default
+    )
     {
         bool deleted = false;
-        int facility = await _context
+        int facility = await context
             .Facilities.Where(f => f.Id == deleteDto.FacilityId && f.OwnerId == deleteDto.OwnerId)
-            .ExecuteDeleteAsync();
+            .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
         if (facility <= 0)
             return Result<bool>.Failure(FacilitiesErrorResults.DeleteFacilityDoesNotExist);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         deleted = true;
 
         return Result<bool>.Success(deleted);
     }
 
-    public async Task<Result<IEnumerable<Facility>>> GetFacilitiesFromOwner(Guid ownerId)
+    public async Task<Result<IEnumerable<Facility>>> GetFacilitiesFromOwner(
+        Guid ownerId,
+        CancellationToken cancellationToken = default
+    )
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner
+        User? owner = await context.Users.FirstOrDefaultAsync(
+            u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
+            cancellationToken: cancellationToken
         );
         if (owner is null)
             return Result<IEnumerable<Facility>>.Failure(
                 FacilitiesErrorResults.RetrieveOwnerDoesNotExists
             );
 
-        IEnumerable<Facility> facilities = await _context
+        IEnumerable<Facility> facilities = await context
             .Facilities.Where(f => f.OwnerId == ownerId)
             .Select(f => new Facility
             {
@@ -71,21 +80,27 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
                 RegistrationNumber = f.RegistrationNumber,
                 OwnerId = f.OwnerId,
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return Result<IEnumerable<Facility>>.Success(facilities);
     }
 
-    public async Task<Result<Facility>> GetFacilityFromOwner(Guid ownerId, Guid facilityId)
+    public async Task<Result<Facility>> GetFacilityFromOwner(
+        Guid ownerId,
+        Guid facilityId,
+        CancellationToken cancellationToken = default
+    )
     {
-        User? owner = await _context.Users.FirstOrDefaultAsync(u =>
-            u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner
+        User? owner = await context.Users.FirstOrDefaultAsync(
+            u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
+            cancellationToken: cancellationToken
         );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.RetrieveOwnerDoesNotExists);
 
-        Facility? facility = await _context.Facilities.FirstOrDefaultAsync(f =>
-            f.Id == facilityId && f.OwnerId == ownerId
+        Facility? facility = await context.Facilities.FirstOrDefaultAsync(
+            f => f.Id == facilityId && f.OwnerId == ownerId,
+            cancellationToken: cancellationToken
         );
         if (facility is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.RetrieveFacilityDoesNotExist);
@@ -93,9 +108,11 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
         return Result<Facility>.Success(facility);
     }
 
-    public async Task<Result<IEnumerable<Facility>>> GetAllFacilities()
+    public async Task<Result<IEnumerable<Facility>>> GetAllFacilities(
+        CancellationToken cancellationToken = default
+    )
     {
-        IEnumerable<Facility> facilities = await _context
+        IEnumerable<Facility> facilities = await context
             .Facilities.Select(f => new Facility
             {
                 Id = f.Id,
@@ -107,35 +124,40 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
                 RegistrationNumber = f.RegistrationNumber,
                 OwnerId = f.OwnerId,
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
 
         return Result<IEnumerable<Facility>>.Success(facilities);
     }
 
-    public async Task<Result<Facility>> Update(IUpdateFacilityDTO updateDto)
+    public async Task<Result<Facility>> Update(
+        IUpdateFacilityDTO updateDto,
+        CancellationToken cancellationToken = default
+    )
     {
         if (updateDto.OwnerId == Guid.Empty)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);
 
-        int affectedRows = await _context
+        int affectedRows = await context
             .Facilities.Where(f => f.Id == updateDto.Id && f.OwnerId == updateDto.OwnerId)
-            .ExecuteUpdateAsync(setters =>
-                setters
-                    .SetProperty(f => f.Name, updateDto.Name)
-                    .SetProperty(f => f.Address, updateDto.Address)
-                    .SetProperty(f => f.City, updateDto.City)
-                    .SetProperty(f => f.State, updateDto.State)
-                    .SetProperty(f => f.ZipCode, updateDto.ZipCode)
-                    .SetProperty(f => f.RegistrationNumber, updateDto.RegistrationNumber)
+            .ExecuteUpdateAsync(
+                setters =>
+                    setters
+                        .SetProperty(f => f.Name, updateDto.Name)
+                        .SetProperty(f => f.Address, updateDto.Address)
+                        .SetProperty(f => f.City, updateDto.City)
+                        .SetProperty(f => f.State, updateDto.State)
+                        .SetProperty(f => f.ZipCode, updateDto.ZipCode)
+                        .SetProperty(f => f.RegistrationNumber, updateDto.RegistrationNumber),
+                cancellationToken: cancellationToken
             );
         if (affectedRows <= 0)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateFacilityDoesNotExist);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
-        Facility? updatedFacility = await _context
+        Facility? updatedFacility = await context
             .Facilities.AsNoTracking()
-            .FirstOrDefaultAsync(f => f.Id == updateDto.Id);
+            .FirstOrDefaultAsync(f => f.Id == updateDto.Id, cancellationToken: cancellationToken);
 
         return Result<Facility>.Success(updatedFacility!);
     }

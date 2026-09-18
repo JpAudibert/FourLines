@@ -7,28 +7,35 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
 [Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
-public class FacilitySchedulesController(ILogger<FacilitySchedulesController> logger, IFacilityScheduleHandler facilityScheduleHandler)
-    : ApiControllerBase(logger)
+public class FacilitySchedulesController(
+    ILogger<FacilitySchedulesController> logger,
+    IFacilityScheduleHandler facilityScheduleHandler
+) : ApiControllerBase(logger)
 {
-    private readonly ILogger<FacilitySchedulesController> _logger = logger;
-    private readonly IFacilityScheduleHandler _facilityScheduleHandler = facilityScheduleHandler;
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> GetScheduleFromFacility(
         [FromRoute] Guid ownerId,
-        [FromRoute] Guid facilityId)
+        [FromRoute] Guid facilityId,
+        CancellationToken cancellationToken = default
+    )
     {
-        const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(GetScheduleFromFacility)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        const string operation =
+            $"{nameof(FacilitySchedulesController)}.{nameof(GetScheduleFromFacility)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.GetSchedules(facilityId);
+        Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            facilityId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -37,25 +44,32 @@ public class FacilitySchedulesController(ILogger<FacilitySchedulesController> lo
     public async Task<ActionResult<FacilitySchedule>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateFacilityScheduleViewModel newFacilitySchedule)
+        [FromBody] CreateFacilityScheduleViewModel newFacilitySchedule,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Create)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<FacilitySchedule> result = await _facilityScheduleHandler.Create(new CreateFacilityScheduleDTO()
-        {
-            FacilityId = facilityId,
-            DayOfWeek = newFacilitySchedule.DayOfWeek,
-            OpensAt = newFacilitySchedule.OpensAt,
-            ClosesAt = newFacilitySchedule.ClosesAt,
-        });
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
+            new CreateFacilityScheduleDTO()
+            {
+                FacilityId = facilityId,
+                DayOfWeek = newFacilitySchedule.DayOfWeek,
+                OpensAt = newFacilitySchedule.OpensAt,
+                ClosesAt = newFacilitySchedule.ClosesAt,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -64,15 +78,19 @@ public class FacilitySchedulesController(ILogger<FacilitySchedulesController> lo
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> CreateMultiple(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules)
+        [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(CreateMultiple)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+            }
+        );
 
         StartStopwatch();
 
@@ -91,7 +109,10 @@ public class FacilitySchedulesController(ILogger<FacilitySchedulesController> lo
             schedules.Add(facilityScheduleDTO);
         }
 
-        Result<IEnumerable<FacilitySchedule>> result = await _facilityScheduleHandler.CreateMultiple(schedules);
+        Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.CreateMultiple(
+            schedules,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -101,27 +122,34 @@ public class FacilitySchedulesController(ILogger<FacilitySchedulesController> lo
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId,
-        [FromBody] UpdateFacilityScheduleViewModel updateFacilitySchedule)
+        [FromBody] UpdateFacilityScheduleViewModel updateFacilitySchedule,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Update)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-            ["scheduleId"] = scheduleId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+                ["scheduleId"] = scheduleId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<FacilitySchedule> result = await _facilityScheduleHandler.Update(new UpdateFacilityScheduleDTO()
-        {
-            Id = scheduleId,
-            FacilityId = facilityId,
-            DayOfWeek = updateFacilitySchedule.DayOfWeek,
-            OpensAt = updateFacilitySchedule.OpensAt,
-            ClosesAt = updateFacilitySchedule.ClosesAt,
-        });
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
+            new UpdateFacilityScheduleDTO()
+            {
+                Id = scheduleId,
+                FacilityId = facilityId,
+                DayOfWeek = updateFacilitySchedule.DayOfWeek,
+                OpensAt = updateFacilitySchedule.OpensAt,
+                ClosesAt = updateFacilitySchedule.ClosesAt,
+            },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
@@ -130,24 +158,27 @@ public class FacilitySchedulesController(ILogger<FacilitySchedulesController> lo
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromRoute] Guid scheduleId)
+        [FromRoute] Guid scheduleId,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Delete)}";
-        using var scope = _logger.BeginScope(new Dictionary<string, object>
-        {
-            ["operation"] = operation,
-            ["ownerId"] = ownerId,
-            ["facilityId"] = facilityId,
-            ["scheduleId"] = scheduleId,
-        });
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["ownerId"] = ownerId,
+                ["facilityId"] = facilityId,
+                ["scheduleId"] = scheduleId,
+            }
+        );
 
         StartStopwatch();
 
-        Result<bool> result = await _facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
-        {
-            FacilityId = facilityId,
-            ScheduleId = scheduleId
-        });
+        Result<bool> result = await facilityScheduleHandler.Delete(
+            new DeleteFacilityScheduleDTO { FacilityId = facilityId, ScheduleId = scheduleId },
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
