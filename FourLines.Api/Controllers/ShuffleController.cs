@@ -11,7 +11,8 @@ public class ShuffleController(ILogger<ShuffleController> logger, IShuffleHandle
 {
     [HttpPost]
     public async Task<ActionResult<IEnumerable<MatchesUsers>>> ShuffleTeams(
-        [FromRoute] Guid matchId
+        [FromRoute] Guid matchId,
+        CancellationToken cancellationToken
     )
     {
         const string operation = $"{nameof(ReservationsController)}.{nameof(ShuffleTeams)}";
@@ -21,7 +22,10 @@ public class ShuffleController(ILogger<ShuffleController> logger, IShuffleHandle
 
         StartStopwatch();
 
-        Result<IEnumerable<MatchesUsers>> result = await shuffleHandler.ShufflePlayers(matchId);
+        Result<IEnumerable<MatchesUsers>> result = await shuffleHandler.ShufflePlayers(
+            matchId,
+            cancellationToken
+        );
 
         return HandleResult(result);
     }
