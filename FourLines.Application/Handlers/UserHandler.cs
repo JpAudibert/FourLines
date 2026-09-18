@@ -1,17 +1,21 @@
 ﻿namespace FourLines.Application.Handlers;
 
 public class UserHandler(FourLinesContext context, IPasswordHashProvider passwordHashProvider)
+    : IUserHandler
 {
-    private readonly FourLinesContext _context = context;
-    private readonly IPasswordHashProvider _passwordHashProvider = passwordHashProvider;
-
-    public async Task<Result<User>> Create(UserRegisterDTO request)
+    public async Task<Result<User>> Create(
+        UserRegisterDTO request,
+        CancellationToken cancellationToken = default
+    )
     {
-        User? existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        User? existingUser = await context.Users.FirstOrDefaultAsync(
+            u => u.Email == request.Email,
+            cancellationToken: cancellationToken
+        );
         if (existingUser is not null)
             return Result<User>.Failure(UsersErrorResults.EmailAlreadyExists);
 
-        Role? role = _context.Roles.FirstOrDefault(r => r.Id == request.RoleId);
+        Role? role = context.Roles.FirstOrDefault(r => r.Id == request.RoleId);
         if (role is null)
             return Result<User>.Failure(UsersErrorResults.InvalidRole);
 
@@ -25,10 +29,10 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
             RoleId = role.Id,
             Role = role,
         };
-        user.PasswordHash = _passwordHashProvider.Hash(user, request.Password);
+        user.PasswordHash = passwordHashProvider.Hash(user, request.Password);
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(user, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return Result<User>.Success(user);
     }

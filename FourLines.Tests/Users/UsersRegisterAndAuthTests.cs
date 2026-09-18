@@ -52,7 +52,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         IPasswordHashProvider passwordHashProvider =
             fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
-        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
         ITokenProvider jwtTokenProvider =
             fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
 
@@ -65,7 +65,8 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         // Act
         ActionResult<User> userRegisterResult = await UsersController.Register(
             RoleSeed.Player.Id,
-            newUser
+            newUser,
+            CancellationToken.None
         );
         ActionResult<string> authResult = await authController.Authenticate(
             loginRequest,
@@ -95,7 +96,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             RoleId = RoleSeed.Owner.Id,
         };
 
-        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
 
         // Act
         Result<User> result = await userHandler.Create(createUserTest);
@@ -122,7 +123,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             RoleId = Guid.NewGuid(),
         };
 
-        UserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<UserHandler>();
+        IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
 
         // Act
         Result<User> result = await userHandler.Create(createUserTest);

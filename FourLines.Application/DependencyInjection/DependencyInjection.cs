@@ -6,7 +6,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration
+    )
     {
         services.AddSingleton<ITokenProvider, JwtTokenProvider>();
 
@@ -15,7 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
         services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();
 
-        services.AddScoped<UserHandler>();
+        services.AddScoped<IUserHandler, UserHandler>();
         services.AddScoped<IFacilityHandler, FacilityHandler>();
         services.AddScoped<IFacilityScheduleHandler, FacilityScheduleHandler>();
         services.AddScoped<ICourtHandler, CourtHandler>();
