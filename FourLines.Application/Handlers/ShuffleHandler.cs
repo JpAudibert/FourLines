@@ -3,7 +3,10 @@ namespace FourLines.Application.Handlers;
 public class ShuffleHandler(FourLinesContext context, IShuffleStrategy shuffleStrategy)
     : IShuffleHandler
 {
-    public async Task<Result<IEnumerable<MatchesUsers>>> ShufflePlayers(Guid matchId)
+    public async Task<Result<IEnumerable<MatchesUsers>>> ShufflePlayers(
+        Guid matchId,
+        CancellationToken cancellationToken = default
+    )
     {
         IQueryable<MatchesUsers> players = context.MatchesUsers.Where(mu => mu.MatchId == matchId);
         if (!players.Any())
@@ -30,14 +33,16 @@ public class ShuffleHandler(FourLinesContext context, IShuffleStrategy shuffleSt
             shuffledPlayers[i].TeamNumber = i % 2 == 0 ? 1 : 2;
         }
 
-        using var transaction = await context.Database.BeginTransactionAsync();
+        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-        await context.MatchesUsers.Where(mu => mu.MatchId == matchId).ExecuteDeleteAsync();
+        await context
+            .MatchesUsers.Where(mu => mu.MatchId == matchId)
+            .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
-        await context.AddRangeAsync(shuffledPlayers);
-        await context.SaveChangesAsync();
+        await context.AddRangeAsync(shuffledPlayers, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
-        await transaction.CommitAsync();
+        await transaction.CommitAsync(cancellationToken);
 
         return Result<IEnumerable<MatchesUsers>>.Success(shuffledPlayers);
     }

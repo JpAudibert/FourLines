@@ -12,7 +12,10 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     : ApiControllerBase(logger)
 {
     [HttpGet("{matchId}")]
-    public async Task<ActionResult<Match?>> GetMatch([FromRoute] Guid matchId)
+    public async Task<ActionResult<Match?>> GetMatch(
+        [FromRoute] Guid matchId,
+        CancellationToken cancellationToken = default
+    )
     {
         const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
         using var scope = logger.BeginScope(
@@ -21,7 +24,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
 
         StartStopwatch();
 
-        Result<Match?> match = await matchHandler.GetMatch(matchId);
+        Result<Match?> match = await matchHandler.GetMatch(matchId, cancellationToken);
 
         return HandleResult(match);
     }
@@ -30,7 +33,8 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     public async Task<ActionResult<MatchesUsers>> Ingress(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
-        [FromBody] CreateIngressViewModel newIngress
+        [FromBody] CreateIngressViewModel newIngress,
+        CancellationToken cancellationToken = default
     )
     {
         const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
@@ -52,7 +56,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
             Code = newIngress.Code,
         };
 
-        Result<MatchesUsers> matchesUsers = await matchHandler.Ingress(ingress);
+        Result<MatchesUsers> matchesUsers = await matchHandler.Ingress(ingress, cancellationToken);
 
         return HandleResult(matchesUsers);
     }
@@ -61,7 +65,8 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
-        [FromBody] CreateIngressViewModel newIngress
+        [FromBody] CreateIngressViewModel newIngress,
+        CancellationToken cancellationToken = default
     )
     {
         const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
@@ -83,7 +88,10 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
             Code = newIngress.Code,
         };
 
-        Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsFixedPosition(ingress);
+        Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsFixedPosition(
+            ingress,
+            cancellationToken
+        );
 
         return HandleResult(matchesUsers);
     }
@@ -91,7 +99,8 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     [HttpDelete("{matchId}/leave/{userId}")]
     public async Task<ActionResult<bool>> LeaveMatch(
         [FromRoute] Guid matchId,
-        [FromRoute] Guid userId
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken = default
     )
     {
         const string operation = $"{nameof(MatchesController)}.{nameof(LeaveMatch)}";
@@ -108,7 +117,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
 
         LeaveMatchDTO leaveMatch = new() { MatchId = matchId, UserId = userId };
 
-        Result<bool> matchesUsers = await matchHandler.LeaveMatch(leaveMatch);
+        Result<bool> matchesUsers = await matchHandler.LeaveMatch(leaveMatch, cancellationToken);
 
         return HandleResult(matchesUsers);
     }
@@ -116,7 +125,8 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     [HttpPatch("{matchId}/update-match-name")]
     public async Task<ActionResult<Match>> UpdateMatchName(
         [FromRoute] Guid matchId,
-        [FromBody] UpdateMatchNameViewModel updateMatchName
+        [FromBody] UpdateMatchNameViewModel updateMatchName,
+        CancellationToken cancellationToken = default
     )
     {
         const string operation = $"{nameof(MatchesController)}.{nameof(UpdateMatchName)}";
@@ -132,7 +142,10 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
             NewName = updateMatchName.Name,
         };
 
-        Result<Match> match = await matchHandler.UpdateMatchName(updateMatchNameDTO);
+        Result<Match> match = await matchHandler.UpdateMatchName(
+            updateMatchNameDTO,
+            cancellationToken
+        );
 
         return HandleResult(match);
     }

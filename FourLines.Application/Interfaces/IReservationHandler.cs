@@ -4,10 +4,29 @@ namespace FourLines.Application.Interfaces;
 
 public interface IReservationHandler
 {
-    Task<Result<ConfirmReservationResponseDTO>> Create(ICreateReservationDTO newReservation);
-    Task<Result<Reservation>> UpdateReservationStatus(IUpdateStatusFromReservationDTO reservation);
-    Task<Result<bool>> Delete(IDeleteReservationDTO deleteDto);
-    Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromUser(Guid userId);
-    Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromCourt(Guid courtId);
-    Task<Result<Reservation>> GetOneReservationFromUser(Guid userId, Guid reservationId);
+    Task<Result<ConfirmReservationResponseDTO>> Create(
+        ICreateReservationDTO newReservation,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<Reservation>> UpdateReservationStatus(
+        IUpdateStatusFromReservationDTO reservation,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<bool>> Delete(
+        IDeleteReservationDTO deleteDto,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromUser(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
+        Guid courtId,
+        CancellationToken cancellationToken = default
+    );
+    Task<Result<Reservation>> GetOneReservationFromUser(
+        Guid userId,
+        Guid reservationId,
+        CancellationToken cancellationToken = default
+    );
 }

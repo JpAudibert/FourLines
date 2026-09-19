@@ -77,7 +77,7 @@ public class FourLinesFixture : IAsyncLifetime
 
         Builder
             .Services.AddInfrastructure(Configuration, _connectionString)
-            .AddApplication(Configuration)
+            .AddApplication()
             .AddDomain();
 
         Builder.Configuration.AddConfiguration(Configuration);
