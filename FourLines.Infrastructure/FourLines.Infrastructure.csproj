@@ -17,7 +17,6 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
 
   <ItemGroup>
