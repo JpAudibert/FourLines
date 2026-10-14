@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<ICourtLockStrategies, PostgresCourtLockStrategy>();
         services.AddScoped<IReservationValidator, ReservationValidator>();
         services.AddScoped<IReservationHandler, ReservationHandler>();
+        services.AddScoped<IAvailabilityHandler, AvailabilityHandler>();
         services.AddScoped<IMatchHandler, MatchHandler>();
 
         services.AddScoped<IShuffleHandler, ShuffleHandler>();

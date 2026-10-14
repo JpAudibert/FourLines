@@ -1,11 +1,14 @@
-﻿using FourLines.Application.DTOs.Reservations.Interfaces;
+﻿using Dapper;
+using FourLines.Application.DTOs.Reservations.Interfaces;
+using FourLines.Infrastructure.Providers;
 
 namespace FourLines.Application.Handlers;
 
 public class ReservationHandler(
     FourLinesContext context,
     IReservationValidator reservationValidator,
-    ICourtLockStrategies courtLockStrategy
+    ICourtLockStrategies courtLockStrategy,
+    IAvailabilityHandler availabilityHandler
 ) : IReservationHandler
 {
     private const string DefaultMatchName = "World Cup Match";
@@ -224,5 +227,57 @@ public class ReservationHandler(
             );
 
         return Result<Reservation>.Success(reservation);
+    }
+
+    public async Task<Result<CourtAvailability>> GetAvailableTimesToPlayInCourt(
+        Guid courtId,
+        DateTimeOffset selectedDate,
+        CancellationToken cancellationToken = default
+    )
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        List<TimeSlot> availableSlots = [];
+
+        IAsyncEnumerable<TimeSlot> timeSlots = availabilityHandler.GetTimeSlots(
+            courtId,
+            selectedDate.DayOfWeek,
+            cancellationToken
+        );
+
+        await foreach (TimeSlot slot in timeSlots)
+        {
+            bool isPast = slot.Start <= TimeOnly.FromDateTime(now.DateTime);
+            bool hasReservation = false;
+
+            if (!isPast)
+            {
+                hasReservation = await context.Reservations.AnyAsync(
+                    r =>
+                        r.Period.Start.Date == selectedDate.Date
+                        && r.Period.Start.TimeOfDay == slot.Start.ToTimeSpan()
+                        && r.Period.End.TimeOfDay == slot.End.ToTimeSpan(),
+                    cancellationToken: cancellationToken
+                );
+            }
+
+            availableSlots.Add(
+                new TimeSlot()
+                {
+                    Start = slot.Start,
+                    End = slot.End,
+                    Price = slot.Price,
+                    Available = !hasReservation && !isPast,
+                }
+            );
+        }
+
+        CourtAvailability availability = new()
+        {
+            CourtId = courtId,
+            PlayingDate = DateOnly.FromDateTime(selectedDate.DateTime),
+            TimeSlots = availableSlots,
+        };
+
+        return Result<CourtAvailability>.Success(availability);
     }
 }
