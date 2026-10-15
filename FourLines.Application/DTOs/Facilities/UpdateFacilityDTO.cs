@@ -12,4 +12,5 @@ public record UpdateFacilityDTO : IUpdateFacilityDTO
     public string State { get; init; } = default!;
     public string ZipCode { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
+    public string TimeZoneId { get; init; } = default!;
 }

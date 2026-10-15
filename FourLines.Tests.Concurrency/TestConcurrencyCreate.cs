@@ -2,6 +2,7 @@
 using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Application.Strategies;
+using FourLines.Application.Validators.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Tests.Concurrency.Seed;

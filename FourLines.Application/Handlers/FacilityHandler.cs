@@ -2,7 +2,7 @@
 
 namespace FourLines.Application.Handlers;
 
-public class FacilityHandler(FourLinesContext context) : IFacilityHandler
+public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZoneValidator) : IFacilityHandler
 {
     public async Task<Result<Facility>> Create(
         ICreateFacilityDTO createDto,
@@ -15,6 +15,9 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
         );
         if (owner is null)
             return Result<Facility>.Failure(FacilitiesErrorResults.CreateOwnerDoesNotExists);
+
+        if (!timeZoneValidator.Validate(createDto.TimeZoneId).IsValid)
+            return Result<Facility>.Failure(FacilitiesErrorResults.InvalidTimeZone);
 
         Facility facility = new()
         {
@@ -136,6 +139,9 @@ public class FacilityHandler(FourLinesContext context) : IFacilityHandler
     {
         if (updateDto.OwnerId == Guid.Empty)
             return Result<Facility>.Failure(FacilitiesErrorResults.UpdateEmptyOwnerId);
+
+        if (!timeZoneValidator.Validate(updateDto.TimeZoneId).IsValid)
+            return Result<Facility>.Failure(FacilitiesErrorResults.InvalidTimeZone);
 
         int affectedRows = await context
             .Facilities.Where(f => f.Id == updateDto.Id && f.OwnerId == updateDto.OwnerId)

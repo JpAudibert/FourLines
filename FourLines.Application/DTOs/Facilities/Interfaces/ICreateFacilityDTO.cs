@@ -9,4 +9,5 @@ public interface ICreateFacilityDTO
     string RegistrationNumber { get; init; }
     string State { get; init; }
     string ZipCode { get; init; }
+    string TimeZoneId { get; init; }
 }

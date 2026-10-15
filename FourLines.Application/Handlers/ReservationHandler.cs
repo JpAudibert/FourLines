@@ -1,4 +1,5 @@
 ﻿using FourLines.Application.DTOs.Reservations.Interfaces;
+using FourLines.Application.Validators.Interfaces;
 
 namespace FourLines.Application.Handlers;
 
