@@ -5,13 +5,13 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Authorize]
-[Route("api/v{version:apiVersion}/user/{userId}/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class ReservationsController(
     ILogger<ReservationsController> logger,
     IReservationHandler reservationHandler
 ) : ApiControllerBase(logger)
 {
-    [HttpGet]
+    [HttpGet("users/{userId}")]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(
         [FromRoute] Guid userId,
         CancellationToken cancellationToken
@@ -31,7 +31,7 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpGet("~/api/v{version:apiVersion}/court/{courtId}/[controller]")]
+    [HttpGet("courts/{courtId}")]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
         [FromRoute] Guid courtId,
         CancellationToken cancellationToken
@@ -51,7 +51,7 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpGet("{reservationId}")]
+    [HttpGet("{reservationId}/users/{userId}")]
     public async Task<ActionResult<Reservation>> GetOneReservationsFromUser(
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
@@ -80,7 +80,7 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpPost]
+    [HttpPost("users/{userId}")]
     public async Task<ActionResult<ConfirmReservationResponseDTO>> CreateAReservationForUser(
         [FromRoute] Guid userId,
         [FromBody] CreateReservationViewModel newReservation,
@@ -114,7 +114,7 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpPatch("{reservationId}")]
+    [HttpPatch("{reservationId}/users/{userId}")]
     public async Task<ActionResult<Reservation>> UpdateStatusFromReservation(
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
@@ -148,7 +148,7 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpDelete("{reservationId}")]
+    [HttpDelete("{reservationId}/users/{userId}")]
     public async Task<ActionResult<bool>> DeleteAReservationFromUser(
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
@@ -170,6 +170,37 @@ public class ReservationsController(
 
         Result<bool> result = await reservationHandler.Delete(
             new DeleteReservationDTO { UserId = userId, ReservationId = reservationId },
+            cancellationToken
+        );
+
+        return HandleResult(result);
+    }
+
+    [HttpGet("courts/{courtId}/selected-date/{selectedDate}")]
+    public async Task<ActionResult<CourtAvailability>> GetAvailableTimesToPlayInCourt(
+        [FromRoute] Guid courtId,
+        [FromRoute] DateTimeOffset? selectedDate,
+        CancellationToken cancellationToken
+    )
+    {
+        DateTimeOffset dateToSearch = selectedDate ?? DateTimeOffset.UtcNow;
+
+        const string operation =
+            $"{nameof(ReservationsController)}.{nameof(GetAvailableTimesToPlayInCourt)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["courtId"] = courtId,
+                ["selectedDate"] = dateToSearch,
+            }
+        );
+
+        StartStopwatch();
+
+        Result<CourtAvailability> result = await reservationHandler.GetAvailableTimesToPlayInCourt(
+            courtId,
+            dateToSearch,
             cancellationToken
         );
 

@@ -29,4 +29,10 @@ public interface IReservationHandler
         Guid reservationId,
         CancellationToken cancellationToken = default
     );
+
+    Task<Result<CourtAvailability>> GetAvailableTimesToPlayInCourt(
+        Guid courtId,
+        DateTimeOffset selectedDate,
+        CancellationToken cancellationToken = default
+    );
 }

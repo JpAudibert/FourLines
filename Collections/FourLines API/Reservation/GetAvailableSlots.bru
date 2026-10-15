@@ -1,0 +1,22 @@
+meta {
+  name: GetAvailableSlots
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v{{apiVersion}}/reservations/courts/:courtId/selected-date/:selectedDate
+  body: none
+  auth: inherit
+}
+
+params:path {
+  courtId: 1ba17e4a-8437-43b8-9cbb-c2cd61e99d4b
+  selectedDate: 2026-10-06
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

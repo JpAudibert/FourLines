@@ -17,7 +17,8 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>

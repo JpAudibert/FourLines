@@ -49,7 +49,8 @@ public class TestConcurrencyCreate(PostgresTestDatabase database)
             IReservationHandler reservationHandler = new ReservationHandler(
                 reservationContext,
                 validator.Object,
-                new PostgresCourtLockStrategy(reservationContext)
+                new PostgresCourtLockStrategy(reservationContext),
+                new Mock<IAvailabilityHandler>().Object
             );
 
             try

@@ -1,4 +1,6 @@
-﻿namespace FourLines.Infrastructure.DependencyInjection;
+﻿using FourLines.Infrastructure.Providers;
+
+namespace FourLines.Infrastructure.DependencyInjection;
 
 public static class DependencyInjection
 {
@@ -37,6 +39,7 @@ public static class DependencyInjection
             }
         );
 
+        services.AddScoped<ConnectionProvider>();
         services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
 
         return services;
