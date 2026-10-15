@@ -141,7 +141,8 @@ namespace FourLines.Infrastructure.Migrations
 
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("time_zone_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
@@ -163,9 +164,6 @@ namespace FourLines.Infrastructure.Migrations
                     b.HasIndex("RegistrationNumber")
                         .IsUnique()
                         .HasDatabaseName("ix_facilities_registration_number");
-
-                    b.HasIndex("TimeZoneId")
-                        .HasDatabaseName("ix_facilities_time_zone_id");
 
                     b.ToTable("facilities", (string)null);
                 });

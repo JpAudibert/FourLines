@@ -13,23 +13,15 @@ namespace FourLines.Infrastructure.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "time_zone_id",
                 table: "facilities",
-                type: "text",
+                type: "character varying(150)",
+                maxLength: 150,
                 nullable: false,
                 defaultValue: "");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_facilities_time_zone_id",
-                table: "facilities",
-                column: "time_zone_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "ix_facilities_time_zone_id",
-                table: "facilities");
-
             migrationBuilder.DropColumn(
                 name: "time_zone_id",
                 table: "facilities");
