@@ -37,13 +37,13 @@ public sealed class TimeZoneProvider : ITimeZoneProvider
     {
         DateTimeOffset utcStart = ToUtc(
             timeZoneId,
-            DateOnly.FromDateTime(period.Start.Date),
-            TimeOnly.FromDateTime(period.Start.Date)
+            DateOnly.FromDateTime(period.Start.DateTime),
+            TimeOnly.FromDateTime(period.Start.DateTime)
         );
         DateTimeOffset utcEnd = ToUtc(
             timeZoneId,
-            DateOnly.FromDateTime(period.End.Date),
-            TimeOnly.FromDateTime(period.End.Date)
+            DateOnly.FromDateTime(period.End.DateTime),
+            TimeOnly.FromDateTime(period.End.DateTime)
         );
 
         return new TimeRange(utcStart, utcEnd);
