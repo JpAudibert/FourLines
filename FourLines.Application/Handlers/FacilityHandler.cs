@@ -29,6 +29,7 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
             RegistrationNumber = createDto.RegistrationNumber,
             OwnerId = createDto.OwnerId,
             Owner = owner,
+            TimeZoneId = createDto.TimeZoneId
         };
 
         await context.Facilities.AddAsync(facility, cancellationToken);
@@ -153,7 +154,8 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
                         .SetProperty(f => f.City, updateDto.City)
                         .SetProperty(f => f.State, updateDto.State)
                         .SetProperty(f => f.ZipCode, updateDto.ZipCode)
-                        .SetProperty(f => f.RegistrationNumber, updateDto.RegistrationNumber),
+                        .SetProperty(f => f.RegistrationNumber, updateDto.RegistrationNumber)
+                        .SetProperty(f => f.TimeZoneId, updateDto.TimeZoneId),
                 cancellationToken: cancellationToken
             );
         if (affectedRows <= 0)
