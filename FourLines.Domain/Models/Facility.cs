@@ -9,6 +9,7 @@ public record Facility : BaseEntity
     public string State { get; init; } = default!;
     public string ZipCode { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
+    public string TimeZoneId { get; init; } = default!;
 
     public User Owner { get; init; } = default!;
     public ICollection<Court> Courts { get; set; } = new List<Court>();
