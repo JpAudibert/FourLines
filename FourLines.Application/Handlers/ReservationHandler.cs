@@ -247,15 +247,25 @@ public class ReservationHandler(
         CancellationToken cancellationToken = default
     )
     {
-        List<TimeSlot> availableSlots = [];
-
         FacilityTimeSlot facilityTimeSlots = await availabilityHandler.GetTimeSlots(
             courtId,
             selectedDate.DayOfWeek,
             cancellationToken
         );
 
-        DateTimeOffset now = TimeZoneProvider.ToFacilityTime(facilityTimeSlots.TimeZoneId, DateTimeOffset.UtcNow);
+        DateTimeOffset now = TimeZoneProvider.ToFacilityTime(
+            facilityTimeSlots.TimeZoneId,
+            DateTimeOffset.UtcNow
+        );
+
+        IQueryable<Reservation> reservationsQuery = context
+            .Reservations.Where(r =>
+                r.CourtId == courtId
+                && r.Period.Start.Date == selectedDate.Date
+                && r.Status != ReservationStatus.Cancelled
+            )
+            .Select(r => new Reservation { Period = r.Period });
+        List<TimeSlot> availableSlots = [];
 
         foreach (TimeSlot slot in facilityTimeSlots.TimeSlots)
         {
@@ -264,14 +274,9 @@ public class ReservationHandler(
 
             if (!isPast)
             {
-                hasReservation = await context.Reservations.AnyAsync(
-                    r =>
-                        r.Period.Start.Date == selectedDate.Date
-                        && r.Period.Start.TimeOfDay < slot.Start.ToTimeSpan()
-                        && r.Period.End.TimeOfDay > slot.End.ToTimeSpan()
-                        && r.CourtId == courtId
-                        && r.Status != ReservationStatus.Cancelled,
-                    cancellationToken: cancellationToken
+                hasReservation = reservationsQuery.Any(r =>
+                    r.Period.Start.TimeOfDay < slot.Start.ToTimeSpan()
+                    && r.Period.End.TimeOfDay > slot.End.ToTimeSpan()
                 );
             }
 
