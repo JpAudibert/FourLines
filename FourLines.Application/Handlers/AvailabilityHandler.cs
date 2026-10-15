@@ -39,21 +39,23 @@ public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvail
             await connection.QueryFirstOrDefaultAsync<FacilityAvailability>(command);
 
         if (facilityAvailability is null)
-            return null!;
+            return default!;
 
-        TimeOnly current = facilityAvailability.OpensAt;
         int reservationSlot =
             facilityAvailability.MaintenancePeriodInMinutes
             + facilityAvailability.RentingPeriodInMinutes;
 
+        TimeOnly current = facilityAvailability.OpensAt;
         List<TimeSlot> timeSlots = [];
 
         while (current.AddMinutes(reservationSlot) <= facilityAvailability.ClosesAt)
         {
             TimeOnly slotEnd = current.AddMinutes(reservationSlot);
+            if (slotEnd <= current || slotEnd > facilityAvailability.ClosesAt)
+                break;
 
             if (slotEnd > facilityAvailability.ClosesAt)
-                return null!;
+                return default!;
 
             timeSlots.Add(
                 new TimeSlot()
