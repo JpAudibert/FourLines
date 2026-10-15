@@ -53,7 +53,7 @@ public class TestConcurrencyCreate(PostgresTestDatabase database)
                 validator.Object,
                 new PostgresCourtLockStrategy(reservationContext),
                 new Mock<IAvailabilityHandler>().Object,
-                new Mock<TimeZoneValidator>().Object
+                new TimeZoneValidator()
             );
 
             try
