@@ -34,6 +34,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         ZipCode = "12345",
         RegistrationNumber = "1111111111",
         OwnerId = FacilitySeed.ToBeUpdated.OwnerId,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     [Fact]

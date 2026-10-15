@@ -32,6 +32,7 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     [Fact]
