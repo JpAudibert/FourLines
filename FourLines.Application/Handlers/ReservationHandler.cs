@@ -1,6 +1,4 @@
-﻿using Dapper;
-using FourLines.Application.DTOs.Reservations.Interfaces;
-using FourLines.Infrastructure.Providers;
+﻿using FourLines.Application.DTOs.Reservations.Interfaces;
 
 namespace FourLines.Application.Handlers;
 

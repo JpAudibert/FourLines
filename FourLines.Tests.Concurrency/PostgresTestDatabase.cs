@@ -1,5 +1,4 @@
 ﻿using DotNet.Testcontainers.Builders;
-using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Concurrency.Seed;
 using Microsoft.EntityFrameworkCore;

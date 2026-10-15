@@ -1,5 +1,3 @@
-using System;
-
 namespace FourLines.Domain.Results.ErrorResults;
 
 public class AvailabilityErrorResults
