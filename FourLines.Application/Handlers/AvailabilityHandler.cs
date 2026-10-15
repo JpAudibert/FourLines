@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Dapper;
 using FourLines.Infrastructure.Providers;
 
@@ -6,10 +5,10 @@ namespace FourLines.Application.Handlers;
 
 public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvailabilityHandler
 {
-    public async IAsyncEnumerable<TimeSlot> GetTimeSlots(
+    public async Task<FacilityTimeSlot> GetTimeSlots(
         Guid courtId,
         DayOfWeek selectedDayOfTheWeek,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default
     )
     {
         const string sql =
@@ -18,6 +17,7 @@ public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvail
                      c.renting_period_in_minutes AS ""RentingPeriodInMinutes"",
                      c.amount AS ""PriceAmount"",
                      c.currency AS ""PriceCurrency"",
+                     f.time_zone_id AS ""TimeZoneId"",
                      fs.day_of_week AS ""DayOfWeek"",
                      fs.opens_at AS ""OpensAt"",
                      fs.closes_at AS ""ClosesAt""
@@ -39,32 +39,38 @@ public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvail
             await connection.QueryFirstOrDefaultAsync<FacilityAvailability>(command);
 
         if (facilityAvailability is null)
-            yield break;
+            return null!;
 
         TimeOnly current = facilityAvailability.OpensAt;
         int reservationSlot =
             facilityAvailability.MaintenancePeriodInMinutes
             + facilityAvailability.RentingPeriodInMinutes;
 
+        List<TimeSlot> timeSlots = [];
+
         while (current.AddMinutes(reservationSlot) <= facilityAvailability.ClosesAt)
         {
             TimeOnly slotEnd = current.AddMinutes(reservationSlot);
 
             if (slotEnd > facilityAvailability.ClosesAt)
-                yield break;
+                return null!;
 
-            yield return new TimeSlot()
-            {
-                Start = current,
-                End = slotEnd,
-                Price = new Money(
-                    facilityAvailability.PriceAmount,
-                    facilityAvailability.PriceCurrency
-                ),
-                Available = true,
-            };
+            timeSlots.Add(
+                new TimeSlot()
+                {
+                    Start = current,
+                    End = slotEnd,
+                    Price = new Money(
+                        facilityAvailability.PriceAmount,
+                        facilityAvailability.PriceCurrency
+                    ),
+                    Available = true,
+                }
+            );
 
             current = slotEnd;
         }
+
+        return new FacilityTimeSlot(facilityAvailability.TimeZoneId, timeSlots);
     }
 }

@@ -7,7 +7,8 @@ public class ReservationHandler(
     FourLinesContext context,
     IReservationValidator reservationValidator,
     ICourtLockStrategies courtLockStrategy,
-    IAvailabilityHandler availabilityHandler
+    IAvailabilityHandler availabilityHandler,
+    TimeZoneValidator timeZoneValidator
 ) : IReservationHandler
 {
     private const string DefaultMatchName = "World Cup Match";
@@ -49,25 +50,37 @@ public class ReservationHandler(
         TimeOnly reservationStartTime = TimeOnly.FromDateTime(newReservation.Period.Start.DateTime);
         TimeOnly reservationEndTime = TimeOnly.FromDateTime(newReservation.Period.End.DateTime);
 
-        FacilitySchedule? schedule = await context.FacilitySchedules.FirstOrDefaultAsync(
-            s =>
-                s.FacilityId == court.FacilityId
-                && s.DayOfWeek == dayOfWeek
-                && s.OpensAt <= reservationStartTime
-                && s.ClosesAt >= reservationEndTime,
-            cancellationToken: cancellationToken
-        );
+        FacilitySchedule? schedule = await context
+            .FacilitySchedules.Include(fs => fs.Facility)
+            .FirstOrDefaultAsync(
+                s =>
+                    s.FacilityId == court.FacilityId
+                    && s.DayOfWeek == dayOfWeek
+                    && s.OpensAt <= reservationStartTime
+                    && s.ClosesAt >= reservationEndTime,
+                cancellationToken: cancellationToken
+            );
 
         if (schedule is null)
             return Result<ConfirmReservationResponseDTO>.Failure(
                 ReservationsErrorResults.CreationOutsideFacilitySchedule
             );
 
+        if (!timeZoneValidator.Validate(schedule.Facility.TimeZoneId).IsValid)
+            return Result<ConfirmReservationResponseDTO>.Failure(
+                ReservationsErrorResults.InvalidTimeZone
+            );
+
+        TimeRange utcReservationPeriod = TimeZoneProvider.EnsureUtcForTimeRange(
+            schedule.Facility.TimeZoneId,
+            newReservation.Period
+        );
+
         Reservation reservation = new()
         {
             CourtId = newReservation.CourtId,
             UserId = newReservation.UserId,
-            Period = newReservation.Period,
+            Period = utcReservationPeriod,
             Status = ReservationStatus.Pending,
             Price = newReservation.Price,
             Court = court,
@@ -77,8 +90,8 @@ public class ReservationHandler(
         bool overlappingReservation = await context
             .Reservations.Where(r =>
                 r.CourtId == newReservation.CourtId
-                && r.Period.Start < newReservation.Period.End
-                && r.Period.End > newReservation.Period.Start
+                && r.Period.Start < utcReservationPeriod.End
+                && r.Period.End > utcReservationPeriod.Start
                 && r.Status != ReservationStatus.Cancelled
             )
             .AnyAsync(cancellationToken: cancellationToken);
@@ -230,20 +243,21 @@ public class ReservationHandler(
 
     public async Task<Result<CourtAvailability>> GetAvailableTimesToPlayInCourt(
         Guid courtId,
-        DateTimeOffset selectedDate,
+        DateTime selectedDate,
         CancellationToken cancellationToken = default
     )
     {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
         List<TimeSlot> availableSlots = [];
 
-        IAsyncEnumerable<TimeSlot> timeSlots = availabilityHandler.GetTimeSlots(
+        FacilityTimeSlot facilityTimeSlots = await availabilityHandler.GetTimeSlots(
             courtId,
             selectedDate.DayOfWeek,
             cancellationToken
         );
 
-        await foreach (TimeSlot slot in timeSlots)
+        DateTimeOffset now = TimeZoneProvider.ToFacilityTime(facilityTimeSlots.TimeZoneId, DateTimeOffset.UtcNow);
+
+        foreach (TimeSlot slot in facilityTimeSlots.TimeSlots)
         {
             bool isPast = slot.Start <= TimeOnly.FromDateTime(now.DateTime);
             bool hasReservation = false;
@@ -253,8 +267,10 @@ public class ReservationHandler(
                 hasReservation = await context.Reservations.AnyAsync(
                     r =>
                         r.Period.Start.Date == selectedDate.Date
-                        && r.Period.Start.TimeOfDay == slot.Start.ToTimeSpan()
-                        && r.Period.End.TimeOfDay == slot.End.ToTimeSpan(),
+                        && r.Period.Start.TimeOfDay < slot.Start.ToTimeSpan()
+                        && r.Period.End.TimeOfDay > slot.End.ToTimeSpan()
+                        && r.CourtId == courtId
+                        && r.Status != ReservationStatus.Cancelled,
                     cancellationToken: cancellationToken
                 );
             }
@@ -273,7 +289,7 @@ public class ReservationHandler(
         CourtAvailability availability = new()
         {
             CourtId = courtId,
-            PlayingDate = DateOnly.FromDateTime(selectedDate.DateTime),
+            PlayingDate = DateOnly.FromDateTime(selectedDate),
             TimeSlots = availableSlots,
         };
 
