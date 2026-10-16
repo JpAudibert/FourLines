@@ -18,6 +18,7 @@ public record TestUpdateFacilityDTO : IUpdateFacilityDTO
     public string State { get; init; } = default!;
     public string ZipCode { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
+    public string TimeZoneId { get; init; } = default!;
 }
 
 [Collection(FourLinesCollection.Name)]
@@ -33,6 +34,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         ZipCode = "12345",
         RegistrationNumber = "1111111111",
         OwnerId = FacilitySeed.ToBeUpdated.OwnerId,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     [Fact]
@@ -41,9 +43,10 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
-        TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with 
+        TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with
         {
             Id = FacilitySeed.ToBeUpdated.Id,
         };
@@ -69,8 +72,12 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-        TestUpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with { OwnerId = Guid.Empty };
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        TestUpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with
+        {
+            OwnerId = Guid.Empty,
+        };
 
         // Act
         Result<Facility> result = await facilityHandler.Update(facilityWithNoOwnerId);
@@ -86,7 +93,8 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
         TestUpdateFacilityDTO unknownFacility = _updateFacilityTest with { Id = Guid.NewGuid() };
 
         // Act

@@ -14,6 +14,7 @@ public static class FacilitySeed
         ZipCode = "12345",
         RegistrationNumber = "1234567890",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static async Task SeedAsync(FourLinesContext context)

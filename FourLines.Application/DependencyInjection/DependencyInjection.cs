@@ -1,4 +1,5 @@
 ﻿using FourLines.Application.Strategies;
+using FourLines.Application.Validators.Interfaces;
 
 namespace FourLines.Application.DependencyInjection;
 
@@ -9,6 +10,9 @@ public static class DependencyInjection
         services.AddSingleton<ITokenProvider, JwtTokenProvider>();
 
         services.AddSingleton<PasswordHasher<User>>();
+
+        services.AddScoped<IReservationValidator, ReservationValidator>();
+        services.AddScoped<TimeZoneValidator>();
 
         services.AddScoped<IPasswordHashProvider, PasswordHashProvider>();
         services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();

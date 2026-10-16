@@ -39,7 +39,7 @@ public static class DependencyInjection
             }
         );
 
-        services.AddScoped<ConnectionProvider>();
+        services.AddScoped(provider => new ConnectionProvider(configuration, connectionString));
         services.AddScoped(typeof(IStandardRepository<>), typeof(StandardRepository<>));
 
         return services;

@@ -14,4 +14,6 @@ public class FacilitiesErrorResults
 
     public static readonly Error RetrieveNoFacilities = new("FacilityRetrieval.NoFacilities", "There are no facilities.");
 
+    public static readonly Error InvalidTimeZone = new("Facility.TimeZone.Invalid", "The specified time zone is invalid.");
+
 }

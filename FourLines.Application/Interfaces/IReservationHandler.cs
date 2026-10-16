@@ -32,7 +32,7 @@ public interface IReservationHandler
 
     Task<Result<CourtAvailability>> GetAvailableTimesToPlayInCourt(
         Guid courtId,
-        DateTimeOffset selectedDate,
+        DateTime selectedDate,
         CancellationToken cancellationToken = default
     );
 }

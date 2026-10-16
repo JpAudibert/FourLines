@@ -1,7 +1,6 @@
 using FourLines.Api.Controllers;
 using FourLines.Api.ViewModels.Users;
 using FourLines.Application.DTOs;
-using FourLines.Application.Handlers;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Interfaces;
 using FourLines.Domain.Models;

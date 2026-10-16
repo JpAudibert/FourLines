@@ -14,6 +14,7 @@ public static class FacilitySeed
         ZipCode = "12345",
         RegistrationNumber = "1234567890",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility Default2 = new()
@@ -25,6 +26,7 @@ public static class FacilitySeed
         ZipCode = "12345",
         RegistrationNumber = "0987654458",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility NoSchedules = new()
@@ -36,6 +38,7 @@ public static class FacilitySeed
         ZipCode = "12346",
         RegistrationNumber = "0994654389",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility NoSchedules2 = new()
@@ -47,6 +50,7 @@ public static class FacilitySeed
         ZipCode = "12346",
         RegistrationNumber = "0994874389",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility ToBeUpdated = new()
@@ -58,6 +62,7 @@ public static class FacilitySeed
         ZipCode = "12345",
         RegistrationNumber = "0987654987",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility ToBeDeleted = new()
@@ -69,6 +74,7 @@ public static class FacilitySeed
         ZipCode = "12345",
         RegistrationNumber = "0986324987",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static readonly Facility Dummy = new()
@@ -80,6 +86,7 @@ public static class FacilitySeed
         ZipCode = "12346",
         RegistrationNumber = "0987654345",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     public static async Task SeedAsync(FourLinesContext context)

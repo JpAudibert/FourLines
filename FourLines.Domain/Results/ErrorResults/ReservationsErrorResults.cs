@@ -22,4 +22,6 @@ public static class ReservationsErrorResults
     public static readonly Error GetAllNoReservationsForCourt = new("GetAllForCourt.NoReservationsForCourt", "No reservations found for the specified court id.");
 
     public static readonly Error GetOneReservationDoesNotExist = new("ReservationsGetOne.UnknownReservation", "No reservation found for the specified reservation id and user id.");
+
+    public static readonly Error InvalidTimeZone = new("Reservations.InvalidTimeZone", "The specified time zone is invalid.");
 }

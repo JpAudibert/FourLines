@@ -17,6 +17,7 @@ public record TestCreateFacilityDTO : ICreateFacilityDTO
     public string State { get; init; } = default!;
     public string ZipCode { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;
+    public string TimeZoneId { get; init; } = default!;
 }
 
 [Collection(FourLinesCollection.Name)]
@@ -31,6 +32,7 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         ZipCode = "12345",
         RegistrationNumber = "1234555555",
         OwnerId = UserSeed.Owner.Id,
+        TimeZoneId = "America/Sao_Paulo"
     };
 
     [Fact]
@@ -39,7 +41,8 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
         Result<Facility> result = await facilityHandler.Create(_createFacilityTest);
@@ -62,8 +65,12 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityHandler facilityHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-        TestCreateFacilityDTO facilityWithNoOwner = _createFacilityTest with { OwnerId = Guid.NewGuid() };
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+        TestCreateFacilityDTO facilityWithNoOwner = _createFacilityTest with
+        {
+            OwnerId = Guid.NewGuid(),
+        };
 
         // Act
         Result<Facility> result = await facilityHandler.Create(facilityWithNoOwner);

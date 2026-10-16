@@ -1,6 +1,7 @@
 using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.DTOs.Reservations.Interfaces;
 using FourLines.Application.Interfaces;
+using FourLines.Application.Providers;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -49,7 +50,13 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         Assert.IsType<ConfirmReservationResponseDTO>(result.Value);
         Assert.Equal(_createReservationTest.CourtId, result.Value.Reservation.CourtId);
         Assert.Equal(_createReservationTest.UserId, result.Value.Reservation.UserId);
-        Assert.Equal(_createReservationTest.Period, result.Value.Reservation.Period);
+        Assert.Equal(
+            TimeZoneProvider.EnsureUtcForTimeRange(
+                FacilitySeed.Default.TimeZoneId,
+                _createReservationTest.Period
+            ),
+            result.Value.Reservation.Period
+        );
         Assert.Equal(_createReservationTest.Status, result.Value.Reservation.Status);
 
         Assert.NotNull(result.Value.Match);
@@ -172,10 +179,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
             CourtId = CourtSeed.CourtWithNoSchedule2.Id,
-            Period = new TimeRange(
-                TestDates.Now,
-                TestDates.Now.AddHours(1)
-            ),
+            Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(1)),
         };
 
         IReservationHandler reservationHandler =

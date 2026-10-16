@@ -1,4 +1,3 @@
-using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.DTOs.Facilities.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;

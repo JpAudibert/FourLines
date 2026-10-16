@@ -37,6 +37,10 @@ public class FacilityMap : IEntityTypeConfiguration<Facility>
 
         builder.HasIndex(f => f.RegistrationNumber)
             .IsUnique();
+        
+        builder.Property(f => f.TimeZoneId)
+            .IsRequired()
+            .HasMaxLength(150);
 
         builder.Property(f => f.CreatedAt)
             .IsRequired();
