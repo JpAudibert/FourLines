@@ -21,7 +21,7 @@ public class TestMatchesLeave(FourLinesFixture fixtures)
         Guid matchId = fixtures.GoalKeeperReservationResult.Value.Match.Id;
         Guid userId = fixtures.GoalKeeperReservationResult.Value.Reservation.UserId;
 
-        TestCreateIngressDTO ingressDTO = new()
+        CreateIngressDTO ingressDTO = new()
         {
             MatchId = matchId,
             UserId = userId,

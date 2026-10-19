@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,18 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-public record TestCreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
-{
-    public TimeOnly ClosesAt { get; init; }
-    public DayOfWeek DayOfWeek { get; init; }
-    public Guid FacilityId { get; init; }
-    public TimeOnly OpensAt { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
 {
-    private readonly static TestCreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
+    private static readonly CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
         FacilityId = FacilitySeed.NoSchedules.Id,
         DayOfWeek = DayOfWeek.Monday,
@@ -33,7 +25,8 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        IFacilityScheduleHandler facilityScheduleHandler = fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -57,8 +50,10 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
-        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility =
-            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
+        CreateFacilityScheduleDTO scheduleWithUnknownFacility = _createFacilityScheduleTest1 with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
 
         // Act
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
@@ -79,22 +74,18 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        TestCreateFacilityScheduleDTO schedule2 = _createFacilityScheduleTest1 with
+        CreateFacilityScheduleDTO schedule2 = _createFacilityScheduleTest1 with
         {
             FacilityId = FacilitySeed.NoSchedules.Id,
-            DayOfWeek = DayOfWeek.Tuesday
+            DayOfWeek = DayOfWeek.Tuesday,
         };
-        TestCreateFacilityScheduleDTO schedule3 = _createFacilityScheduleTest1 with
+        CreateFacilityScheduleDTO schedule3 = _createFacilityScheduleTest1 with
         {
             FacilityId = FacilitySeed.NoSchedules.Id,
-            DayOfWeek = DayOfWeek.Wednesday
+            DayOfWeek = DayOfWeek.Wednesday,
         };
 
-        List<ICreateFacilityScheduleDTO> newSchedules =
-        [
-            schedule2,
-            schedule3
-        ];
+        List<CreateFacilityScheduleDTO> newSchedules = [schedule2, schedule3];
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.CreateMultiple(
@@ -126,16 +117,19 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
-        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility1 =
-            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
-        TestCreateFacilityScheduleDTO scheduleWithUnknownFacility2 =
-            _createFacilityScheduleTest1 with { FacilityId = Guid.NewGuid() };
+        CreateFacilityScheduleDTO scheduleWithUnknownFacility1 = _createFacilityScheduleTest1 with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
+        CreateFacilityScheduleDTO scheduleWithUnknownFacility2 = _createFacilityScheduleTest1 with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
 
-
-        List<ICreateFacilityScheduleDTO> newSchedules =
+        List<CreateFacilityScheduleDTO> newSchedules =
         [
             scheduleWithUnknownFacility1,
-            scheduleWithUnknownFacility2
+            scheduleWithUnknownFacility2,
         ];
 
         // Act

@@ -1,5 +1,4 @@
 using FourLines.Application.DTOs.Reservations;
-using FourLines.Application.DTOs.Reservations.Interfaces;
 using FourLines.Application.Interfaces;
 using FourLines.Application.Providers;
 using FourLines.Domain.Models;
@@ -10,19 +9,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
-public record TestCreateReservationDTO : ICreateReservationDTO
-{
-    public Guid CourtId { get; init; }
-    public TimeRange Period { get; init; } = default!;
-    public ReservationStatus Status { get; init; }
-    public Guid UserId { get; init; }
-    public Money Price { get; init; } = default!;
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestReservationsCreate(FourLinesFixture fixtures)
 {
-    private static readonly TestCreateReservationDTO _createReservationTest = new()
+    private static readonly CreateReservationDTO _createReservationTest = new()
     {
         CourtId = CourtSeed.Default.Id,
         UserId = UserSeed.Player.Id,
@@ -69,19 +59,19 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        TestCreateReservationDTO reservationWithInvalidDate = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidDate = _createReservationTest with
         {
             Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(-2)),
         };
-        TestCreateReservationDTO reservationWithInvalidPastDate = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidPastDate = _createReservationTest with
         {
             Period = new TimeRange(TestDates.Now.AddHours(-2), TestDates.Now),
         };
-        TestCreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidDuration = _createReservationTest with
         {
             Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(2)),
         };
-        TestCreateReservationDTO reservationWithInvalidStatus = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidStatus = _createReservationTest with
         {
             Status = (ReservationStatus)999,
         };
@@ -123,7 +113,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        TestCreateReservationDTO reservationWithInvalidCourt = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidCourt = _createReservationTest with
         {
             CourtId = Guid.NewGuid(),
         };
@@ -147,7 +137,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        TestCreateReservationDTO reservationWithInvalidUser = _createReservationTest with
+        CreateReservationDTO reservationWithInvalidUser = _createReservationTest with
         {
             UserId = Guid.NewGuid(),
         };
@@ -176,7 +166,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
             new TimeOnly(22, 0),
             TimeSpan.Zero
         );
-        TestCreateReservationDTO reservationWithSchedule = _createReservationTest with
+        CreateReservationDTO reservationWithSchedule = _createReservationTest with
         {
             CourtId = CourtSeed.CourtWithNoSchedule2.Id,
             Period = new TimeRange(TestDates.Now, TestDates.Now.AddHours(1)),
@@ -204,7 +194,7 @@ public class TestReservationsCreate(FourLinesFixture fixtures)
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        TestCreateReservationDTO reservationWithOverlapping = _createReservationTest with
+        CreateReservationDTO reservationWithOverlapping = _createReservationTest with
         {
             Period = new TimeRange(
                 TestDates.Now.AddMinutes(30),

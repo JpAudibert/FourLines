@@ -1,5 +1,4 @@
-﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
-using FourLines.Application.Interfaces;
+﻿using FourLines.Application.Interfaces;
 
 namespace FourLines.Api.Controllers;
 
@@ -94,7 +93,7 @@ public class FacilitySchedulesController(
 
         StartStopwatch();
 
-        List<ICreateFacilityScheduleDTO> schedules = [];
+        List<CreateFacilityScheduleDTO> schedules = [];
 
         foreach (var schedule in newFacilitySchedules)
         {

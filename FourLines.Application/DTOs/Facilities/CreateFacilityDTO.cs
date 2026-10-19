@@ -1,8 +1,6 @@
-﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+﻿namespace FourLines.Application.DTOs.Facilities;
 
-namespace FourLines.Application.DTOs.Facilities;
-
-public record CreateFacilityDTO : ICreateFacilityDTO
+public record CreateFacilityDTO
 {
     public Guid OwnerId { get; init; } = default!;
     public string Name { get; init; } = default!;

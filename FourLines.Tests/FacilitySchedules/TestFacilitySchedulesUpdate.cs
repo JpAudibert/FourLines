@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+using FourLines.Application.DTOs.FacilitySchedules;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,19 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.FacilitySchedules;
 
-public record TestUpdateScheduleDTO : IUpdateFacilityScheduleDTO
-{
-    public TimeOnly ClosesAt { get; init; }
-    public DayOfWeek DayOfWeek { get; init; }
-    public Guid FacilityId { get; init; }
-    public Guid Id { get; init; }
-    public TimeOnly OpensAt { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 {
-    private static readonly TestUpdateScheduleDTO _updateFacilityScheduleTest = new()
+    private static readonly UpdateFacilityScheduleDTO _updateFacilityScheduleTest = new()
     {
         Id = FacilityScheduleSeed.ToBeUpdated.Id,
         FacilityId = FacilitySeed.NoSchedules.Id,
@@ -35,18 +26,16 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
 
-        TestUpdateScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with
+        UpdateFacilityScheduleDTO updateScheduleDTO = _updateFacilityScheduleTest with
         {
-            Id = FacilityScheduleSeed.ToBeUpdated.Id
+            Id = FacilityScheduleSeed.ToBeUpdated.Id,
         };
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
 
         // Act
-        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
-            updateScheduleDTO
-        );
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(updateScheduleDTO);
 
         // Assert
         Assert.NotNull(result.Value);
@@ -65,10 +54,15 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
-        TestUpdateScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with { FacilityId = Guid.NewGuid() };
+        UpdateFacilityScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
 
         // Act
-        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(scheduleWithNoFacility);
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
+            scheduleWithNoFacility
+        );
 
         // Assert
         Assert.Null(result.Value);
@@ -83,10 +77,15 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 
         IFacilityScheduleHandler facilityScheduleHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
-        TestUpdateScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with { Id = Guid.NewGuid() };
+        UpdateFacilityScheduleDTO scheduleWithNoFacility = _updateFacilityScheduleTest with
+        {
+            Id = Guid.NewGuid(),
+        };
 
         // Act
-        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(scheduleWithNoFacility);
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
+            scheduleWithNoFacility
+        );
 
         // Assert
         Assert.Null(result.Value);

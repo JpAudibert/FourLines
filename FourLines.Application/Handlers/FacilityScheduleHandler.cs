@@ -1,11 +1,11 @@
-﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+﻿using FourLines.Application.DTOs.FacilitySchedules;
 
 namespace FourLines.Application.Handlers;
 
 public class FacilityScheduleHandler(FourLinesContext context) : IFacilityScheduleHandler
 {
     public async Task<Result<FacilitySchedule>> Create(
-        ICreateFacilityScheduleDTO newSchedule,
+        CreateFacilityScheduleDTO newSchedule,
         CancellationToken cancellationToken = default
     )
     {
@@ -34,7 +34,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     }
 
     public async Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(
-        List<ICreateFacilityScheduleDTO> newSchedules,
+        List<CreateFacilityScheduleDTO> newSchedules,
         CancellationToken cancellationToken = default
     )
     {
@@ -69,7 +69,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     }
 
     public async Task<Result<FacilitySchedule>> Update(
-        IUpdateFacilityScheduleDTO schedule,
+        UpdateFacilityScheduleDTO schedule,
         CancellationToken cancellationToken = default
     )
     {
@@ -110,7 +110,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     }
 
     public async Task<Result<bool>> Delete(
-        IDeleteFacilityScheduleDTO deleteDto,
+        DeleteFacilityScheduleDTO deleteDto,
         CancellationToken cancellationToken = default
     )
     {

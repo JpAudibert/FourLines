@@ -1,8 +1,6 @@
-﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+﻿namespace FourLines.Application.DTOs.Facilities;
 
-namespace FourLines.Application.DTOs.Facilities;
-
-public record UpdateFacilityDTO : IUpdateFacilityDTO
+public record UpdateFacilityDTO 
 {
     public Guid Id { get; init; } = default!;
     public Guid OwnerId { get; init; } = default!;

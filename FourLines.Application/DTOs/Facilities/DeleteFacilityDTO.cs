@@ -1,8 +1,6 @@
-﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+﻿namespace FourLines.Application.DTOs.Facilities;
 
-namespace FourLines.Application.DTOs.Facilities;
-
-public record DeleteFacilityDTO : IDeleteFacilityDTO
+public record DeleteFacilityDTO 
 {
     public Guid OwnerId { get; init; }
     public Guid FacilityId { get; init; }

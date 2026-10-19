@@ -1,9 +1,9 @@
+using FourLines.Application.DTOs.Matches;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
 using FourLines.Infrastructure.Contexts;
-using FourLines.Tests.Matches;
 using FourLines.Tests.Shared;
 using FourLines.Tests.Shared.Seed;
 
@@ -71,44 +71,44 @@ public class TestShuffle(FourLinesFixture fixtures)
         await fixtures.EnsureShuffleReservationCreatedAsync();
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
-        TestCreateIngressDTO playerToShuffle1 = new()
+        CreateIngressDTO playerToShuffle1 = new()
         {
             MatchId = fixtures.ShuffleReservationResult.Value.Match.Id,
             UserId = UserSeed.PlayerToShuffle1.Id,
             Code = fixtures.ShuffleReservationResult.Value.Match.Code,
         };
 
-        TestCreateIngressDTO playerToShuffle2 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle2 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle2.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle3 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle3 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle3.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle4 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle4 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle4.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle5 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle5 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle5.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle6 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle6 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle6.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle7 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle7 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle7.Id,
         };
 
-        TestCreateIngressDTO playerToShuffle8 = playerToShuffle1 with
+        CreateIngressDTO playerToShuffle8 = playerToShuffle1 with
         {
             UserId = UserSeed.PlayerToShuffle8.Id,
         };

@@ -1,8 +1,6 @@
-﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+﻿namespace FourLines.Application.DTOs.FacilitySchedules;
 
-namespace FourLines.Application.DTOs.FacilitySchedules;
-
-public record UpdateFacilityScheduleDTO : IUpdateFacilityScheduleDTO
+public record UpdateFacilityScheduleDTO
 {
     public Guid Id { get; init; }
     public Guid FacilityId { get; init; }

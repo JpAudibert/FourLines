@@ -1,19 +1,17 @@
-﻿using FourLines.Application.DTOs.Reservations.Interfaces;
-
-namespace FourLines.Application.Interfaces;
+﻿namespace FourLines.Application.Interfaces;
 
 public interface IReservationHandler
 {
     Task<Result<ConfirmReservationResponseDTO>> Create(
-        ICreateReservationDTO newReservation,
+        CreateReservationDTO newReservation,
         CancellationToken cancellationToken = default
     );
     Task<Result<Reservation>> UpdateReservationStatus(
-        IUpdateStatusFromReservationDTO reservation,
+        UpdateStatusFromReservationDTO reservation,
         CancellationToken cancellationToken = default
     );
     Task<Result<bool>> Delete(
-        IDeleteReservationDTO deleteDto,
+        DeleteReservationDTO deleteDto,
         CancellationToken cancellationToken = default
     );
     Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromUser(

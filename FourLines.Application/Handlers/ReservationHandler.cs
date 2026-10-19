@@ -1,5 +1,4 @@
-﻿using FourLines.Application.DTOs.Reservations.Interfaces;
-using FourLines.Application.Validators.Interfaces;
+﻿using FourLines.Application.Validators.Interfaces;
 
 namespace FourLines.Application.Handlers;
 
@@ -14,7 +13,7 @@ public class ReservationHandler(
     private const string DefaultMatchName = "World Cup Match";
 
     public async Task<Result<ConfirmReservationResponseDTO>> Create(
-        ICreateReservationDTO newReservation,
+        CreateReservationDTO newReservation,
         CancellationToken cancellationToken = default
     )
     {
@@ -124,7 +123,7 @@ public class ReservationHandler(
     }
 
     public async Task<Result<Reservation>> UpdateReservationStatus(
-        IUpdateStatusFromReservationDTO reservation,
+        UpdateStatusFromReservationDTO reservation,
         CancellationToken cancellationToken = default
     )
     {
@@ -153,7 +152,7 @@ public class ReservationHandler(
     }
 
     public async Task<Result<bool>> Delete(
-        IDeleteReservationDTO deleteDto,
+        DeleteReservationDTO deleteDto,
         CancellationToken cancellationToken = default
     )
     {
