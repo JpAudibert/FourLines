@@ -1,4 +1,5 @@
-﻿using FourLines.Application.Interfaces;
+﻿using FourLines.Application.DTOs.Matches;
+using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
 using FourLines.Domain.Results.ErrorResults;
@@ -10,7 +11,7 @@ namespace FourLines.Tests.Matches;
 [Collection(FourLinesCollection.Name)]
 public class TestMatchesIngress(FourLinesFixture fixtures)
 {
-    private TestCreateIngressDTO _ingress = new()
+    private CreateIngressDTO _ingress = new()
     {
         MatchId = Guid.NewGuid(),
         UserId = Guid.NewGuid(),
@@ -26,7 +27,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
-        TestCreateIngressDTO ingress = new()
+        CreateIngressDTO ingress = new()
         {
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = fixtures.GoalKeeperReservationResult.Value.Reservation.UserId,
@@ -53,7 +54,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
+        CreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
@@ -73,7 +74,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
-        TestCreateIngressDTO ingress = _ingress with
+        CreateIngressDTO ingress = _ingress with
         {
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
@@ -99,7 +100,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with
+        CreateIngressDTO ingress = _ingress with
         {
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player2.Id,
@@ -128,7 +129,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
+        CreateIngressDTO ingress = _ingress with { MatchId = Guid.NewGuid() };
 
         IMatchHandler matchHandler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
@@ -149,7 +150,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = _ingress with
+        CreateIngressDTO ingress = _ingress with
         {
             MatchId = fixtures.GoalKeeperReservationResult.Value.Match.Id,
             UserId = Guid.NewGuid(),
@@ -175,7 +176,7 @@ public class TestMatchesIngress(FourLinesFixture fixtures)
 
         await fixtures.EnsureNoGoalKeeperReservationCreatedAsync();
 
-        TestCreateIngressDTO ingress = new()
+        CreateIngressDTO ingress = new()
         {
             MatchId = fixtures.NoGoalKeeperReservationResult.Value.Match.Id,
             UserId = UserSeed.Player3.Id,

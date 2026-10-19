@@ -1,5 +1,4 @@
 ﻿using FourLines.Application.DTOs.Matches;
-using FourLines.Application.DTOs.Matches.Interfaces;
 
 namespace FourLines.Application.Interfaces;
 
@@ -7,11 +6,11 @@ public interface IMatchHandler
 {
     Task<Result<Match?>> GetMatch(Guid matchId, CancellationToken cancellationToken = default);
     Task<Result<MatchesUsers>> Ingress(
-        ICreateIngressDTO ingress,
+        CreateIngressDTO ingress,
         CancellationToken cancellationToken = default
     );
     Task<Result<MatchesUsers>> IngressAsFixedPosition(
-        ICreateIngressDTO ingress,
+        CreateIngressDTO ingress,
         CancellationToken cancellationToken = default
     );
     Task<Result<bool>> LeaveMatch(

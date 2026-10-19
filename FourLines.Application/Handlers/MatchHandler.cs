@@ -1,5 +1,4 @@
 ﻿using FourLines.Application.DTOs.Matches;
-using FourLines.Application.DTOs.Matches.Interfaces;
 
 namespace FourLines.Application.Handlers;
 
@@ -44,7 +43,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
     }
 
     public async Task<Result<MatchesUsers>> Ingress(
-        ICreateIngressDTO ingress,
+        CreateIngressDTO ingress,
         CancellationToken cancellationToken = default
     )
     {
@@ -78,7 +77,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
     }
 
     public async Task<Result<MatchesUsers>> IngressAsFixedPosition(
-        ICreateIngressDTO ingress,
+        CreateIngressDTO ingress,
         CancellationToken cancellationToken = default
     )
     {
