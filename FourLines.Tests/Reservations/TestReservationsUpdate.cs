@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Reservations.Interfaces;
+using FourLines.Application.DTOs.Reservations;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,17 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Reservations;
 
-public record TestUpdateStatusFromReservationDTO : IUpdateStatusFromReservationDTO
-{
-    public Guid Id { get; init; }
-    public ReservationStatus Status { get; init; }
-    public Guid UserId { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestReservationsUpdate(FourLinesFixture fixtures)
 {
-    private static readonly TestUpdateStatusFromReservationDTO _updateReservationTest = new()
+    private static readonly UpdateStatusFromReservationDTO _updateReservationTest = new()
     {
         Id = ReservationSeed.ToBeUpdated.Id,
         UserId = UserSeed.Player.Id,
@@ -33,7 +26,7 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        TestUpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
+        UpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
         {
             Id = ReservationSeed.ToBeUpdated.Id,
             UserId = ReservationSeed.ToBeUpdated.UserId,
@@ -59,7 +52,7 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        TestUpdateStatusFromReservationDTO reservationWithInvalidStatus = _updateReservationTest with
+        UpdateStatusFromReservationDTO reservationWithInvalidStatus = _updateReservationTest with
         {
             Status = (ReservationStatus)999,
         };
@@ -82,7 +75,7 @@ public class TestReservationsUpdate(FourLinesFixture fixtures)
         IReservationHandler reservationHandler =
             fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
 
-        TestUpdateStatusFromReservationDTO reservationWithInvalidId = _updateReservationTest with
+        UpdateStatusFromReservationDTO reservationWithInvalidId = _updateReservationTest with
         {
             Id = Guid.NewGuid(),
         };
