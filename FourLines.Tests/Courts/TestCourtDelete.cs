@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Courts.Interfaces;
+using FourLines.Application.DTOs.Courts;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -6,16 +6,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
-public record TestDeleteCourtDTO : IDeleteCourtDTO
-{
-    public Guid CourtId { get; init; }
-    public Guid FacilityId { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestCourtDelete(FourLinesFixture fixtures)
 {
-    private static readonly TestDeleteCourtDTO _deleteCourt = new()
+    private static readonly DeleteCourtDTO _deleteCourt = new()
     {
         CourtId = CourtSeed.ToBeDeleted.Id,
         FacilityId = CourtSeed.ToBeDeleted.FacilityId,
@@ -42,7 +36,7 @@ public class TestCourtDelete(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
-        TestDeleteCourtDTO inexistentCourt = _deleteCourt with { CourtId = Guid.NewGuid() };
+        DeleteCourtDTO inexistentCourt = _deleteCourt with { CourtId = Guid.NewGuid() };
 
         // Act
         Result<bool> result = await courtHandler.Delete(inexistentCourt);

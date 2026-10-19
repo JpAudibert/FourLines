@@ -1,11 +1,11 @@
-﻿using FourLines.Application.DTOs.Courts.Interfaces;
+﻿using FourLines.Application.DTOs.Courts;
 
 namespace FourLines.Application.Handlers;
 
 public class CourtHandler(FourLinesContext context) : ICourtHandler
 {
     public async Task<Result<Court>> Create(
-        ICreateCourtDTO newCourt,
+        CreateCourtDTO newCourt,
         CancellationToken cancellationToken = default
     )
     {
@@ -43,7 +43,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<Court>> Update(
-        IUpdateCourtDTO court,
+        UpdateCourtDTO court,
         CancellationToken cancellationToken = default
     )
     {
@@ -85,7 +85,7 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<bool>> Delete(
-        IDeleteCourtDTO deleteDto,
+        DeleteCourtDTO deleteDto,
         CancellationToken cancellationToken = default
     )
     {

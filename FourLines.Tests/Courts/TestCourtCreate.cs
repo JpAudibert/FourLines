@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Courts.Interfaces;
+using FourLines.Application.DTOs.Courts;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,22 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
-public record TestCreateCourtDTO : ICreateCourtDTO
-{
-    public Guid FacilityId { get; init; }
-    public bool IsActive { get; init; }
-    public string Name { get; init; } = default!;
-    public Guid OwnerId { get; init; }
-    public Guid SportId { get; init; }
-    public Money DefaultPrice { get; init; } = default!;
-    public int RentingPeriodInMinutes { get; init; }
-    public int MaintenancePeriodInMinutes { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestCourtCreate(FourLinesFixture fixtures)
 {
-    private static readonly TestCreateCourtDTO _createCourtTest = new()
+    private static readonly CreateCourtDTO _createCourtTest = new()
     {
         OwnerId = UserSeed.Owner.Id,
         FacilityId = FacilitySeed.Default.Id,
@@ -67,7 +55,7 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
-        TestCreateCourtDTO courtWithNoFacility = _createCourtTest with
+        CreateCourtDTO courtWithNoFacility = _createCourtTest with
         {
             FacilityId = Guid.NewGuid(),
         };
@@ -86,7 +74,7 @@ public class TestCourtCreate(FourLinesFixture fixtures)
         // Arrange
         await using var scope = fixtures.CreateAsyncServiceScope();
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
-        TestCreateCourtDTO courtWithNoSport = _createCourtTest with { SportId = Guid.NewGuid() };
+        CreateCourtDTO courtWithNoSport = _createCourtTest with { SportId = Guid.NewGuid() };
 
         // Act
         Result<Court> result = await courtHandler.Create(courtWithNoSport);

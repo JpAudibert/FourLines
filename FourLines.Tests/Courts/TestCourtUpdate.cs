@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Courts.Interfaces;
+using FourLines.Application.DTOs.Courts;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,22 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Courts;
 
-public record TestUpdateCourtDTO : IUpdateCourtDTO
-{
-    public Guid FacilityId { get; init; }
-    public Guid Id { get; init; }
-    public bool IsActive { get; init; }
-    public string Name { get; init; } = default!;
-    public Guid SportId { get; init; }
-    public Money DefaultPrice { get; init; } = default!;
-    public int RentingPeriodInMinutes { get; init; }
-    public int MaintenancePeriodInMinutes { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestCourtUpdate(FourLinesFixture fixtures)
 {
-    private static readonly TestUpdateCourtDTO _updateCourt = new()
+    private static readonly UpdateCourtDTO _updateCourt = new()
     {
         FacilityId = CourtSeed.ToBeUpdated.FacilityId,
         SportId = CourtSeed.ToBeUpdated.SportId,
@@ -42,7 +30,7 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
 
-        TestUpdateCourtDTO updateCourtDTO = _updateCourt with
+        UpdateCourtDTO updateCourtDTO = _updateCourt with
         {
             Id = CourtSeed.ToBeUpdated.Id,
             Name = "Updated Court Name",
@@ -74,7 +62,7 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
         await using var scope = fixtures.CreateAsyncServiceScope();
 
         ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
-        TestUpdateCourtDTO courtWithNoFacility = _updateCourt with { FacilityId = Guid.NewGuid() };
+        UpdateCourtDTO courtWithNoFacility = _updateCourt with { FacilityId = Guid.NewGuid() };
 
         // Act
         Result<Court> result = await courtHandler.Update(courtWithNoFacility);
