@@ -24,6 +24,34 @@ GET - /api/v{version}/Reservations/{reservationId}/users/{userId}
 ```
 GET - /api/v{version}/Reservations/courts/{courtId}/selected-date/{selectedDate}
 ```
+The request expects:
+* Route params:
+```json
+    {
+        "courtId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "selectedDate": "2026-10-19"
+    }
+```
+* The handler starts creating the slots for availability for that day of week, from the begining to the end of the day. It connects:
+    * Courts
+    * Facilities
+    * Facility Schedules
+* It creates the `time slots, all available`
+* `Now` is defined
+    * It takes UTC time and passes it to facility time (GMT-3 -> for Brazil/GMT-5 -> for Bogotá)
+* Queries Reservation table to find something for the date and for the court that is not cancelled:
+```csharp
+Reservations.Where(r =>
+    r.CourtId == courtId
+    && DateOnly.FromDateTime(r.Period.Start.DateTime) == selectedDate
+    && r.Status != ReservationStatus.Cancelled
+)
+.Select(r => new Reservation { Period = r.Period })
+```
+* Iterates through the time slot's list and flag these as unavailable
+    * Slots in the past
+    * Slots that has a reservation overlapping
+* Returns a `Result.Success` with the court availability
 
 
 ### Create A Reservation For User
