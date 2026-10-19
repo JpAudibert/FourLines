@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Facilities.Interfaces;
+using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,22 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
-public record TestCreateFacilityDTO : ICreateFacilityDTO
-{
-    public Guid OwnerId { get; init; } = default!;
-    public string Name { get; init; } = default!;
-    public string Address { get; init; } = default!;
-    public string City { get; init; } = default!;
-    public string State { get; init; } = default!;
-    public string ZipCode { get; init; } = default!;
-    public string RegistrationNumber { get; init; } = default!;
-    public string TimeZoneId { get; init; } = default!;
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestFacilitiesCreate(FourLinesFixture fixtures)
 {
-    private static readonly TestCreateFacilityDTO _createFacilityTest = new()
+    private static readonly CreateFacilityDTO _createFacilityTest = new()
     {
         Name = "Test Facility",
         Address = "123 Test St",
@@ -67,7 +55,7 @@ public class TestFacilitiesCreate(FourLinesFixture fixtures)
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-        TestCreateFacilityDTO facilityWithNoOwner = _createFacilityTest with
+        CreateFacilityDTO facilityWithNoOwner = _createFacilityTest with
         {
             OwnerId = Guid.NewGuid(),
         };

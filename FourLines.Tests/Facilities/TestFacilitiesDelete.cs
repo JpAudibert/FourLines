@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Facilities.Interfaces;
+using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
@@ -6,16 +6,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
-public record TestDeleteFacilityDTO : IDeleteFacilityDTO
-{
-    public Guid FacilityId { get; init; }
-    public Guid OwnerId { get; init; }
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestFacilitiesDelete(FourLinesFixture fixtures)
 {
-    private readonly TestDeleteFacilityDTO _deleteFacility = new()
+    private readonly DeleteFacilityDTO _deleteFacility = new()
     {
         OwnerId = FacilitySeed.ToBeDeleted.OwnerId,
         FacilityId = FacilitySeed.ToBeDeleted.Id,

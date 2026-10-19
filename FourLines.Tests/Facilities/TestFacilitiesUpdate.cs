@@ -1,4 +1,4 @@
-using FourLines.Application.DTOs.Facilities.Interfaces;
+using FourLines.Application.DTOs.Facilities;
 using FourLines.Application.Interfaces;
 using FourLines.Domain.Models;
 using FourLines.Domain.Results;
@@ -8,23 +8,10 @@ using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Facilities;
 
-public record TestUpdateFacilityDTO : IUpdateFacilityDTO
-{
-    public Guid Id { get; init; } = default!;
-    public Guid OwnerId { get; init; } = default!;
-    public string Name { get; init; } = default!;
-    public string Address { get; init; } = default!;
-    public string City { get; init; } = default!;
-    public string State { get; init; } = default!;
-    public string ZipCode { get; init; } = default!;
-    public string RegistrationNumber { get; init; } = default!;
-    public string TimeZoneId { get; init; } = default!;
-}
-
 [Collection(FourLinesCollection.Name)]
 public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 {
-    private static readonly TestUpdateFacilityDTO _updateFacilityTest = new()
+    private static readonly UpdateFacilityDTO _updateFacilityTest = new()
     {
         Id = FacilitySeed.ToBeUpdated.Id,
         Name = "Test Updated Facility",
@@ -46,7 +33,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
-        TestUpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with
+        UpdateFacilityDTO updateFacilityDTO = _updateFacilityTest with
         {
             Id = FacilitySeed.ToBeUpdated.Id,
         };
@@ -74,7 +61,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-        TestUpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with
+        UpdateFacilityDTO facilityWithNoOwnerId = _updateFacilityTest with
         {
             OwnerId = Guid.Empty,
         };
@@ -95,7 +82,7 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
 
         IFacilityHandler facilityHandler =
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
-        TestUpdateFacilityDTO unknownFacility = _updateFacilityTest with { Id = Guid.NewGuid() };
+        UpdateFacilityDTO unknownFacility = _updateFacilityTest with { Id = Guid.NewGuid() };
 
         // Act
         Result<Facility> result = await facilityHandler.Update(unknownFacility);

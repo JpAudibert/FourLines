@@ -1,11 +1,12 @@
-﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+﻿using FourLines.Application.DTOs.Facilities;
 
 namespace FourLines.Application.Handlers;
 
-public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZoneValidator) : IFacilityHandler
+public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZoneValidator)
+    : IFacilityHandler
 {
     public async Task<Result<Facility>> Create(
-        ICreateFacilityDTO createDto,
+        CreateFacilityDTO createDto,
         CancellationToken cancellationToken = default
     )
     {
@@ -29,7 +30,7 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
             RegistrationNumber = createDto.RegistrationNumber,
             OwnerId = createDto.OwnerId,
             Owner = owner,
-            TimeZoneId = createDto.TimeZoneId
+            TimeZoneId = createDto.TimeZoneId,
         };
 
         await context.Facilities.AddAsync(facility, cancellationToken);
@@ -39,7 +40,7 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     }
 
     public async Task<Result<bool>> Delete(
-        IDeleteFacilityDTO deleteDto,
+        DeleteFacilityDTO deleteDto,
         CancellationToken cancellationToken = default
     )
     {
@@ -134,7 +135,7 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     }
 
     public async Task<Result<Facility>> Update(
-        IUpdateFacilityDTO updateDto,
+        UpdateFacilityDTO updateDto,
         CancellationToken cancellationToken = default
     )
     {

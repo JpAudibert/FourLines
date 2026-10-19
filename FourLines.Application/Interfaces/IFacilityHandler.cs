@@ -1,9 +1,9 @@
-﻿using FourLines.Application.DTOs.Facilities.Interfaces;
+﻿using FourLines.Application.DTOs.Facilities;
 
 namespace FourLines.Application.Interfaces;
 
 public interface IFacilityHandler
-    : ICrudHandler<Facility, ICreateFacilityDTO, IUpdateFacilityDTO, IDeleteFacilityDTO>
+    : ICrudHandler<Facility, CreateFacilityDTO, UpdateFacilityDTO, DeleteFacilityDTO>
 {
     Task<Result<IEnumerable<Facility>>> GetFacilitiesFromOwner(
         Guid ownerId,
