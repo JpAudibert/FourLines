@@ -1,8 +1,6 @@
-﻿using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+﻿namespace FourLines.Application.DTOs.FacilitySchedules;
 
-namespace FourLines.Application.DTOs.FacilitySchedules;
-
-public record CreateFacilityScheduleDTO : ICreateFacilityScheduleDTO
+public record CreateFacilityScheduleDTO
 {
     public Guid FacilityId { get; init; }
     public DayOfWeek DayOfWeek { get; init; }

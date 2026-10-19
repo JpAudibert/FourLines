@@ -1,17 +1,17 @@
-using FourLines.Application.DTOs.FacilitySchedules.Interfaces;
+using FourLines.Application.DTOs.FacilitySchedules;
 
 namespace FourLines.Application.Interfaces;
 
 public interface IFacilityScheduleHandler
     : ICrudHandler<
         FacilitySchedule,
-        ICreateFacilityScheduleDTO,
-        IUpdateFacilityScheduleDTO,
-        IDeleteFacilityScheduleDTO
+        CreateFacilityScheduleDTO,
+        UpdateFacilityScheduleDTO,
+        DeleteFacilityScheduleDTO
     >
 {
     Task<Result<IEnumerable<FacilitySchedule>>> CreateMultiple(
-        List<ICreateFacilityScheduleDTO> newSchedules,
+        List<CreateFacilityScheduleDTO> newSchedules,
         CancellationToken cancellationToken = default
     );
     Task<Result<IEnumerable<FacilitySchedule>>> GetSchedules(
