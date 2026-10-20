@@ -14,7 +14,7 @@ public class TestReservationAvailability(FourLinesFixture fixtures)
     {
         // Arrange
         Guid courtId = CourtSeed.Default.Id;
-        DateTime playingDate = DateTime.Now;
+        DateOnly playingDate = DateOnly.FromDateTime(DateTime.Now);
         CancellationToken cancellationToken = default;
 
         IReservationHandler reservationHandler =
@@ -32,6 +32,6 @@ public class TestReservationAvailability(FourLinesFixture fixtures)
         Assert.True(result.IsSuccess);
         Assert.Equal(23, result.Value.TimeSlots.Count());
         Assert.Equal(courtId, result.Value.CourtId);
-        Assert.Equal(DateOnly.FromDateTime(playingDate), result.Value.PlayingDate);
+        Assert.Equal(playingDate, result.Value.PlayingDate);
     }
 }
