@@ -1,4 +1,5 @@
 ﻿using FourLines.Application.Interfaces;
+using FourLines.Domain.Results.ErrorResults;
 
 namespace FourLines.Api.Controllers;
 
@@ -92,6 +93,15 @@ public class FacilitySchedulesController(
         );
 
         StartStopwatch();
+
+        if (newFacilitySchedules.Length == 0)
+        {
+            return HandleResult(
+                Result<IEnumerable<FacilitySchedule>>.Failure(
+                    FacilitySchedulesErrorResults.NoSchedulesProvided
+                )
+            );
+        }
 
         List<CreateFacilityScheduleDTO> schedules = [];
 
