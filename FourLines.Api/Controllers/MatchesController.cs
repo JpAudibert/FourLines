@@ -12,7 +12,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     : ApiControllerBase(logger)
 {
     [HttpGet("{matchId}")]
-    public async Task<ActionResult<Match?>> GetMatch(
+    public async Task<ActionResult<Match>> GetMatch(
         [FromRoute] Guid matchId,
         CancellationToken cancellationToken = default
     )
@@ -24,7 +24,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
 
         StartStopwatch();
 
-        Result<Match?> match = await matchHandler.GetMatch(matchId, cancellationToken);
+        Result<Match> match = await matchHandler.GetMatch(matchId, cancellationToken);
 
         return HandleResult(match);
     }
@@ -37,7 +37,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         CancellationToken cancellationToken = default
     )
     {
-        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(Ingress)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
@@ -61,7 +61,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         return HandleResult(matchesUsers);
     }
 
-    [HttpPost("{matchId}/ingress/{userId}/ingress-as-goal-keeper")]
+    [HttpPost("{matchId}/ingress/{userId}/ingress-as-fixed-position")]
     public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
@@ -69,7 +69,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         CancellationToken cancellationToken = default
     )
     {
-        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
+        const string operation = $"{nameof(MatchesController)}.{nameof(IngressAsFixedPosition)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
