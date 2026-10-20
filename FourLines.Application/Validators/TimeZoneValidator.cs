@@ -1,4 +1,5 @@
 using FluentValidation;
+using TimeZoneConverter;
 
 namespace FourLines.Application.Validators;
 
@@ -13,7 +14,7 @@ public sealed class TimeZoneValidator : AbstractValidator<string>
     {
         try
         {
-            TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            TZConvert.GetTimeZoneInfo(timeZoneId);
             return true;
         }
         catch (TimeZoneNotFoundException)
