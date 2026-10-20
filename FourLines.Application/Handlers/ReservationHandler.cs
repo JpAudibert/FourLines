@@ -242,7 +242,7 @@ public class ReservationHandler(
 
     public async Task<Result<CourtAvailability>> GetAvailableTimesToPlayInCourt(
         Guid courtId,
-        DateTime selectedDate,
+        DateOnly selectedDate,
         CancellationToken cancellationToken = default
     )
     {
@@ -260,7 +260,7 @@ public class ReservationHandler(
         IQueryable<Reservation> reservationsQuery = context
             .Reservations.Where(r =>
                 r.CourtId == courtId
-                && r.Period.Start.Date == selectedDate.Date
+                && DateOnly.FromDateTime(r.Period.Start.DateTime) == selectedDate
                 && r.Status != ReservationStatus.Cancelled
             )
             .Select(r => new Reservation { Period = r.Period });
@@ -293,7 +293,7 @@ public class ReservationHandler(
         CourtAvailability availability = new()
         {
             CourtId = courtId,
-            PlayingDate = DateOnly.FromDateTime(selectedDate),
+            PlayingDate = selectedDate,
             TimeSlots = availableSlots,
         };
 

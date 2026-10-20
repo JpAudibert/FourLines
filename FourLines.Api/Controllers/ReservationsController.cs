@@ -179,11 +179,11 @@ public class ReservationsController(
     [HttpGet("courts/{courtId}/selected-date/{selectedDate}")]
     public async Task<ActionResult<CourtAvailability>> GetAvailableTimesToPlayInCourt(
         [FromRoute] Guid courtId,
-        [FromRoute] DateTime? selectedDate,
+        [FromRoute] DateOnly? selectedDate,
         CancellationToken cancellationToken
     )
     {
-        DateTime dateToSearch = selectedDate ?? DateTime.UtcNow;
+        DateOnly dateToSearch = selectedDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
 
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(GetAvailableTimesToPlayInCourt)}";

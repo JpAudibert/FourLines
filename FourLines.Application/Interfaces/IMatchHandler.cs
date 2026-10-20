@@ -4,7 +4,7 @@ namespace FourLines.Application.Interfaces;
 
 public interface IMatchHandler
 {
-    Task<Result<Match?>> GetMatch(Guid matchId, CancellationToken cancellationToken = default);
+    Task<Result<Match>> GetMatch(Guid matchId, CancellationToken cancellationToken = default);
     Task<Result<MatchesUsers>> Ingress(
         CreateIngressDTO ingress,
         CancellationToken cancellationToken = default

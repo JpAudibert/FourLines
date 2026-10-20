@@ -4,7 +4,7 @@ namespace FourLines.Application.Handlers;
 
 public class MatchHandler(FourLinesContext context) : IMatchHandler
 {
-    public async Task<Result<Match?>> GetMatch(
+    public async Task<Result<Match>> GetMatch(
         Guid matchId,
         CancellationToken cancellationToken = default
     )
@@ -14,7 +14,10 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
             .Include(s => s.Sport)
             .FirstOrDefaultAsync(m => m.Id == matchId, cancellationToken: cancellationToken);
 
-        return Result<Match?>.Success(match);
+        if (match is null)
+            return Result<Match>.Failure(MatchesErrorResults.MatchNotFound);
+
+        return Result<Match>.Success(match);
     }
 
     public async Task<Result<Match>> UpdateMatchName(
