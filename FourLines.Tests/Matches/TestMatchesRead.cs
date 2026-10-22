@@ -20,7 +20,7 @@ public class TestMatchesRead(FourLinesFixture fixtures)
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<Match?> result = await handler.GetMatch(matchId);
+        Result<Match> result = await handler.GetMatch(matchId);
 
         // Assert
         Assert.True(result.IsSuccess);
