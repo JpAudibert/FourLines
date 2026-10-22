@@ -31,7 +31,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             Password = "Password123!",
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "383.975.210-89",
+            RegistrationNumber = "892.459.500-85",
         };
 
         LoginViewModel loginRequest = new()
@@ -62,8 +62,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         AuthController authController = new(mockAuthLogger.Object, handler);
 
         // Act
-        ActionResult<User> userRegisterResult = await UsersController.Register(
-            RoleSeed.Player.Id,
+        ActionResult<User> userRegisterResult = await UsersController.RegisterPlayer(
             newUser,
             CancellationToken.None
         );
@@ -92,7 +91,6 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             Birthday = new DateOnly(1970, 1, 1),
             Phone = "55 54 9 9999-9999",
             RegistrationNumber = "383.975.210-89",
-            RoleId = RoleSeed.Owner.Id,
         };
 
         IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
@@ -103,33 +101,6 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(UsersErrorResults.EmailAlreadyExists, result.Error);
-    }
-
-    [Fact]
-    public async Task Should_Not_HaveUserRole()
-    {
-        // Arrange
-        await using var scope = fixtures.CreateAsyncServiceScope();
-
-        UserRegisterDTO createUserTest = new()
-        {
-            Name = "John Doe",
-            Email = "randomEmailTest@example.com",
-            Password = "Password123!",
-            Birthday = new DateOnly(1970, 1, 1),
-            Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "383.975.210-89",
-            RoleId = Guid.NewGuid(),
-        };
-
-        IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
-
-        // Act
-        Result<User> result = await userHandler.Create(createUserTest);
-
-        // Assert
-        Assert.Null(result.Value);
-        Assert.Equal(UsersErrorResults.InvalidRole, result.Error);
     }
 
     [Fact]

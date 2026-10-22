@@ -8,14 +8,15 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
         CancellationToken cancellationToken = default
     )
     {
-        User? existingUser = await context.Users.FirstOrDefaultAsync(
-            u => u.Email == request.Email,
-            cancellationToken: cancellationToken
-        );
-        if (existingUser is not null)
+        if (
+            await context.Users.AnyAsync(
+                u => u.Email == request.Email,
+                cancellationToken: cancellationToken
+            )
+        )
             return Result<User>.Failure(UsersErrorResults.EmailAlreadyExists);
 
-        Role? role = context.Roles.FirstOrDefault(r => r.Id == request.RoleId);
+        Role? role = await GetRole(request.IsFacilityOwner, cancellationToken);
         if (role is null)
             return Result<User>.Failure(UsersErrorResults.InvalidRole);
 
@@ -35,5 +36,18 @@ public class UserHandler(FourLinesContext context, IPasswordHashProvider passwor
         await context.SaveChangesAsync(cancellationToken);
 
         return Result<User>.Success(user);
+    }
+
+    protected virtual async Task<Role?> GetRole(
+        bool isFacilityOwner,
+        CancellationToken cancellationToken
+    )
+    {
+        string roleName = isFacilityOwner ? RoleConstants.FacilityOwner : RoleConstants.Player;
+
+        return await context.Roles.FirstOrDefaultAsync(
+            r => r.Name == roleName,
+            cancellationToken: cancellationToken
+        );
     }
 }

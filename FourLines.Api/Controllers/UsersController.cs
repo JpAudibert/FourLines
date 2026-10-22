@@ -8,20 +8,37 @@ namespace FourLines.Api.Controllers;
 public class UsersController(ILogger<UsersController> logger, IUserHandler userHandler)
     : ApiControllerBase(logger)
 {
-    [HttpPost("{roleId}")]
-    public async Task<ActionResult<User>> Register(
-        [FromRoute] Guid roleId,
+    [HttpPost("players")]
+    public async Task<ActionResult<User>> RegisterPlayer(
         [FromBody] UserRegisterViewModel request,
         CancellationToken cancellationToken
     )
     {
-        const string operation = $"{nameof(UsersController)}.{nameof(Register)}";
+        return await RegisterUser(request, isFacilityOwner: false, cancellationToken);
+    }
+
+    [HttpPost("facility-owners")]
+    public async Task<ActionResult<User>> RegisterFacilityOwner(
+        [FromBody] UserRegisterViewModel request,
+        CancellationToken cancellationToken
+    )
+    {
+        return await RegisterUser(request, isFacilityOwner: true, cancellationToken);
+    }
+
+    protected virtual async Task<ActionResult<User>> RegisterUser(
+        UserRegisterViewModel request,
+        bool isFacilityOwner,
+        CancellationToken cancellationToken
+    )
+    {
+        const string operation = $"{nameof(UsersController)}.{nameof(RegisterFacilityOwner)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
                 ["operation"] = operation,
-                ["roleId"] = roleId,
                 ["email"] = request.Email,
+                ["isFacilityOwner"] = isFacilityOwner,
             }
         );
 
@@ -35,7 +52,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
                 Birthday = request.Birthday,
                 Phone = request.Phone,
                 RegistrationNumber = request.RegistrationNumber,
-                RoleId = roleId,
+                IsFacilityOwner = true,
                 Password = request.Password,
                 IsActive = request.IsActive,
             },
