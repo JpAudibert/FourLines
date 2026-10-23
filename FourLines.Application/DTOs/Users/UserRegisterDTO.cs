@@ -1,4 +1,4 @@
-﻿namespace FourLines.Application.DTOs;
+﻿namespace FourLines.Application.DTOs.Users;
 
 public record UserRegisterDTO
 {
