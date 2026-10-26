@@ -1,0 +1,86 @@
+using FourLines.Application.DTOs.Courts;
+using FourLines.Application.Interfaces;
+using FourLines.Domain.Models;
+using FourLines.Domain.Results;
+using FourLines.Domain.Results.ErrorResults;
+using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
+
+namespace FourLines.Tests.Courts;
+
+[Collection(FourLinesCollection.Name)]
+public class TestCourtCreate(FourLinesFixture fixtures)
+{
+    private static readonly CreateCourtDTO _createCourtTest = new()
+    {
+        OwnerId = UserSeed.Owner.Id,
+        FacilityId = FacilitySeed.Default.Id,
+        SportId = SportSeed.Default.Id,
+        Name = "Test Court",
+        IsActive = true,
+        DefaultPrice = new Money(100.00m, "BRL"),
+        RentingPeriodInMinutes = 50,
+        MaintenancePeriodInMinutes = 10,
+    };
+
+    [Fact]
+    public async Task Should_CreateCourt()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+
+        // Act
+        Result<Court> result = await courtHandler.Create(_createCourtTest);
+
+        // Assert
+        Assert.NotNull(result.Value);
+        Assert.IsType<Court>(result.Value);
+        Assert.Equal(_createCourtTest.Name, result.Value.Name);
+        Assert.Equal(_createCourtTest.FacilityId, result.Value.FacilityId);
+        Assert.Equal(_createCourtTest.SportId, result.Value.SportId);
+        Assert.Equal(_createCourtTest.IsActive, result.Value.IsActive);
+        Assert.Equal(_createCourtTest.DefaultPrice.Amount, result.Value.DefaultPrice.Amount);
+        Assert.Equal(_createCourtTest.DefaultPrice.Currency, result.Value.DefaultPrice.Currency);
+        Assert.Equal(_createCourtTest.RentingPeriodInMinutes, result.Value.RentingPeriodInMinutes);
+        Assert.Equal(
+            _createCourtTest.MaintenancePeriodInMinutes,
+            result.Value.MaintenancePeriodInMinutes
+        );
+    }
+
+    [Fact]
+    public async Task Should_Not_HaveFacilityToCreateCourt()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        CreateCourtDTO courtWithNoFacility = _createCourtTest with
+        {
+            FacilityId = Guid.NewGuid(),
+        };
+
+        // Act
+        Result<Court> result = await courtHandler.Create(courtWithNoFacility);
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.CreateUnknownFacility, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_HaveKnownSport()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+        CreateCourtDTO courtWithNoSport = _createCourtTest with { SportId = Guid.NewGuid() };
+
+        // Act
+        Result<Court> result = await courtHandler.Create(courtWithNoSport);
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.CreateUnknownSport, result.Error);
+    }
+}

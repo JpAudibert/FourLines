@@ -1,0 +1,92 @@
+using FourLines.Application.DTOs.Reservations;
+using FourLines.Application.Interfaces;
+using FourLines.Domain.Models;
+using FourLines.Domain.Results;
+using FourLines.Domain.Results.ErrorResults;
+using FourLines.Tests.Shared;
+using FourLines.Tests.Shared.Seed;
+
+namespace FourLines.Tests.Reservations;
+
+[Collection(FourLinesCollection.Name)]
+public class TestReservationsUpdate(FourLinesFixture fixtures)
+{
+    private static readonly UpdateStatusFromReservationDTO _updateReservationTest = new()
+    {
+        Id = ReservationSeed.ToBeUpdated.Id,
+        UserId = UserSeed.Player.Id,
+        Status = ReservationStatus.Confirmed,
+    };
+
+    [Fact]
+    public async Task Should_UpdateReservation()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IReservationHandler reservationHandler =
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+
+        UpdateStatusFromReservationDTO reservationDTO = _updateReservationTest with
+        {
+            Id = ReservationSeed.ToBeUpdated.Id,
+            UserId = ReservationSeed.ToBeUpdated.UserId,
+        };
+
+        // Act
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
+            reservationDTO
+        );
+
+        // Assert
+        Assert.NotNull(result.Value);
+        Assert.IsType<Reservation>(result.Value);
+        Assert.Equal(reservationDTO.Status, result.Value.Status);
+        Assert.Equal(reservationDTO.UserId, result.Value.UserId);
+    }
+
+    [Fact]
+    public async Task Should_Not_HaveValidStatus()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IReservationHandler reservationHandler =
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+
+        UpdateStatusFromReservationDTO reservationWithInvalidStatus = _updateReservationTest with
+        {
+            Status = (ReservationStatus)999,
+        };
+
+        // Act
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
+            reservationWithInvalidStatus
+        );
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(ReservationsErrorResults.CreationInvalidStatus, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_AffectAnyRowFacilitySchedule()
+    {
+        // Arrange
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IReservationHandler reservationHandler =
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+
+        UpdateStatusFromReservationDTO reservationWithInvalidId = _updateReservationTest with
+        {
+            Id = Guid.NewGuid(),
+        };
+
+        // Act
+        Result<Reservation> result = await reservationHandler.UpdateReservationStatus(
+            reservationWithInvalidId
+        );
+
+        // Assert
+        Assert.Null(result.Value);
+        Assert.Equal(ReservationsErrorResults.UpdateReservationDoesNotExist, result.Error);
+    }
+}

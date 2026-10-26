@@ -1,0 +1,152 @@
+﻿using FourLines.Api.ViewModels.Matches;
+using FourLines.Application.DTOs.Matches;
+using FourLines.Application.Interfaces;
+
+namespace FourLines.Api.Controllers;
+
+[ApiVersion("1")]
+[ApiController]
+[Authorize]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class MatchesController(ILogger<MatchesController> logger, IMatchHandler matchHandler)
+    : ApiControllerBase(logger)
+{
+    [HttpGet("{matchId}")]
+    public async Task<ActionResult<Match>> GetMatch(
+        [FromRoute] Guid matchId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
+        );
+
+        StartStopwatch();
+
+        Result<Match> match = await matchHandler.GetMatch(matchId, cancellationToken);
+
+        return HandleResult(match);
+    }
+
+    [HttpPost("{matchId}/ingress/{userId}")]
+    public async Task<ActionResult<MatchesUsers>> Ingress(
+        [FromRoute] Guid matchId,
+        [FromRoute] Guid userId,
+        [FromBody] CreateIngressViewModel newIngress,
+        CancellationToken cancellationToken = default
+    )
+    {
+        const string operation = $"{nameof(MatchesController)}.{nameof(Ingress)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["matchId"] = matchId,
+                ["userId"] = userId,
+            }
+        );
+
+        StartStopwatch();
+
+        CreateIngressDTO ingress = new()
+        {
+            MatchId = matchId,
+            UserId = userId,
+            Code = newIngress.Code,
+        };
+
+        Result<MatchesUsers> matchesUsers = await matchHandler.Ingress(ingress, cancellationToken);
+
+        return HandleResult(matchesUsers);
+    }
+
+    [HttpPost("{matchId}/ingress/{userId}/ingress-as-fixed-position")]
+    public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
+        [FromRoute] Guid matchId,
+        [FromRoute] Guid userId,
+        [FromBody] CreateIngressViewModel newIngress,
+        CancellationToken cancellationToken = default
+    )
+    {
+        const string operation = $"{nameof(MatchesController)}.{nameof(IngressAsFixedPosition)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["matchId"] = matchId,
+                ["userId"] = userId,
+            }
+        );
+
+        StartStopwatch();
+
+        CreateIngressDTO ingress = new()
+        {
+            MatchId = matchId,
+            UserId = userId,
+            Code = newIngress.Code,
+        };
+
+        Result<MatchesUsers> matchesUsers = await matchHandler.IngressAsFixedPosition(
+            ingress,
+            cancellationToken
+        );
+
+        return HandleResult(matchesUsers);
+    }
+
+    [HttpDelete("{matchId}/leave/{userId}")]
+    public async Task<ActionResult<bool>> LeaveMatch(
+        [FromRoute] Guid matchId,
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        const string operation = $"{nameof(MatchesController)}.{nameof(LeaveMatch)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["matchId"] = matchId,
+                ["userId"] = userId,
+            }
+        );
+
+        StartStopwatch();
+
+        LeaveMatchDTO leaveMatch = new() { MatchId = matchId, UserId = userId };
+
+        Result<bool> matchesUsers = await matchHandler.LeaveMatch(leaveMatch, cancellationToken);
+
+        return HandleResult(matchesUsers);
+    }
+
+    [HttpPatch("{matchId}/update-match-name")]
+    public async Task<ActionResult<Match>> UpdateMatchName(
+        [FromRoute] Guid matchId,
+        [FromBody] UpdateMatchNameViewModel updateMatchName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        const string operation = $"{nameof(MatchesController)}.{nameof(UpdateMatchName)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
+        );
+
+        StartStopwatch();
+
+        UpdateMatchNameDTO updateMatchNameDTO = new()
+        {
+            MatchId = matchId,
+            NewName = updateMatchName.Name,
+        };
+
+        Result<Match> match = await matchHandler.UpdateMatchName(
+            updateMatchNameDTO,
+            cancellationToken
+        );
+
+        return HandleResult(match);
+    }
+}
