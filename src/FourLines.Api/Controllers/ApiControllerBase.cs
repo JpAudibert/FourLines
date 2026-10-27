@@ -12,6 +12,7 @@ public class ApiControllerBase(ILogger logger) : ControllerBase
 
     protected ActionResult<T> HandleResult<T>(
         Result<T> result,
+        int succeedingStatusCode = StatusCodes.Status200OK,
         int failingStatusCodes = StatusCodes.Status400BadRequest)
     {
         if (result.IsFailure)
@@ -28,6 +29,6 @@ public class ApiControllerBase(ILogger logger) : ControllerBase
 
         _logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
 
-        return result.Value;
+        return StatusCode(succeedingStatusCode, result.Value);
     }
 }

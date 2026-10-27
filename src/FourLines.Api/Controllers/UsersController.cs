@@ -75,7 +75,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 
         Result<bool> result = await userHandler.Delete(id, cancellationToken);
 
-        return HandleResult(result);
+        return HandleResult(result, succeedingStatusCode: StatusCodes.Status204NoContent);
     }
 
     [HttpPost("players")]
@@ -129,6 +129,6 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, succeedingStatusCode: StatusCodes.Status201Created);
     }
 }
