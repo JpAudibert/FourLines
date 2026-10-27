@@ -19,6 +19,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FourLines.Tests.Concurrency/FourLines.Tests.Concurrency.csproj" />
+    <Project Path="tests/FourLines.Tests.Integration/FourLines.Tests.Integration.csproj" />
     <Project Path="tests/FourLines.Tests/FourLines.Tests.csproj" Id="2e814752-6eb5-417b-84a2-5e449599d4bd" />
   </Folder>
 </Solution>

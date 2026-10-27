@@ -1,0 +1,18 @@
+using FourLines.Infrastructure.Contexts;
+using FourLines.Tests.Integration.Shared.Seed;
+
+namespace FourLines.Tests.Integration.Shared.Seed;
+
+public static class TestDataSeeder
+{
+    public static async Task SeedAsync(FourLinesContext context)
+    {
+        await RoleSeed.SeedAsync(context);
+        await UserSeed.SeedAsync(context);
+        await SportSeed.SeedAsync(context);
+        await FacilitySeed.SeedAsync(context);
+        await CourtSeed.SeedAsync(context);
+        await FacilityScheduleSeed.SeedAsync(context);
+        await ReservationSeed.SeedAsync(context);
+    }
+}
