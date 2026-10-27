@@ -83,7 +83,7 @@ public class ReservationsController(
     [HttpPost("users/{userId}")]
     public async Task<ActionResult<ConfirmReservationResponseDTO>> CreateAReservationForUser(
         [FromRoute] Guid userId,
-        [FromBody] CreateReservationViewModel newReservation,
+        [FromBody] CreateReservationRequest newReservation,
         CancellationToken cancellationToken
     )
     {
@@ -118,7 +118,7 @@ public class ReservationsController(
     public async Task<ActionResult<Reservation>> UpdateStatusFromReservation(
         [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
-        [FromBody] UpdateReservationStatusViewModel updateReservation,
+        [FromBody] UpdateReservationStatusRequest updateReservation,
         CancellationToken cancellationToken
     )
     {

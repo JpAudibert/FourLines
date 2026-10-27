@@ -1,6 +1,6 @@
-﻿namespace FourLines.Api.ViewModels.FacilitySchedules;
+namespace FourLines.Api.Models.RequestModels.FacilitySchedules;
 
-public class CreateFacilityScheduleViewModel
+public class CreateFacilityScheduleRequest
 {
     [Required(ErrorMessage = "Day of the week is required")]
     public DayOfWeek DayOfWeek { get; init; }

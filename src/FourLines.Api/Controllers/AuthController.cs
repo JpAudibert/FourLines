@@ -12,7 +12,7 @@ public class AuthController(
 {
     [HttpPost]
     public async Task<ActionResult<string>> Authenticate(
-        LoginViewModel request,
+        LoginRequest request,
         CancellationToken cancellationToken
     )
     {

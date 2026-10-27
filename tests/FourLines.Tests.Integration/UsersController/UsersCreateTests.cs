@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Flurl.Http;
 using Flurl.Http.Testing;
-using FourLines.Api.ViewModels.Users;
+using FourLines.Api.Models.RequestModels.Users;
 using FourLines.Tests.Integration.Shared;
 using Microsoft.AspNetCore.Http;
 
@@ -16,7 +16,7 @@ public class UsersCreateTests(FourLinesFixture fixture)
     {
         // Arrange
         var httpClient = new TestHttpClient(fixture.BaseUrl);
-        UserRegisterViewModel user = new()
+        UserRegisterRequest user = new()
         {
             Name = "Terezinha Pagliari",
             Email = "terezinha@pagliari.com",
@@ -43,7 +43,7 @@ public class UsersCreateTests(FourLinesFixture fixture)
     {
         // Arrange
         var httpClient = new TestHttpClient(fixture.BaseUrl);
-        UserRegisterViewModel user = new()
+        UserRegisterRequest user = new()
         {
             Name = "Davi Pagliari",
             Email = "davi@pagliari.com",
@@ -70,7 +70,7 @@ public class UsersCreateTests(FourLinesFixture fixture)
     {
         // Arrange
         var httpClient = new TestHttpClient(fixture.BaseUrl);
-        UserRegisterViewModel user = new()
+        UserRegisterRequest user = new()
         {
             Name = "Davi Pagliari",
             Email = "davi@pagliari.com",

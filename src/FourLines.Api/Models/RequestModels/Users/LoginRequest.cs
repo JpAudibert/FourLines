@@ -1,6 +1,6 @@
-﻿namespace FourLines.Api.ViewModels.Users;
+namespace FourLines.Api.Models.RequestModels.Users;
 
-public class LoginViewModel
+public class LoginRequest
 {
     [Required(ErrorMessage = "Email is required.")]
     [EmailAddress(ErrorMessage = "Invalid email format.")]

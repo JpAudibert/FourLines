@@ -1,4 +1,4 @@
-﻿using FourLines.Api.ViewModels.Matches;
+using FourLines.Api.Models.RequestModels.Matches;
 using FourLines.Application.DTOs.Matches;
 using FourLines.Application.Interfaces;
 
@@ -33,7 +33,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     public async Task<ActionResult<MatchesUsers>> Ingress(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
-        [FromBody] CreateIngressViewModel newIngress,
+        [FromBody] CreateIngressRequest newIngress,
         CancellationToken cancellationToken = default
     )
     {
@@ -65,7 +65,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
         [FromRoute] Guid matchId,
         [FromRoute] Guid userId,
-        [FromBody] CreateIngressViewModel newIngress,
+        [FromBody] CreateIngressRequest newIngress,
         CancellationToken cancellationToken = default
     )
     {
@@ -125,7 +125,7 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
     [HttpPatch("{matchId}/update-match-name")]
     public async Task<ActionResult<Match>> UpdateMatchName(
         [FromRoute] Guid matchId,
-        [FromBody] UpdateMatchNameViewModel updateMatchName,
+        [FromBody] UpdateMatchNameRequest updateMatchName,
         CancellationToken cancellationToken = default
     )
     {

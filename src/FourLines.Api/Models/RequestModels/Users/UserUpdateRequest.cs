@@ -1,6 +1,6 @@
-namespace FourLines.Api.ViewModels.Users;
+namespace FourLines.Api.Models.RequestModels.Users;
 
-public record UserUpdateViewModel
+public record UserUpdateRequest
 {
     public string Name { get; init; } = default!;
     public DateOnly Birthday { get; init; }

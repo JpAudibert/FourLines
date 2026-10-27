@@ -1,6 +1,6 @@
-﻿namespace FourLines.Api.ViewModels.Users;
+namespace FourLines.Api.Models.RequestModels.Users;
 
-public record UserRegisterViewModel
+public record UserRegisterRequest
 {
     [Required(ErrorMessage = "Name is required.")]
     public string Name { get; set; } = default!;

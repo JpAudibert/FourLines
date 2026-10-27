@@ -1,6 +1,6 @@
-﻿namespace FourLines.Api.ViewModels.Facilities;
+namespace FourLines.Api.Models.RequestModels.Facilities;
 
-public class UpdateFacilityViewModel
+public class UpdateFacilityRequest
 {
     [Required(ErrorMessage = "Facility name is required.")]
     public string Name { get; init; } = default!;

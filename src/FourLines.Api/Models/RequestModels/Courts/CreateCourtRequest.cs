@@ -1,6 +1,6 @@
-﻿namespace FourLines.Api.ViewModels.Courts;
+namespace FourLines.Api.Models.RequestModels.Courts;
 
-public class UpdateCourtViewModel
+public class CreateCourtRequest
 {
     [Required(ErrorMessage = "Court name is required.")]
     public string Name { get; init; } = default!;

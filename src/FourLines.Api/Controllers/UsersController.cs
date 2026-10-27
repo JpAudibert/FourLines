@@ -32,7 +32,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
     public async Task<ActionResult<User>> UpdateUser(
         [FromRoute] Guid id,
-        [FromBody] UserUpdateViewModel request,
+        [FromBody] UserUpdateRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -80,7 +80,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 
     [HttpPost("players")]
     public async Task<ActionResult<User>> RegisterPlayer(
-        [FromBody] UserRegisterViewModel request,
+        [FromBody] UserRegisterRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -89,7 +89,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 
     [HttpPost("facility-owners")]
     public async Task<ActionResult<User>> RegisterFacilityOwner(
-        [FromBody] UserRegisterViewModel request,
+        [FromBody] UserRegisterRequest request,
         CancellationToken cancellationToken
     )
     {
@@ -97,7 +97,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
     }
 
     protected virtual async Task<ActionResult<User>> RegisterUser(
-        UserRegisterViewModel request,
+        UserRegisterRequest request,
         bool isFacilityOwner,
         CancellationToken cancellationToken
     )

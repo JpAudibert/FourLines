@@ -44,7 +44,7 @@ public class FacilitySchedulesController(
     public async Task<ActionResult<FacilitySchedule>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateFacilityScheduleViewModel newFacilitySchedule,
+        [FromBody] CreateFacilityScheduleRequest newFacilitySchedule,
         CancellationToken cancellationToken = default
     )
     {
@@ -78,7 +78,7 @@ public class FacilitySchedulesController(
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> CreateMultiple(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateFacilityScheduleViewModel[] newFacilitySchedules,
+        [FromBody] CreateFacilityScheduleRequest[] newFacilitySchedules,
         CancellationToken cancellationToken = default
     )
     {
@@ -131,7 +131,7 @@ public class FacilitySchedulesController(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId,
-        [FromBody] UpdateFacilityScheduleViewModel updateFacilitySchedule,
+        [FromBody] UpdateFacilityScheduleRequest updateFacilitySchedule,
         CancellationToken cancellationToken = default
     )
     {

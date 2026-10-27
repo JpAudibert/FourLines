@@ -86,7 +86,7 @@ public class FacilitiesController(
     [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create(
         [FromRoute] Guid ownerId,
-        [FromBody] CreateFacilityViewModel request,
+        [FromBody] CreateFacilityRequest request,
         CancellationToken cancellationToken = default
     )
     {
@@ -119,7 +119,7 @@ public class FacilitiesController(
     public async Task<ActionResult<Facility>> Update(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] UpdateFacilityViewModel facility,
+        [FromBody] UpdateFacilityRequest facility,
         CancellationToken cancellationToken = default
     )
     {

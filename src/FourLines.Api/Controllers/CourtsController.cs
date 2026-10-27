@@ -70,7 +70,7 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
     public async Task<ActionResult<Court>> Create(
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
-        [FromBody] CreateCourtViewModel newCourt,
+        [FromBody] CreateCourtRequest newCourt,
         CancellationToken cancellationToken
     )
     {
@@ -106,7 +106,7 @@ public class CourtsController(ILogger<CourtsController> logger, ICourtHandler co
         [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId,
-        [FromBody] UpdateCourtViewModel updateCourt,
+        [FromBody] UpdateCourtRequest updateCourt,
         CancellationToken cancellationToken
     )
     {

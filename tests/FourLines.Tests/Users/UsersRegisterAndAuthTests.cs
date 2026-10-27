@@ -1,5 +1,5 @@
 using FourLines.Api.Controllers;
-using FourLines.Api.ViewModels.Users;
+using FourLines.Api.Models.RequestModels.Users;
 using FourLines.Application.DTOs;
 using FourLines.Application.DTOs.Users;
 using FourLines.Application.Interfaces;
@@ -25,7 +25,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 
         Mock<ILogger<AuthController>> mockAuthLogger = new();
         Mock<ILogger<UsersController>> mockUserRegisterLogger = new();
-        UserRegisterViewModel newUser = new()
+        UserRegisterRequest newUser = new()
         {
             Name = "John Doe",
             Email = "john.doe@example.com",
@@ -35,7 +35,7 @@ public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
             RegistrationNumber = "892.459.500-85",
         };
 
-        LoginViewModel loginRequest = new()
+        LoginRequest loginRequest = new()
         {
             Email = "john.doe@example.com",
             Password = "Password123!",
