@@ -13,18 +13,22 @@ public class ApiControllerBase(ILogger logger) : ControllerBase
     protected ActionResult<T> HandleResult<T>(
         Result<T> result,
         int succeedingStatusCode = StatusCodes.Status200OK,
-        int failingStatusCodes = StatusCodes.Status400BadRequest)
+        int failingStatusCode = StatusCodes.Status400BadRequest
+    )
     {
         if (result.IsFailure)
         {
-            _logger.LogWarning("Failed with result: {code} - {description}",
+            _logger.LogWarning(
+                "Failed with result: {code} - {description}",
                 result.Error.Code,
-                result.Error.Description);
+                result.Error.Description
+            );
 
             return Problem(
                 title: result.Error.Code,
                 detail: result.Error.Description,
-                statusCode: failingStatusCodes);
+                statusCode: failingStatusCode
+            );
         }
 
         _logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
