@@ -30,6 +30,6 @@ public class AuthController(
             cancellationToken
         );
 
-        return HandleResult(result, StatusCodes.Status401Unauthorized);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status401Unauthorized);
     }
 }
