@@ -23,7 +23,7 @@ public static class UserSeed
         Name = "Jane Smith",
         Email = "jane.smith@example.com",
         PasswordHash =
-            "AQAAAAIAAYagAAAAEMIamrvIuvlWmAnvN+crLN6139ExUi8CuZC2s6J4W/h7DNKU+Z8syKwX08xHWmZp+g==",
+            "AQAAAAIAAYagAAAAEHg8wfcf7syQ6aedwLvclpsB5dKl0ggxoSEU4BHdSSGAexS4OMsGrHt2EkXmtw2kSQ==",
         Birthday = new DateOnly(1970, 1, 1),
         Phone = "55 54 9 9999-9999",
         RegistrationNumber = "383.975.211-89",
@@ -46,10 +46,46 @@ public static class UserSeed
         Name = "Jane Smith",
         Email = "jane.smith3@example.com",
         PasswordHash =
-            "AQAAAAIAAYagAAAAEMIamrvIuvlWmAnvN+crLN6139ExUi8CuZC2s6J4W/h7DNKU+Z8syKwX08xHWmZp+g==",
+            "AQAAAAIAAYagAAAAEHg8wfcf7syQ6aedwLvclpsB5dKl0ggxoSEU4BHdSSGAexS4OMsGrHt2EkXmtw2kSQ==",
         Birthday = new DateOnly(1970, 1, 1),
         Phone = "55 54 9 9999-9999",
         RegistrationNumber = "383.975.213-89",
+    };
+
+    public static readonly User PlayerToBeUpdated = new()
+    {
+        RoleId = RoleSeed.Player.Id,
+        Name = "Jane Smith",
+        Email = "jane.smith4@example.com",
+        PasswordHash =
+            "AQAAAAIAAYagAAAAEHg8wfcf7syQ6aedwLvclpsB5dKl0ggxoSEU4BHdSSGAexS4OMsGrHt2EkXmtw2kSQ==",
+        Birthday = new DateOnly(1970, 1, 1),
+        Phone = "55 54 9 9999-9999",
+        RegistrationNumber = "915.762.660-01",
+    };
+
+    public static readonly User PlayerToBeDeleted = new()
+    {
+        RoleId = RoleSeed.Player.Id,
+        Name = "Jane Smith",
+        Email = "jane.smith5@example.com",
+        PasswordHash =
+            "AQAAAAIAAYagAAAAEHg8wfcf7syQ6aedwLvclpsB5dKl0ggxoSEU4BHdSSGAexS4OMsGrHt2EkXmtw2kSQ==",
+        Birthday = new DateOnly(1970, 1, 1),
+        Phone = "55 54 9 9999-9999",
+        RegistrationNumber = "257.878.220-21",
+    };
+
+    public static readonly User DummyAuth = new()
+    {
+        RoleId = RoleSeed.Player.Id,
+        Name = "Jane Smith",
+        Email = "jane.smith6@example.com",
+        PasswordHash =
+            "AQAAAAIAAYagAAAAEHg8wfcf7syQ6aedwLvclpsB5dKl0ggxoSEU4BHdSSGAexS4OMsGrHt2EkXmtw2kSQ==",
+        Birthday = new DateOnly(1970, 1, 1),
+        Phone = "55 54 9 9999-9999",
+        RegistrationNumber = "601.819.140-77",
     };
 
     public static readonly User PlayerToShuffle1 = new()
@@ -162,7 +198,10 @@ public static class UserSeed
             PlayerToShuffle5,
             PlayerToShuffle6,
             PlayerToShuffle7,
-            PlayerToShuffle8
+            PlayerToShuffle8,
+            PlayerToBeDeleted,
+            PlayerToBeUpdated,
+            DummyAuth
         );
 
         await context.SaveChangesAsync();

@@ -1,4 +1,6 @@
+using System.Net.Http.Json;
 using Flurl.Http;
+using FourLines.Api.Models.RequestModels.Users;
 
 namespace FourLines.Tests.Integration.Shared;
 
@@ -22,6 +24,16 @@ public sealed class TestHttpClient(string baseUrl) : IDisposable
         }
 
         return await request.SendAsync(method, content, cancellationToken: cancellationToken);
+    }
+
+    public async Task<string> LoginAsync(LoginRequest body, int version = 1)
+    {
+        string url = $"/api/v{version}/auth";
+        var request = _client.Request(url);
+
+        string result = await request.PostAsync(JsonContent.Create(body)).Result.GetStringAsync();
+
+        return result;
     }
 
     public void Dispose()

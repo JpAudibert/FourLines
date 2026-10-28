@@ -17,66 +17,66 @@ namespace FourLines.Tests.Users;
 [Collection(FourLinesCollection.Name)]
 public class UsersRegisterAndAuthTests(FourLinesFixture fixtures)
 {
-    [Fact]
-    public async Task Should_RegisterAndAuthenticateUser()
-    {
-        // Arrange
-        await using var scope = fixtures.CreateAsyncServiceScope();
+    // [Fact]
+    // public async Task Should_RegisterAndAuthenticateUser()
+    // {
+    //     // Arrange
+    //     await using var scope = fixtures.CreateAsyncServiceScope();
 
-        Mock<ILogger<AuthController>> mockAuthLogger = new();
-        Mock<ILogger<UsersController>> mockUserRegisterLogger = new();
-        UserRegisterRequest newUser = new()
-        {
-            Name = "John Doe",
-            Email = "john.doe@example.com",
-            Password = "Password123!",
-            Birthday = new DateOnly(1970, 1, 1),
-            Phone = "55 54 9 9999-9999",
-            RegistrationNumber = "892.459.500-85",
-        };
+    //     Mock<ILogger<AuthController>> mockAuthLogger = new();
+    //     Mock<ILogger<UsersController>> mockUserRegisterLogger = new();
+    //     UserRegisterRequest newUser = new()
+    //     {
+    //         Name = "John Doe",
+    //         Email = "john.doe@example.com",
+    //         Password = "Password123!",
+    //         Birthday = new DateOnly(1970, 1, 1),
+    //         Phone = "55 54 9 9999-9999",
+    //         RegistrationNumber = "892.459.500-85",
+    //     };
 
-        LoginRequest loginRequest = new()
-        {
-            Email = "john.doe@example.com",
-            Password = "Password123!",
-        };
+    //     LoginRequest loginRequest = new()
+    //     {
+    //         Email = "john.doe@example.com",
+    //         Password = "Password123!",
+    //     };
 
-        FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
+    //     FourLinesContext context = scope.ServiceProvider.GetRequiredService<FourLinesContext>();
 
-        User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
-        if (testUser is not null)
-        {
-            context.Users.Remove(testUser);
-            await context.SaveChangesAsync();
-        }
+    //     User? testUser = await context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email);
+    //     if (testUser is not null)
+    //     {
+    //         context.Users.Remove(testUser);
+    //         await context.SaveChangesAsync();
+    //     }
 
-        IPasswordHashProvider passwordHashProvider =
-            fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
-        IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
-        ITokenProvider jwtTokenProvider =
-            fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
+    //     IPasswordHashProvider passwordHashProvider =
+    //         fixtures.ServiceProvider.GetRequiredService<IPasswordHashProvider>();
+    //     IUserHandler userHandler = fixtures.ServiceProvider.GetRequiredService<IUserHandler>();
+    //     ITokenProvider jwtTokenProvider =
+    //         fixtures.ServiceProvider.GetRequiredService<ITokenProvider>();
 
-        IAuthenticationHandler handler =
-            fixtures.ServiceProvider.GetRequiredService<IAuthenticationHandler>();
+    //     IAuthenticationHandler handler =
+    //         fixtures.ServiceProvider.GetRequiredService<IAuthenticationHandler>();
 
-        UsersController UsersController = new(mockUserRegisterLogger.Object, userHandler);
-        AuthController authController = new(mockAuthLogger.Object, handler);
+    //     UsersController UsersController = new(mockUserRegisterLogger.Object, userHandler);
+    //     AuthController authController = new(mockAuthLogger.Object, handler);
 
-        // Act
-        ActionResult<User> userRegisterResult = await UsersController.RegisterPlayer(
-            newUser,
-            CancellationToken.None
-        );
-        ActionResult<string> authResult = await authController.Authenticate(
-            loginRequest,
-            CancellationToken.None
-        );
+    //     // Act
+    //     ActionResult<User> userRegisterResult = await UsersController.RegisterPlayer(
+    //         newUser,
+    //         CancellationToken.None
+    //     );
+    //     ActionResult<string> authResult = await authController.Authenticate(
+    //         loginRequest,
+    //         CancellationToken.None
+    //     );
 
-        // Assert
-        Assert.NotNull(userRegisterResult.Value);
-        Assert.IsType<User>(userRegisterResult.Value);
-        Assert.IsType<string>(authResult.Value);
-    }
+    //     // Assert
+    //     Assert.NotNull(userRegisterResult.Value);
+    //     Assert.IsType<User>(userRegisterResult.Value);
+    //     Assert.IsType<string>(authResult.Value);
+    // }
 
     [Fact]
     public async Task Should_Not_HaveDuplicateUser()

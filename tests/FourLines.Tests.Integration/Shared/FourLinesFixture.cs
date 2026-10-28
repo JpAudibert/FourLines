@@ -20,6 +20,8 @@ public class FourLinesFixture : IAsyncLifetime
     public IServiceProvider ServiceProvider { get; set; } = default!;
     public string BaseUrl { get; private set; } = default!;
 
+    public TestHttpClient HttpClient { get; private set; } = default!;
+
     private const string _databaseName = "fourlines_test";
     private const string _username = "fourlines";
     private const string _password = "fourlines";
@@ -71,7 +73,7 @@ public class FourLinesFixture : IAsyncLifetime
             .Build();
         Configuration["ConnectionStrings:DefaultConnection"] = ConnectionString;
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "IntegrationTests");
-        
+
         _app = Program.CreateApp([], Configuration);
 
         _app.Urls.Add("http://localhost:5211");
@@ -82,6 +84,8 @@ public class FourLinesFixture : IAsyncLifetime
 
         BaseUrl = addressFeature!.Addresses.Single();
         ServiceProvider = _app.Services;
+
+        HttpClient = new TestHttpClient(BaseUrl);
     }
 
     public AsyncServiceScope CreateAsyncServiceScope()
