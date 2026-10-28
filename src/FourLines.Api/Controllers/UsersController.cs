@@ -1,4 +1,5 @@
-﻿using FourLines.Application.DTOs.Users;
+﻿using FourLines.Api.Models.ResponseModels.Users;
+using FourLines.Application.DTOs.Users;
 using FourLines.Application.Interfaces;
 
 namespace FourLines.Api.Controllers;
@@ -11,7 +12,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 {
     [HttpGet("{id}")]
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
-    public async Task<ActionResult<User>> GetUser(
+    public async Task<ActionResult<UserReadResponse>> GetUser(
         [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
@@ -25,12 +26,27 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 
         Result<User> result = await userHandler.GetById(id, cancellationToken);
 
-        return HandleResult(result);
+        Result<UserReadResponse> response = result.Map<UserReadResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Birthday = user.Birthday,
+                Phone = user.Phone,
+                RegistrationNumber = user.RegistrationNumber,
+                IsActive = user.IsActive,
+            }
+        );
+
+        return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
-    public async Task<ActionResult<User>> UpdateUser(
+    public async Task<ActionResult<UserUpdateResponse>> UpdateUser(
         [FromRoute] Guid id,
         [FromBody] UserUpdateRequest request,
         CancellationToken cancellationToken
@@ -56,7 +72,22 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
             cancellationToken
         );
 
-        return HandleResult(result);
+        Result<UserUpdateResponse> response = result.Map<UserUpdateResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Birthday = user.Birthday,
+                Phone = user.Phone,
+                RegistrationNumber = user.RegistrationNumber,
+                IsActive = user.IsActive,
+            }
+        );
+
+        return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpDelete("{id}")]
@@ -75,11 +106,15 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
 
         Result<bool> result = await userHandler.Delete(id, cancellationToken);
 
-        return HandleResult(result, succeedingStatusCode: StatusCodes.Status204NoContent);
+        return HandleResult(
+            result,
+            succeedingStatusCode: StatusCodes.Status204NoContent,
+            failingStatusCode: StatusCodes.Status404NotFound
+        );
     }
 
     [HttpPost("players")]
-    public async Task<ActionResult<User>> RegisterPlayer(
+    public async Task<ActionResult<UserRegisterResponse>> RegisterPlayer(
         [FromBody] UserRegisterRequest request,
         CancellationToken cancellationToken
     )
@@ -88,7 +123,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
     }
 
     [HttpPost("facility-owners")]
-    public async Task<ActionResult<User>> RegisterFacilityOwner(
+    public async Task<ActionResult<UserRegisterResponse>> RegisterFacilityOwner(
         [FromBody] UserRegisterRequest request,
         CancellationToken cancellationToken
     )
@@ -96,7 +131,7 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
         return await RegisterUser(request, isFacilityOwner: true, cancellationToken);
     }
 
-    protected virtual async Task<ActionResult<User>> RegisterUser(
+    protected virtual async Task<ActionResult<UserRegisterResponse>> RegisterUser(
         UserRegisterRequest request,
         bool isFacilityOwner,
         CancellationToken cancellationToken
@@ -129,6 +164,16 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
             cancellationToken
         );
 
-        return HandleResult(result, succeedingStatusCode: StatusCodes.Status201Created);
+        Result<UserRegisterResponse> response = result.Map<UserRegisterResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+            }
+        );
+
+        return HandleResult(response, succeedingStatusCode: StatusCodes.Status201Created);
     }
 }
