@@ -1,0 +1,180 @@
+﻿using FourLines.Api.Models.Users.Request;
+using FourLines.Api.Models.Users.Response;
+using FourLines.Application.DTOs.Users;
+using FourLines.Application.Interfaces;
+
+namespace FourLines.Api.Controllers;
+
+[ApiVersion("1")]
+[ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class UsersController(ILogger<UsersController> logger, IUserHandler userHandler)
+    : ApiControllerBase(logger)
+{
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Player, FacilityOwner, Admin")]
+    public async Task<ActionResult<UserReadResponse>> GetUser(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        const string operation = $"{nameof(UsersController)}.{nameof(GetUser)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }
+        );
+
+        StartStopwatch();
+
+        Result<User> result = await userHandler.GetById(id, cancellationToken);
+
+        Result<UserReadResponse> response = result.Map<UserReadResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Birthday = user.Birthday,
+                Phone = user.Phone,
+                RegistrationNumber = user.RegistrationNumber,
+                IsActive = user.IsActive,
+            }
+        );
+
+        return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Player, FacilityOwner, Admin")]
+    public async Task<ActionResult<UserUpdateResponse>> UpdateUser(
+        [FromRoute] Guid id,
+        [FromBody] UserUpdateRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        const string operation = $"{nameof(UsersController)}.{nameof(UpdateUser)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }
+        );
+
+        StartStopwatch();
+
+        Result<User> result = await userHandler.Update(
+            id,
+            new UserUpdateDTO
+            {
+                Name = request.Name,
+                Birthday = request.Birthday,
+                Phone = request.Phone,
+                RegistrationNumber = request.RegistrationNumber,
+                IsActive = request.IsActive,
+            },
+            cancellationToken
+        );
+
+        Result<UserUpdateResponse> response = result.Map<UserUpdateResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Birthday = user.Birthday,
+                Phone = user.Phone,
+                RegistrationNumber = user.RegistrationNumber,
+                IsActive = user.IsActive,
+            }
+        );
+
+        return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Player, FacilityOwner, Admin")]
+    public async Task<ActionResult<bool>> DeleteUser(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        const string operation = $"{nameof(UsersController)}.{nameof(DeleteUser)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }
+        );
+
+        StartStopwatch();
+
+        Result<bool> result = await userHandler.Delete(id, cancellationToken);
+
+        return HandleResult(
+            result,
+            succeedingStatusCode: StatusCodes.Status204NoContent,
+            failingStatusCode: StatusCodes.Status404NotFound
+        );
+    }
+
+    [HttpPost("players")]
+    public async Task<ActionResult<UserRegisterResponse>> RegisterPlayer(
+        [FromBody] UserRegisterRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        return await RegisterUser(request, isFacilityOwner: false, cancellationToken);
+    }
+
+    [HttpPost("facility-owners")]
+    public async Task<ActionResult<UserRegisterResponse>> RegisterFacilityOwner(
+        [FromBody] UserRegisterRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        return await RegisterUser(request, isFacilityOwner: true, cancellationToken);
+    }
+
+    protected virtual async Task<ActionResult<UserRegisterResponse>> RegisterUser(
+        UserRegisterRequest request,
+        bool isFacilityOwner,
+        CancellationToken cancellationToken
+    )
+    {
+        const string operation = $"{nameof(UsersController)}.{nameof(RegisterUser)}";
+        using var scope = logger.BeginScope(
+            new Dictionary<string, object>
+            {
+                ["operation"] = operation,
+                ["email"] = request.Email,
+                ["isFacilityOwner"] = isFacilityOwner,
+            }
+        );
+
+        StartStopwatch();
+
+        Result<User> result = await userHandler.Create(
+            new UserRegisterDTO
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Birthday = request.Birthday,
+                Phone = request.Phone,
+                RegistrationNumber = request.RegistrationNumber,
+                IsFacilityOwner = isFacilityOwner,
+                Password = request.Password,
+                IsActive = request.IsActive,
+            },
+            cancellationToken
+        );
+
+        Result<UserRegisterResponse> response = result.Map<UserRegisterResponse>(user =>
+            new()
+            {
+                Id = user.Id,
+                RoleId = user.RoleId,
+                Name = user.Name,
+                Email = user.Email,
+            }
+        );
+
+        return HandleResult(response, succeedingStatusCode: StatusCodes.Status201Created);
+    }
+}
