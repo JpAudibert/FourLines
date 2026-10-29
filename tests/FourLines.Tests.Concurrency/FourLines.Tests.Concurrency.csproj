@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="appsettings.Tests.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.runner.visualstudio" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+		<PackageReference Include="Testcontainers" />
+		<PackageReference Include="Testcontainers.PostgreSql" />
+		<PackageReference Include="Moq" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\FourLines.Api\FourLines.Api.csproj" />
+		<ProjectReference Include="..\..\src\FourLines.Application\FourLines.Application.csproj" />
+		<ProjectReference Include="..\..\src\FourLines.Domain\FourLines.Domain.csproj" />
+		<ProjectReference Include="..\..\src\FourLines.Infrastructure\FourLines.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+	</ItemGroup>
+
+</Project>
