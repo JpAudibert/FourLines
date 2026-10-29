@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using Flurl.Http;
-using FourLines.Api.Models.RequestModels.Users;
+using FourLines.Api.Models.Users.Request;
 
 namespace FourLines.Tests.Integration.Shared;
 

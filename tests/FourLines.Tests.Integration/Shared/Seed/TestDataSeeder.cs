@@ -1,5 +1,4 @@
 using FourLines.Infrastructure.Contexts;
-using FourLines.Tests.Integration.Shared.Seed;
 
 namespace FourLines.Tests.Integration.Shared.Seed;
 

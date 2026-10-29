@@ -1,7 +1,6 @@
 using FourLines.Application.DTOs.Reservations;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
-using FourLines.Tests.Integration.Shared.Seed;
 
 namespace FourLines.Tests.Integration.Shared.Seed;
 public static class ReservationSeed

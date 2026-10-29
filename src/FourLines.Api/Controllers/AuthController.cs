@@ -1,4 +1,5 @@
-﻿using FourLines.Application.Interfaces;
+﻿using FourLines.Api.Models.Users.Request;
+using FourLines.Application.Interfaces;
 
 namespace FourLines.Api.Controllers;
 

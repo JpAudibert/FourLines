@@ -1,4 +1,5 @@
-﻿using FourLines.Api.Models.ResponseModels.Users;
+﻿using FourLines.Api.Models.Users.Request;
+using FourLines.Api.Models.Users.Response;
 using FourLines.Application.DTOs.Users;
 using FourLines.Application.Interfaces;
 

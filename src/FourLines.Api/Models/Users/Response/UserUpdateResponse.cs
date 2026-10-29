@@ -1,8 +1,12 @@
-namespace FourLines.Api.Models.RequestModels.Users;
+namespace FourLines.Api.Models.Users.Response;
 
-public record UserUpdateRequest
+public record UserUpdateResponse
 {
+    public Guid Id { get; init; }
+    public Guid RoleId { get; init; }
     public string Name { get; init; } = default!;
+    public string Email { get; init; } = default!;
+    public string PasswordHash { get; init; } = default!;
     public DateOnly Birthday { get; init; }
     public string Phone { get; init; } = default!;
     public string RegistrationNumber { get; init; } = default!;

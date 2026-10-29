@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using Flurl.Http;
-using FourLines.Api.Models.RequestModels.Users;
+using FourLines.Api.Models.Users.Request;
 using FourLines.Tests.Integration.Shared;
 using FourLines.Tests.Integration.Shared.Seed;
 using Microsoft.AspNetCore.Http;

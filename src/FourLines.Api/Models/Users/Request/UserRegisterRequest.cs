@@ -1,4 +1,4 @@
-namespace FourLines.Api.Models.RequestModels.Users;
+namespace FourLines.Api.Models.Users.Request;
 
 public record UserRegisterRequest
 {

@@ -3,7 +3,6 @@ global using FourLines.Api.Models.RequestModels.Courts;
 global using FourLines.Api.Models.RequestModels.Facilities;
 global using FourLines.Api.Models.RequestModels.FacilitySchedules;
 global using FourLines.Api.Models.RequestModels.Reservations;
-global using FourLines.Api.Models.RequestModels.Users;
 global using FourLines.Application.DependencyInjection;
 global using FourLines.Application.DTOs;
 global using FourLines.Application.DTOs.Courts;

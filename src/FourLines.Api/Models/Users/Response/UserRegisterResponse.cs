@@ -1,5 +1,4 @@
-namespace FourLines.Api.Models.ResponseModels.Users;
-
+namespace FourLines.Api.Models.Users.Response;
 public record UserRegisterResponse
 {
     public Guid Id { get; init; }

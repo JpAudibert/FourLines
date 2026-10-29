@@ -1,4 +1,6 @@
-public record UserUpdateResponse
+namespace FourLines.Api.Models.Users.Response;
+
+public record UserReadResponse
 {
     public Guid Id { get; init; }
     public Guid RoleId { get; init; }
