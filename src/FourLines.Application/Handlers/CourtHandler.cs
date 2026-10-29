@@ -137,15 +137,13 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(
-        Guid ownerId,
-        bool isAdmin,
         Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<Court?> courts = await context
             .Courts.Where(c =>
-                c.Facility.Id == facilityId && (isAdmin || c.Facility.OwnerId == ownerId)
+                c.Facility.Id == facilityId
             )
             .ToListAsync(cancellationToken: cancellationToken);
 

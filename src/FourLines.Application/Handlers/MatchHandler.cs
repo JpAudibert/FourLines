@@ -6,22 +6,14 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
 {
     public async Task<Result<Match>> GetMatch(
         Guid matchId,
-        Guid userId,
-        bool isAdmin,
         CancellationToken cancellationToken = default
     )
     {
         Match? match = await context
-            .Matches.Include(r => r.Reservation)
+            .Matches            .Include(r => r.Reservation)
             .Include(s => s.Sport)
             .FirstOrDefaultAsync(
-                m =>
-                    m.Id == matchId
-                    && (
-                        isAdmin
-                        || m.Reservation.UserId == userId
-                        || m.MatchesUsers.Any(mu => mu.UserId == userId)
-                    ),
+                m => m.Id == matchId,
                 cancellationToken: cancellationToken
             );
 

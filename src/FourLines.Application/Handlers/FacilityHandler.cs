@@ -125,13 +125,11 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     }
 
     public async Task<Result<IEnumerable<Facility>>> GetAllFacilities(
-        Guid ownerId,
-        bool isAdmin,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<Facility> facilities = await context
-            .Facilities.Where(f => isAdmin || f.OwnerId == ownerId)
+            .Facilities
             .Select(f => new Facility
             {
                 Id = f.Id,

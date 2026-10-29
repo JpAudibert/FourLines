@@ -17,8 +17,6 @@ public interface IFacilityHandler
         bool isAdmin = false
     );
     Task<Result<IEnumerable<Facility>>> GetAllFacilities(
-        Guid ownerId,
-        bool isAdmin,
         CancellationToken cancellationToken = default
     );
 }

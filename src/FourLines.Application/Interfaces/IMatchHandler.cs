@@ -6,8 +6,6 @@ public interface IMatchHandler
 {
     Task<Result<Match>> GetMatch(
         Guid matchId,
-        Guid userId,
-        bool isAdmin,
         CancellationToken cancellationToken = default
     );
     Task<Result<MatchesUsers>> Ingress(

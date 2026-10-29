@@ -20,9 +20,6 @@ public class MatchesController(
         CancellationToken cancellationToken = default
     )
     {
-        if (!TryGetCurrentUser(out Guid userId, out bool isAdmin))
-            return Unauthorized();
-
         const string operation = $"{nameof(MatchesController)}.{nameof(GetMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
@@ -30,12 +27,7 @@ public class MatchesController(
 
         StartStopwatch();
 
-        Result<Match> match = await matchHandler.GetMatch(
-            matchId,
-            userId,
-            isAdmin,
-            cancellationToken
-        );
+        Result<Match> match = await matchHandler.GetMatch(matchId, cancellationToken);
 
         return HandleResult(match);
     }

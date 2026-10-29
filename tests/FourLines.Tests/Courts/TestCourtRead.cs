@@ -24,8 +24,6 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
-            UserSeed.Owner.Id,
-            false,
             facilityId
         );
 
@@ -46,8 +44,6 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
-            UserSeed.Owner.Id,
-            false,
             FacilitySeed.Dummy.Id
         );
 

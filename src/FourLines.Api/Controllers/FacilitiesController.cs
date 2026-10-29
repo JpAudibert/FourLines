@@ -4,7 +4,7 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
+[Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FacilitiesController(
     ILogger<FacilitiesController> logger,
@@ -14,14 +14,10 @@ public class FacilitiesController(
 {
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
-    [Authorize(Roles = $"{RoleConstants.Admin}")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromFacilities(
         CancellationToken cancellationToken = default
     )
     {
-        if (!TryGetCurrentUser(out Guid userId, out bool isAdmin))
-            return Unauthorized();
-
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromFacilities)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation }
@@ -30,8 +26,6 @@ public class FacilitiesController(
         StartStopwatch();
 
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities(
-            userId,
-            isAdmin,
             cancellationToken
         );
 
@@ -40,6 +34,7 @@ public class FacilitiesController(
 
     [HttpGet("mine")]
     [EndpointName("GetAllFromOwner")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner(
         CancellationToken cancellationToken = default
     )
@@ -65,6 +60,7 @@ public class FacilitiesController(
 
     [HttpGet("{facilityId:guid}")]
     [EndpointName("GetFacilityFromOwner")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Facility>> GetFacilityFromOwner(
         [FromRoute] Guid facilityId,
         CancellationToken cancellationToken = default
@@ -97,6 +93,7 @@ public class FacilitiesController(
 
     [HttpPost]
     [EndpointName("Create")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Facility>> Create(
         [FromBody] CreateFacilityRequest request,
         CancellationToken cancellationToken = default
@@ -132,6 +129,7 @@ public class FacilitiesController(
 
     [HttpPut("{facilityId}")]
     [EndpointName("Update")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Facility>> Update(
         [FromRoute] Guid facilityId,
         [FromBody] UpdateFacilityRequest facility,
@@ -174,6 +172,7 @@ public class FacilitiesController(
 
     [HttpDelete("{facilityId}")]
     [EndpointName("Delete")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid facilityId,
         CancellationToken cancellationToken = default

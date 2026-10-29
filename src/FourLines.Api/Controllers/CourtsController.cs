@@ -4,7 +4,7 @@ namespace FourLines.Api.Controllers;
 
 [ApiVersion("1")]
 [ApiController]
-[Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
+[Authorize]
 [Route("api/v{version:apiVersion}/facilities/{facilityId:guid}/courts")]
 public class CourtsController(
     ILogger<CourtsController> logger,
@@ -18,15 +18,11 @@ public class CourtsController(
         CancellationToken cancellationToken
     )
     {
-        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
-            return Unauthorized();
-
         const string operation = $"{nameof(CourtsController)}.{nameof(GetAllCourtsFromFacility)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
             {
                 ["operation"] = operation,
-                ["ownerId"] = ownerId,
                 ["facilityId"] = facilityId,
             }
         );
@@ -34,8 +30,6 @@ public class CourtsController(
         StartStopwatch();
 
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
-            ownerId,
-            isAdmin,
             facilityId,
             cancellationToken
         );
@@ -44,6 +38,7 @@ public class CourtsController(
     }
 
     [HttpGet("{courtId}")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Court>> GetById(
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId,
@@ -78,6 +73,7 @@ public class CourtsController(
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Court>> Create(
         [FromRoute] Guid facilityId,
         [FromBody] CreateCourtRequest newCourt,
@@ -116,6 +112,7 @@ public class CourtsController(
     }
 
     [HttpPut("{courtId}")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<Court>> Update(
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId,
@@ -157,6 +154,7 @@ public class CourtsController(
     }
 
     [HttpDelete("{courtId}")]
+    [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
     public async Task<ActionResult<bool>> Delete(
         [FromRoute] Guid facilityId,
         [FromRoute] Guid courtId,

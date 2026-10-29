@@ -21,7 +21,7 @@ public class TestMatchesRead(FourLinesFixture fixtures)
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player.Id, false);
+        Result<Match> result = await handler.GetMatch(matchId);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -40,22 +40,23 @@ public class TestMatchesRead(FourLinesFixture fixtures)
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player.Id, false);
+        Result<Match> result = await handler.GetMatch(matchId);
 
         // Assert
         Assert.True(result.IsFailure);
     }
 
     [Fact]
-    public async Task Should_Not_GetMatchForAnotherUser()
+    public async Task Should_GetMatchForAnotherUser()
     {
         await using var scope = fixtures.CreateAsyncServiceScope();
         await fixtures.EnsureGoalKeeperReservationCreatedAsync();
         Guid matchId = fixtures.GoalKeeperReservationResult.Value.Match.Id;
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
-        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player2.Id, false);
+        Result<Match> result = await handler.GetMatch(matchId);
 
-        Assert.True(result.IsFailure);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(matchId, result.Value.Id);
     }
 }
