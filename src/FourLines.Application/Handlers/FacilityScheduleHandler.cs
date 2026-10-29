@@ -10,7 +10,9 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     )
     {
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == newSchedule.FacilityId,
+            f =>
+                f.Id == newSchedule.FacilityId
+                && (newSchedule.IsAdmin || f.OwnerId == newSchedule.OwnerId),
             cancellationToken: cancellationToken
         );
         if (facility is null)
@@ -39,10 +41,19 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     )
     {
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == newSchedules[0].FacilityId,
+            f =>
+                f.Id == newSchedules[0].FacilityId
+                && (newSchedules[0].IsAdmin || f.OwnerId == newSchedules[0].OwnerId),
             cancellationToken: cancellationToken
         );
-        if (facility is null)
+        if (
+            facility is null
+            || newSchedules.Any(schedule =>
+                schedule.FacilityId != facility.Id
+                || schedule.OwnerId != newSchedules[0].OwnerId
+                || schedule.IsAdmin != newSchedules[0].IsAdmin
+            )
+        )
             return Result<IEnumerable<FacilitySchedule>>.Failure(
                 FacilitySchedulesErrorResults.CreateFacilitySchedules
             );
@@ -74,7 +85,9 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     )
     {
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == schedule.FacilityId,
+            f =>
+                f.Id == schedule.FacilityId
+                && (schedule.IsAdmin || f.OwnerId == schedule.OwnerId),
             cancellationToken: cancellationToken
         );
         if (facility is null)
@@ -84,7 +97,9 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
 
         int affectedRows = await context
             .FacilitySchedules.Where(fs =>
-                fs.Id == schedule.Id && fs.FacilityId == schedule.FacilityId
+                fs.Id == schedule.Id
+                && fs.FacilityId == schedule.FacilityId
+                && (schedule.IsAdmin || fs.Facility.OwnerId == schedule.OwnerId)
             )
             .ExecuteUpdateAsync(
                 fs =>
@@ -118,7 +133,9 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
 
         int affectedRows = await context
             .FacilitySchedules.Where(fs =>
-                fs.Id == deleteDto.ScheduleId && fs.FacilityId == deleteDto.FacilityId
+                fs.Id == deleteDto.ScheduleId
+                && fs.FacilityId == deleteDto.FacilityId
+                && (deleteDto.IsAdmin || fs.Facility.OwnerId == deleteDto.OwnerId)
             )
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
@@ -132,12 +149,16 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
     }
 
     public async Task<Result<IEnumerable<FacilitySchedule>>> GetSchedules(
+        Guid ownerId,
+        bool isAdmin,
         Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<FacilitySchedule>? schedules = await context
-            .FacilitySchedules.Where(fs => fs.FacilityId == facilityId)
+            .FacilitySchedules.Where(fs =>
+                fs.FacilityId == facilityId && (isAdmin || fs.Facility.OwnerId == ownerId)
+            )
             .AsNoTracking()
             .Select(fs => new FacilitySchedule()
             {
@@ -151,7 +172,7 @@ public class FacilityScheduleHandler(FourLinesContext context) : IFacilitySchedu
             })
             .ToListAsync(cancellationToken: cancellationToken);
 
-        if (!schedules.Any() || schedules is null)
+        if (schedules is null || !schedules.Any())
             return Result<IEnumerable<FacilitySchedule>>.Failure(
                 FacilitySchedulesErrorResults.RetrieveFacilitySchedules
             );

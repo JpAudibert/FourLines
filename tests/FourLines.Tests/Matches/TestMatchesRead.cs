@@ -2,6 +2,7 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
 using FourLines.Domain.Models;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Matches;
 
@@ -20,7 +21,7 @@ public class TestMatchesRead(FourLinesFixture fixtures)
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<Match> result = await handler.GetMatch(matchId);
+        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player.Id, false);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -39,9 +40,22 @@ public class TestMatchesRead(FourLinesFixture fixtures)
         IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
 
         // Act
-        Result<Match> result = await handler.GetMatch(matchId);
+        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player.Id, false);
 
         // Assert
+        Assert.True(result.IsFailure);
+    }
+
+    [Fact]
+    public async Task Should_Not_GetMatchForAnotherUser()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
+        Guid matchId = fixtures.GoalKeeperReservationResult.Value.Match.Id;
+        IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
+
+        Result<Match> result = await handler.GetMatch(matchId, UserSeed.Player2.Id, false);
+
         Assert.True(result.IsFailure);
     }
 }

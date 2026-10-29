@@ -13,6 +13,7 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 {
     private static readonly UpdateCourtDTO _updateCourt = new()
     {
+        OwnerId = UserSeed.Owner.Id,
         FacilityId = CourtSeed.ToBeUpdated.FacilityId,
         SportId = CourtSeed.ToBeUpdated.SportId,
         Name = "Test Updated Court",
@@ -69,6 +70,24 @@ public class TestCourtUpdate(FourLinesFixture fixtures)
 
         // Assert
         Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.UpdateUnknownFacility, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_UpdateCourtForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+
+        Result<Court> result = await courtHandler.Update(
+            _updateCourt with
+            {
+                Id = CourtSeed.ToBeUpdated.Id,
+                OwnerId = UserSeed.Player.Id,
+            }
+        );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(CourtsErrorResults.UpdateUnknownFacility, result.Error);
     }
 }

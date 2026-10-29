@@ -6,19 +6,22 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
-[Route("api/v{version:apiVersion}/owner/{ownerId}/facility/{facilityId}/[controller]")]
+[Route("api/v{version:apiVersion}/facilities/{facilityId:guid}/schedules")]
 public class FacilitySchedulesController(
     ILogger<FacilitySchedulesController> logger,
-    IFacilityScheduleHandler facilityScheduleHandler
-) : ApiControllerBase(logger)
+    IFacilityScheduleHandler facilityScheduleHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> GetScheduleFromFacility(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(FacilitySchedulesController)}.{nameof(GetScheduleFromFacility)}";
         using var scope = logger.BeginScope(
@@ -33,6 +36,8 @@ public class FacilitySchedulesController(
         StartStopwatch();
 
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            ownerId,
+            isAdmin,
             facilityId,
             cancellationToken
         );
@@ -42,12 +47,14 @@ public class FacilitySchedulesController(
 
     [HttpPost]
     public async Task<ActionResult<FacilitySchedule>> Create(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleRequest newFacilitySchedule,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Create)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -63,6 +70,8 @@ public class FacilitySchedulesController(
         Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
             new CreateFacilityScheduleDTO()
             {
+                OwnerId = ownerId,
+                IsAdmin = isAdmin,
                 FacilityId = facilityId,
                 DayOfWeek = newFacilitySchedule.DayOfWeek,
                 OpensAt = newFacilitySchedule.OpensAt,
@@ -76,12 +85,14 @@ public class FacilitySchedulesController(
 
     [HttpPost("multiple")]
     public async Task<ActionResult<IEnumerable<FacilitySchedule>>> CreateMultiple(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromBody] CreateFacilityScheduleRequest[] newFacilitySchedules,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(CreateMultiple)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -109,6 +120,8 @@ public class FacilitySchedulesController(
         {
             CreateFacilityScheduleDTO facilityScheduleDTO = new()
             {
+                OwnerId = ownerId,
+                IsAdmin = isAdmin,
                 FacilityId = facilityId,
                 DayOfWeek = schedule.DayOfWeek,
                 OpensAt = schedule.OpensAt,
@@ -128,13 +141,15 @@ public class FacilitySchedulesController(
 
     [HttpPut("{scheduleId}")]
     public async Task<ActionResult<FacilitySchedule>> Update(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId,
         [FromBody] UpdateFacilityScheduleRequest updateFacilitySchedule,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Update)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -151,6 +166,8 @@ public class FacilitySchedulesController(
         Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
             new UpdateFacilityScheduleDTO()
             {
+                OwnerId = ownerId,
+                IsAdmin = isAdmin,
                 Id = scheduleId,
                 FacilityId = facilityId,
                 DayOfWeek = updateFacilitySchedule.DayOfWeek,
@@ -165,12 +182,14 @@ public class FacilitySchedulesController(
 
     [HttpDelete("{scheduleId}")]
     public async Task<ActionResult<bool>> Delete(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromRoute] Guid scheduleId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitySchedulesController)}.{nameof(Delete)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -185,7 +204,13 @@ public class FacilitySchedulesController(
         StartStopwatch();
 
         Result<bool> result = await facilityScheduleHandler.Delete(
-            new DeleteFacilityScheduleDTO { FacilityId = facilityId, ScheduleId = scheduleId },
+            new DeleteFacilityScheduleDTO
+            {
+                OwnerId = ownerId,
+                IsAdmin = isAdmin,
+                FacilityId = facilityId,
+                ScheduleId = scheduleId,
+            },
             cancellationToken
         );
 

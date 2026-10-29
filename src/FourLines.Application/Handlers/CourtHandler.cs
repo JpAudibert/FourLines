@@ -10,7 +10,9 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     )
     {
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == newCourt.FacilityId && f.OwnerId == newCourt.OwnerId,
+            f =>
+                f.Id == newCourt.FacilityId
+                && (newCourt.IsAdmin || f.OwnerId == newCourt.OwnerId),
             cancellationToken: cancellationToken
         );
         if (facility is null)
@@ -48,14 +50,19 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     )
     {
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == court.FacilityId,
+            f =>
+                f.Id == court.FacilityId && (court.IsAdmin || f.OwnerId == court.OwnerId),
             cancellationToken: cancellationToken
         );
         if (facility is null)
             return Result<Court>.Failure(CourtsErrorResults.UpdateUnknownFacility);
 
         int affectedRows = await context
-            .Courts.Where(c => c.Id == court.Id && c.Facility.Id == court.FacilityId)
+            .Courts.Where(c =>
+                c.Id == court.Id
+                && c.Facility.Id == court.FacilityId
+                && (court.IsAdmin || c.Facility.OwnerId == court.OwnerId)
+            )
             .ExecuteUpdateAsync(
                 setters =>
                     setters
@@ -91,7 +98,11 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     {
         bool deleted = false;
         int affectedRows = await context
-            .Courts.Where(c => c.Id == deleteDto.CourtId && c.Facility.Id == deleteDto.FacilityId)
+            .Courts.Where(c =>
+                c.Id == deleteDto.CourtId
+                && c.Facility.Id == deleteDto.FacilityId
+                && (deleteDto.IsAdmin || c.Facility.OwnerId == deleteDto.OwnerId)
+            )
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
         if (affectedRows <= 0)
@@ -104,13 +115,18 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<Court>> GetCourtFromFacility(
+        Guid ownerId,
+        bool isAdmin,
         Guid facilityId,
         Guid courtId,
         CancellationToken cancellationToken = default
     )
     {
         Court? court = await context.Courts.FirstOrDefaultAsync(
-            c => c.Id == courtId && c.Facility.Id == facilityId,
+            c =>
+                c.Id == courtId
+                && c.Facility.Id == facilityId
+                && (isAdmin || c.Facility.OwnerId == ownerId),
             cancellationToken: cancellationToken
         );
 
@@ -121,12 +137,16 @@ public class CourtHandler(FourLinesContext context) : ICourtHandler
     }
 
     public async Task<Result<IEnumerable<Court>>> GetAllCourtsFromFacility(
+        Guid ownerId,
+        bool isAdmin,
         Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<Court?> courts = await context
-            .Courts.Where(c => c.Facility.Id == facilityId)
+            .Courts.Where(c =>
+                c.Facility.Id == facilityId && (isAdmin || c.Facility.OwnerId == ownerId)
+            )
             .ToListAsync(cancellationToken: cancellationToken);
 
         if (courts is null || !courts.Any())

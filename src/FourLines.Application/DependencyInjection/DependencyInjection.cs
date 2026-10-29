@@ -8,6 +8,8 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddSingleton<ITokenProvider, JwtTokenProvider>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserProvider, HttpCurrentUserProvider>();
 
         services.AddSingleton<PasswordHasher<User>>();
 

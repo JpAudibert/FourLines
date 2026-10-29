@@ -5,18 +5,23 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Authorize(Roles = $"{RoleConstants.FacilityOwner}, {RoleConstants.Admin}")]
-[Route("api/v{version:apiVersion}/owner/{ownerId}/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class FacilitiesController(
     ILogger<FacilitiesController> logger,
-    IFacilityHandler facilityHandler
-) : ApiControllerBase(logger)
+    IFacilityHandler facilityHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
     [HttpGet("~/api/v{version:apiVersion}/facilities")]
     [EndpointName("GetAll")]
+    [Authorize(Roles = $"{RoleConstants.Admin}")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromFacilities(
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid userId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromFacilities)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation }
@@ -25,19 +30,23 @@ public class FacilitiesController(
         StartStopwatch();
 
         Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities(
+            userId,
+            isAdmin,
             cancellationToken
         );
 
         return HandleResult(result);
     }
 
-    [HttpGet]
+    [HttpGet("mine")]
     [EndpointName("GetAllFromOwner")]
     public async Task<ActionResult<IEnumerable<Facility>>> GetAllFromOwner(
-        [FromRoute] Guid ownerId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetAllFromOwner)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["ownerId"] = ownerId }
@@ -47,20 +56,23 @@ public class FacilitiesController(
 
         Result<IEnumerable<Facility>> result = await facilityHandler.GetFacilitiesFromOwner(
             ownerId,
-            cancellationToken
+            cancellationToken,
+            isAdmin
         );
 
         return HandleResult(result);
     }
 
-    [HttpGet("{facilityId}")]
+    [HttpGet("{facilityId:guid}")]
     [EndpointName("GetFacilityFromOwner")]
     public async Task<ActionResult<Facility>> GetFacilityFromOwner(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(GetFacilityFromOwner)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -76,7 +88,8 @@ public class FacilitiesController(
         Result<Facility> result = await facilityHandler.GetFacilityFromOwner(
             ownerId,
             facilityId,
-            cancellationToken
+            cancellationToken,
+            isAdmin
         );
 
         return HandleResult(result);
@@ -85,11 +98,13 @@ public class FacilitiesController(
     [HttpPost]
     [EndpointName("Create")]
     public async Task<ActionResult<Facility>> Create(
-        [FromRoute] Guid ownerId,
         [FromBody] CreateFacilityRequest request,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Create)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["ownerId"] = ownerId }
@@ -101,6 +116,7 @@ public class FacilitiesController(
             new CreateFacilityDTO()
             {
                 OwnerId = ownerId,
+                IsAdmin = isAdmin,
                 Name = request.Name,
                 Address = request.Address,
                 City = request.City,
@@ -117,12 +133,14 @@ public class FacilitiesController(
     [HttpPut("{facilityId}")]
     [EndpointName("Update")]
     public async Task<ActionResult<Facility>> Update(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         [FromBody] UpdateFacilityRequest facility,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Update)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -140,6 +158,7 @@ public class FacilitiesController(
             {
                 Id = facilityId,
                 OwnerId = ownerId,
+                IsAdmin = isAdmin,
                 Name = facility.Name,
                 Address = facility.Address,
                 City = facility.City,
@@ -156,11 +175,13 @@ public class FacilitiesController(
     [HttpDelete("{facilityId}")]
     [EndpointName("Delete")]
     public async Task<ActionResult<bool>> Delete(
-        [FromRoute] Guid ownerId,
         [FromRoute] Guid facilityId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(FacilitiesController)}.{nameof(Delete)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -174,7 +195,12 @@ public class FacilitiesController(
         StartStopwatch();
 
         Result<bool> result = await facilityHandler.Delete(
-            new DeleteFacilityDTO() { OwnerId = ownerId, FacilityId = facilityId },
+            new DeleteFacilityDTO()
+            {
+                OwnerId = ownerId,
+                IsAdmin = isAdmin,
+                FacilityId = facilityId,
+            },
             cancellationToken
         );
 

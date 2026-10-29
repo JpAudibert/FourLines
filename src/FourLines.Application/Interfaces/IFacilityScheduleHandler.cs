@@ -15,6 +15,8 @@ public interface IFacilityScheduleHandler
         CancellationToken cancellationToken = default
     );
     Task<Result<IEnumerable<FacilitySchedule>>> GetSchedules(
+        Guid ownerId,
+        bool isAdmin,
         Guid facilityId,
         CancellationToken cancellationToken = default
     );

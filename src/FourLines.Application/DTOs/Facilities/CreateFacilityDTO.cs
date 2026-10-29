@@ -3,6 +3,7 @@
 public record CreateFacilityDTO
 {
     public Guid OwnerId { get; init; } = default!;
+    public bool IsAdmin { get; init; }
     public string Name { get; init; } = default!;
     public string Address { get; init; } = default!;
     public string City { get; init; } = default!;

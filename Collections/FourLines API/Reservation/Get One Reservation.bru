@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v{{apiVersion}}/user/{{userId}}/Reservation/:reservationId
+  url: {{baseUrl}}/api/v{{apiVersion}}/reservations/:reservationId/users/me
   body: none
   auth: inherit
 }

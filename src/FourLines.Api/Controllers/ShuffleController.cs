@@ -6,8 +6,11 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/matches/{matchId}/[controller]")]
-public class ShuffleController(ILogger<ShuffleController> logger, IShuffleHandler shuffleHandler)
-    : ApiControllerBase(logger)
+public class ShuffleController(
+    ILogger<ShuffleController> logger,
+    IShuffleHandler shuffleHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
     [HttpPost]
     public async Task<ActionResult<IEnumerable<MatchesUsers>>> ShuffleTeams(
@@ -15,6 +18,9 @@ public class ShuffleController(ILogger<ShuffleController> logger, IShuffleHandle
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUser(out Guid userId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(ReservationsController)}.{nameof(ShuffleTeams)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
@@ -24,6 +30,8 @@ public class ShuffleController(ILogger<ShuffleController> logger, IShuffleHandle
 
         Result<IEnumerable<MatchesUsers>> result = await shuffleHandler.ShufflePlayers(
             matchId,
+            userId,
+            isAdmin,
             cancellationToken
         );
 

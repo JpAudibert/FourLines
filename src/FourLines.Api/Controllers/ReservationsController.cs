@@ -8,15 +8,18 @@ namespace FourLines.Api.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class ReservationsController(
     ILogger<ReservationsController> logger,
-    IReservationHandler reservationHandler
-) : ApiControllerBase(logger)
+    IReservationHandler reservationHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
-    [HttpGet("users/{userId}")]
+    [HttpGet("users/me")]
     public async Task<ActionResult<IEnumerable<Reservation>>> GetAllReservationsFromUser(
-        [FromRoute] Guid userId,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(GetAllReservationsFromUser)}";
         using var scope = logger.BeginScope(
@@ -37,6 +40,9 @@ public class ReservationsController(
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUser(out Guid ownerId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(GetAllReservationsFromCourt)}";
         using var scope = logger.BeginScope(
@@ -46,18 +52,25 @@ public class ReservationsController(
         StartStopwatch();
 
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(courtId, cancellationToken);
+            await reservationHandler.GetAllReservationsFromCourt(
+                courtId,
+                ownerId,
+                isAdmin,
+                cancellationToken
+            );
 
         return HandleResult(result);
     }
 
-    [HttpGet("{reservationId}/users/{userId}")]
+    [HttpGet("{reservationId}/users/me")]
     public async Task<ActionResult<Reservation>> GetOneReservationsFromUser(
-        [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(GetOneReservationsFromUser)}";
         using var scope = logger.BeginScope(
@@ -80,13 +93,15 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpPost("users/{userId}")]
+    [HttpPost("users/me")]
     public async Task<ActionResult<ConfirmReservationResponseDTO>> CreateAReservationForUser(
-        [FromRoute] Guid userId,
         [FromBody] CreateReservationRequest newReservation,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(CreateAReservationForUser)}";
         using var scope = logger.BeginScope(
@@ -114,14 +129,16 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpPatch("{reservationId}/users/{userId}")]
+    [HttpPatch("{reservationId}/users/me")]
     public async Task<ActionResult<Reservation>> UpdateStatusFromReservation(
-        [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
         [FromBody] UpdateReservationStatusRequest updateReservation,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(UpdateStatusFromReservation)}";
         using var scope = logger.BeginScope(
@@ -148,13 +165,15 @@ public class ReservationsController(
         return HandleResult(result);
     }
 
-    [HttpDelete("{reservationId}/users/{userId}")]
+    [HttpDelete("{reservationId}/users/me")]
     public async Task<ActionResult<bool>> DeleteAReservationFromUser(
-        [FromRoute] Guid userId,
         [FromRoute] Guid reservationId,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation =
             $"{nameof(ReservationsController)}.{nameof(DeleteAReservationFromUser)}";
         using var scope = logger.BeginScope(

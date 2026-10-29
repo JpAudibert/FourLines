@@ -66,7 +66,11 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(CourtSeed.Default.Id);
+            await reservationHandler.GetAllReservationsFromCourt(
+                CourtSeed.Default.Id,
+                UserSeed.Owner.Id,
+                false
+            );
 
         // Assert
         int reservationsFromCourt = context.Reservations.Where(r => r.CourtId == courtId).Count();
@@ -86,10 +90,32 @@ public class TestReservationsRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Reservation>> result =
-            await reservationHandler.GetAllReservationsFromCourt(Guid.NewGuid());
+            await reservationHandler.GetAllReservationsFromCourt(
+                Guid.NewGuid(),
+                UserSeed.Owner.Id,
+                false
+            );
 
         // Assert
         Assert.Null(result.Value);
+        Assert.Equal(ReservationsErrorResults.GetAllNoReservationsForCourt, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_GetReservationsFromAnotherOwnersCourt()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IReservationHandler reservationHandler =
+            fixtures.ServiceProvider.GetRequiredService<IReservationHandler>();
+
+        Result<IEnumerable<Reservation>> result =
+            await reservationHandler.GetAllReservationsFromCourt(
+                CourtSeed.Default.Id,
+                UserSeed.Player.Id,
+                false
+            );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(ReservationsErrorResults.GetAllNoReservationsForCourt, result.Error);
     }
 

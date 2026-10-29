@@ -23,7 +23,11 @@ public class TestCourtRead(FourLinesFixture fixtures)
         Guid facilityId = FacilitySeed.Default.Id;
 
         // Act
-        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(facilityId);
+        Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
+            UserSeed.Owner.Id,
+            false,
+            facilityId
+        );
 
         // Assert
         int courtsFromFacility = context.Courts.Where(c => c.FacilityId == facilityId).Count();
@@ -42,6 +46,8 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<Court>> result = await courtHandler.GetAllCourtsFromFacility(
+            UserSeed.Owner.Id,
+            false,
             FacilitySeed.Dummy.Id
         );
 
@@ -60,6 +66,8 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
+            UserSeed.Owner.Id,
+            false,
             CourtSeed.Default.FacilityId,
             CourtSeed.Default.Id
         );
@@ -83,12 +91,31 @@ public class TestCourtRead(FourLinesFixture fixtures)
 
         // Act
         Result<Court> result = await courtHandler.GetCourtFromFacility(
+            UserSeed.Owner.Id,
+            false,
             Guid.NewGuid(),
             CourtSeed.Default.Id
         );
 
         // Assert
         Assert.Null(result.Value);
+        Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_GetCourtForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        ICourtHandler courtHandler = fixtures.ServiceProvider.GetRequiredService<ICourtHandler>();
+
+        Result<Court> result = await courtHandler.GetCourtFromFacility(
+            UserSeed.Player.Id,
+            false,
+            CourtSeed.Default.FacilityId,
+            CourtSeed.Default.Id
+        );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(CourtsErrorResults.RetrieveGetCourtDoesNotExist, result.Error);
     }
 }

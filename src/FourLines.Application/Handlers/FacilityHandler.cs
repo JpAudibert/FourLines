@@ -11,7 +11,9 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     )
     {
         User? owner = await context.Users.FirstOrDefaultAsync(
-            u => u.Id == createDto.OwnerId && u.Role.Name == RoleConstants.FacilityOwner,
+            u =>
+                u.Id == createDto.OwnerId
+                && (createDto.IsAdmin || u.Role.Name == RoleConstants.FacilityOwner),
             cancellationToken: cancellationToken
         );
         if (owner is null)
@@ -46,7 +48,10 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     {
         bool deleted = false;
         int facility = await context
-            .Facilities.Where(f => f.Id == deleteDto.FacilityId && f.OwnerId == deleteDto.OwnerId)
+            .Facilities.Where(f =>
+                f.Id == deleteDto.FacilityId
+                && (deleteDto.IsAdmin || f.OwnerId == deleteDto.OwnerId)
+            )
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
         if (facility <= 0)
@@ -60,14 +65,17 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
 
     public async Task<Result<IEnumerable<Facility>>> GetFacilitiesFromOwner(
         Guid ownerId,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default,
+        bool isAdmin = false
     )
     {
-        User? owner = await context.Users.FirstOrDefaultAsync(
-            u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
-            cancellationToken: cancellationToken
-        );
-        if (owner is null)
+        if (
+            !isAdmin
+            && !await context.Users.AnyAsync(
+                u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
+                cancellationToken
+            )
+        )
             return Result<IEnumerable<Facility>>.Failure(
                 FacilitiesErrorResults.RetrieveOwnerDoesNotExists
             );
@@ -93,18 +101,21 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     public async Task<Result<Facility>> GetFacilityFromOwner(
         Guid ownerId,
         Guid facilityId,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default,
+        bool isAdmin = false
     )
     {
-        User? owner = await context.Users.FirstOrDefaultAsync(
-            u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
-            cancellationToken: cancellationToken
-        );
-        if (owner is null)
+        if (
+            !isAdmin
+            && !await context.Users.AnyAsync(
+                u => u.Id == ownerId && u.Role.Name == RoleConstants.FacilityOwner,
+                cancellationToken
+            )
+        )
             return Result<Facility>.Failure(FacilitiesErrorResults.RetrieveOwnerDoesNotExists);
 
         Facility? facility = await context.Facilities.FirstOrDefaultAsync(
-            f => f.Id == facilityId && f.OwnerId == ownerId,
+            f => f.Id == facilityId && (isAdmin || f.OwnerId == ownerId),
             cancellationToken: cancellationToken
         );
         if (facility is null)
@@ -114,11 +125,14 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
     }
 
     public async Task<Result<IEnumerable<Facility>>> GetAllFacilities(
+        Guid ownerId,
+        bool isAdmin,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<Facility> facilities = await context
-            .Facilities.Select(f => new Facility
+            .Facilities.Where(f => isAdmin || f.OwnerId == ownerId)
+            .Select(f => new Facility
             {
                 Id = f.Id,
                 Name = f.Name,
@@ -146,7 +160,9 @@ public class FacilityHandler(FourLinesContext context, TimeZoneValidator timeZon
             return Result<Facility>.Failure(FacilitiesErrorResults.InvalidTimeZone);
 
         int affectedRows = await context
-            .Facilities.Where(f => f.Id == updateDto.Id && f.OwnerId == updateDto.OwnerId)
+            .Facilities.Where(f =>
+                f.Id == updateDto.Id && (updateDto.IsAdmin || f.OwnerId == updateDto.OwnerId)
+            )
             .ExecuteUpdateAsync(
                 setters =>
                     setters

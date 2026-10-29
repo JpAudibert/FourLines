@@ -3,6 +3,7 @@
 public record CreateCourtDTO
 {
     public Guid OwnerId { get; init; }
+    public bool IsAdmin { get; init; }
     public Guid FacilityId { get; init; }
     public Guid SportId { get; init; }
     public string Name { get; init; } = default!;

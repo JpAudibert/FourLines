@@ -91,4 +91,19 @@ public class TestFacilitiesUpdate(FourLinesFixture fixtures)
         Assert.Null(result.Value);
         Assert.Equal(FacilitiesErrorResults.UpdateFacilityDoesNotExist, result.Error);
     }
+
+    [Fact]
+    public async Task Should_Not_UpdateAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+
+        Result<Facility> result = await facilityHandler.Update(
+            _updateFacilityTest with { OwnerId = UserSeed.Player.Id }
+        );
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(FacilitiesErrorResults.UpdateFacilityDoesNotExist, result.Error);
+    }
 }

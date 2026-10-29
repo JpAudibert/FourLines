@@ -22,7 +22,10 @@ public class TestFacilitiesRead(FourLinesFixture fixtures)
             fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
 
         // Act
-        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities();
+        Result<IEnumerable<Facility>> result = await facilityHandler.GetAllFacilities(
+            UserSeed.Owner.Id,
+            false
+        );
 
         // Assert
         Assert.NotEmpty(result.Value);

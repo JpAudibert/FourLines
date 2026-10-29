@@ -3,6 +3,7 @@
 public sealed class JwtTokenProvider(IConfiguration configuration) : ITokenProvider
 {
     const string RoleClaimType = "role";
+    public const string IsAdminRoleClaimType = "isAdmin";
 
     public string Create(User user)
     {
@@ -18,6 +19,7 @@ public sealed class JwtTokenProvider(IConfiguration configuration) : ITokenProvi
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(RoleClaimType, user.Role.Name),
+                new Claim(IsAdminRoleClaimType, (user.Role.Name == RoleConstants.Admin).ToString())
                 //TODO: add email verification
                 //new Claim(JwtRegisteredClaimNames.EmailVerified, user.IsActive.ToString()),
             ]

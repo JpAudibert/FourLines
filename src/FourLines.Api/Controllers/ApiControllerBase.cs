@@ -1,9 +1,28 @@
 ﻿namespace FourLines.Api.Controllers;
 
-public class ApiControllerBase(ILogger logger) : ControllerBase
+public class ApiControllerBase(ILogger logger, ICurrentUserProvider currentUserProvider)
+    : ControllerBase
 {
     private readonly ILogger _logger = logger;
     private readonly Stopwatch _sw = new();
+
+    protected bool TryGetCurrentUser(out Guid userId, out bool isAdmin)
+    {
+        Guid? currentUserId = currentUserProvider.UserId;
+        if (currentUserId is Guid id)
+        {
+            userId = id;
+            isAdmin = currentUserProvider.IsAdmin;
+            return true;
+        }
+
+        userId = default;
+        isAdmin = false;
+        return false;
+    }
+
+    protected bool TryGetCurrentUserId(out Guid userId) =>
+        TryGetCurrentUser(out userId, out _);
 
     protected void StartStopwatch()
     {
