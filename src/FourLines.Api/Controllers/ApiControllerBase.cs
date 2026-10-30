@@ -3,10 +3,9 @@
 public class ApiControllerBase(ILogger logger, ICurrentUserProvider currentUserProvider)
     : ControllerBase
 {
-    private readonly ILogger _logger = logger;
     private readonly Stopwatch _sw = new();
 
-    protected bool TryGetCurrentUser(out Guid userId, out bool isAdmin)
+    public virtual bool TryGetCurrentUser(out Guid userId, out bool isAdmin)
     {
         Guid? currentUserId = currentUserProvider.UserId;
         if (currentUserId is Guid id)
@@ -37,7 +36,7 @@ public class ApiControllerBase(ILogger logger, ICurrentUserProvider currentUserP
     {
         if (result.IsFailure)
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "Failed with result: {code} - {description}",
                 result.Error.Code,
                 result.Error.Description
@@ -50,7 +49,7 @@ public class ApiControllerBase(ILogger logger, ICurrentUserProvider currentUserP
             );
         }
 
-        _logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
+        logger.LogDebug("Executed in {ms}", _sw.ElapsedMilliseconds);
 
         return StatusCode(succeedingStatusCode, result.Value);
     }
