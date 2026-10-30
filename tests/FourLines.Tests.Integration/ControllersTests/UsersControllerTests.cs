@@ -65,7 +65,7 @@ public class UsersControllerTests(FourLinesFixture fixture)
     }
 
     [Fact]
-    public async Task UsersRegister_Player_404Route()
+    public async Task UsersRegister_Player_MethodNotAllowedOnProfileRoute()
     {
         // Arrange
         UserRegisterRequest user = new()
@@ -87,21 +87,20 @@ public class UsersControllerTests(FourLinesFixture fixture)
         );
 
         // Assert
-        Assert.Equal(StatusCodes.Status404NotFound, response.StatusCode);
+        Assert.Equal(StatusCodes.Status405MethodNotAllowed, response.StatusCode);
     }
 
     [Fact]
     public async Task GetUser_ReturnsOk()
     {
         // Arrange
-        Guid userId = UserSeed.Player.Id;
         string token = await fixture.HttpClient.LoginAsync(
             new LoginRequest { Email = UserSeed.Player.Email, Password = "123" }
         );
 
         // Act
         IFlurlResponse response = await fixture.HttpClient.SendAsync(
-            url: $"/api/v1/users/{userId}",
+            url: "/api/v1/users",
             method: HttpMethod.Get,
             token: token
         );
@@ -111,7 +110,7 @@ public class UsersControllerTests(FourLinesFixture fixture)
     }
 
     [Fact]
-    public async Task GetUser_Returns404()
+    public async Task GetUser_WithRouteUserId_Returns404()
     {
         // Arrange
         Guid userId = Guid.NewGuid();
@@ -134,7 +133,6 @@ public class UsersControllerTests(FourLinesFixture fixture)
     public async Task UpdateUser_ReturnsOk()
     {
         // Arrange
-        Guid userId = UserSeed.Player.Id;
         UserUpdateRequest user = new()
         {
             Name = "Titcho Cohsul",
@@ -149,7 +147,7 @@ public class UsersControllerTests(FourLinesFixture fixture)
 
         // Act
         IFlurlResponse response = await fixture.HttpClient.SendAsync(
-            url: $"/api/v1/users/{userId}",
+            url: "/api/v1/users",
             method: HttpMethod.Put,
             content: JsonContent.Create(user),
             token: token
@@ -160,7 +158,7 @@ public class UsersControllerTests(FourLinesFixture fixture)
     }
 
     [Fact]
-    public async Task UpdateUser_Returns404()
+    public async Task UpdateUser_WithRouteUserId_Returns404()
     {
         // Arrange
         Guid userId = Guid.NewGuid();
@@ -192,14 +190,13 @@ public class UsersControllerTests(FourLinesFixture fixture)
     public async Task DeleteUser_ReturnsNoContent()
     {
         // Arrange
-        Guid userId = UserSeed.PlayerToBeDeleted.Id;
         string token = await fixture.HttpClient.LoginAsync(
             new LoginRequest { Email = UserSeed.PlayerToBeDeleted.Email, Password = "123" }
         );
 
         // Act
         IFlurlResponse response = await fixture.HttpClient.SendAsync(
-            url: $"/api/v1/users/{userId}",
+            url: "/api/v1/users",
             method: HttpMethod.Delete,
             token: token
         );
@@ -209,7 +206,7 @@ public class UsersControllerTests(FourLinesFixture fixture)
     }
 
     [Fact]
-    public async Task DeleteUser_Returns404()
+    public async Task DeleteUser_WithRouteUserId_Returns404()
     {
         // Arrange
         Guid userId = Guid.NewGuid();

@@ -52,4 +52,18 @@ public class TestFacilitiesDelete(FourLinesFixture fixtures)
         // Assert
         Assert.False(result.Value);
     }
+
+    [Fact]
+    public async Task Should_Not_DeleteAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityHandler facilityHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityHandler>();
+
+        Result<bool> result = await facilityHandler.Delete(
+            _deleteFacility with { OwnerId = UserSeed.Player.Id }
+        );
+
+        Assert.True(result.IsFailure);
+    }
 }

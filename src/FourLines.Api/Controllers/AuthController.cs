@@ -8,8 +8,9 @@ namespace FourLines.Api.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController(
     ILogger<AuthController> logger,
-    IAuthenticationHandler authenticationHandler
-) : ApiControllerBase(logger)
+    IAuthenticationHandler authenticationHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
     [HttpPost]
     public async Task<ActionResult<string>> Authenticate(

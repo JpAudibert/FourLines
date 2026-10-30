@@ -5,14 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v1/match/:matchId/ingress/:userId/ingress-as-goal-keeper
+  url: {{baseUrl}}/api/v1/matches/:matchId/ingress-as-fixed-position
   body: json
   auth: inherit
 }
 
 params:path {
   matchId: 83a79c32-f9c6-4b6e-b949-97913cf53423
-  userId: 09846d19-d334-41e0-bbb8-9186f8683489
 }
 
 body:json {

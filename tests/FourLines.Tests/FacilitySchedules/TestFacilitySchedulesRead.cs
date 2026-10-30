@@ -25,6 +25,8 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            UserSeed.Owner.Id,
+            false,
             facilityId
         );
 
@@ -48,11 +50,30 @@ public class TestFacilitySchedulesRead(FourLinesFixture fixtures)
 
         // Act
         Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            UserSeed.Owner.Id,
+            false,
             Guid.NewGuid()
         );
 
         // Assert
         Assert.Null(result.Value);
+        Assert.Equal(FacilitySchedulesErrorResults.RetrieveFacilitySchedules, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_GetSchedulesForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+
+        Result<IEnumerable<FacilitySchedule>> result = await facilityScheduleHandler.GetSchedules(
+            UserSeed.Player.Id,
+            false,
+            FacilitySeed.Default.Id
+        );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(FacilitySchedulesErrorResults.RetrieveFacilitySchedules, result.Error);
     }
 }

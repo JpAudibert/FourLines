@@ -20,6 +20,8 @@ public interface IReservationHandler
     );
     Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
         Guid courtId,
+        Guid ownerId,
+        bool isAdmin,
         CancellationToken cancellationToken = default
     );
     Task<Result<Reservation>> GetOneReservationFromUser(

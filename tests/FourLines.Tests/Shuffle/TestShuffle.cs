@@ -32,7 +32,11 @@ public class TestShuffle(FourLinesFixture fixtures)
         IShuffleHandler handler = fixtures.ServiceProvider.GetRequiredService<IShuffleHandler>();
 
         // Act
-        Result<IEnumerable<MatchesUsers>> result = await handler.ShufflePlayers(match.Id);
+        Result<IEnumerable<MatchesUsers>> result = await handler.ShufflePlayers(
+            match.Id,
+            UserSeed.PlayerToShuffle1.Id,
+            false
+        );
 
         // Assert
         Assert.NotNull(result.Value);
@@ -58,7 +62,11 @@ public class TestShuffle(FourLinesFixture fixtures)
         IShuffleHandler handler = fixtures.ServiceProvider.GetRequiredService<IShuffleHandler>();
 
         // Act
-        Result<IEnumerable<MatchesUsers>> result = await handler.ShufflePlayers(Guid.NewGuid());
+        Result<IEnumerable<MatchesUsers>> result = await handler.ShufflePlayers(
+            Guid.NewGuid(),
+            UserSeed.PlayerToShuffle1.Id,
+            false
+        );
 
         // Assert
         Assert.NotNull(result.Error);

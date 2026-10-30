@@ -21,6 +21,7 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
+            OwnerId = UserSeed.Owner.Id,
             FacilityId = FacilityScheduleSeed.ToBeDeleted.FacilityId,
             ScheduleId = FacilityScheduleSeed.ToBeDeleted.Id
         });
@@ -41,11 +42,31 @@ public class TestFacilitySchedulesDelete(FourLinesFixture fixtures)
         // Act
         Result<bool> result = await facilityScheduleHandler.Delete(new DeleteFacilityScheduleDTO
         {
+            OwnerId = UserSeed.Owner.Id,
             FacilityId = Guid.NewGuid(),
             ScheduleId = Guid.NewGuid()
         });
 
         // Assert
         Assert.False(result.Value);
+    }
+
+    [Fact]
+    public async Task Should_Not_DeleteScheduleForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+
+        Result<bool> result = await facilityScheduleHandler.Delete(
+            new DeleteFacilityScheduleDTO
+            {
+                OwnerId = UserSeed.Player.Id,
+                FacilityId = FacilityScheduleSeed.ToBeDeleted.FacilityId,
+                ScheduleId = FacilityScheduleSeed.ToBeDeleted.Id,
+            }
+        );
+
+        Assert.True(result.IsFailure);
     }
 }

@@ -5,9 +5,20 @@ public class ShuffleHandler(FourLinesContext context, IShuffleStrategy shuffleSt
 {
     public async Task<Result<IEnumerable<MatchesUsers>>> ShufflePlayers(
         Guid matchId,
+        Guid userId,
+        bool isAdmin,
         CancellationToken cancellationToken = default
     )
     {
+        bool canManageMatch = await context.Matches.AnyAsync(
+            m => m.Id == matchId && (isAdmin || m.Reservation.UserId == userId),
+            cancellationToken
+        );
+        if (!canManageMatch)
+            return Result<IEnumerable<MatchesUsers>>.Failure(
+                ShufflingErrorResults.ShufflingUnknownMatch
+            );
+
         IQueryable<MatchesUsers> players = context.MatchesUsers.Where(mu => mu.MatchId == matchId);
         if (!players.Any())
             return Result<IEnumerable<MatchesUsers>>.Failure(

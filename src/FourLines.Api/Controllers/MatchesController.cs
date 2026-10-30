@@ -8,8 +8,11 @@ namespace FourLines.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class MatchesController(ILogger<MatchesController> logger, IMatchHandler matchHandler)
-    : ApiControllerBase(logger)
+public class MatchesController(
+    ILogger<MatchesController> logger,
+    IMatchHandler matchHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
     [HttpGet("{matchId}")]
     public async Task<ActionResult<Match>> GetMatch(
@@ -29,14 +32,16 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         return HandleResult(match);
     }
 
-    [HttpPost("{matchId}/ingress/{userId}")]
+    [HttpPost("{matchId}/ingress")]
     public async Task<ActionResult<MatchesUsers>> Ingress(
         [FromRoute] Guid matchId,
-        [FromRoute] Guid userId,
         [FromBody] CreateIngressRequest newIngress,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation = $"{nameof(MatchesController)}.{nameof(Ingress)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -61,14 +66,16 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         return HandleResult(matchesUsers);
     }
 
-    [HttpPost("{matchId}/ingress/{userId}/ingress-as-fixed-position")]
+    [HttpPost("{matchId}/ingress-as-fixed-position")]
     public async Task<ActionResult<MatchesUsers>> IngressAsFixedPosition(
         [FromRoute] Guid matchId,
-        [FromRoute] Guid userId,
         [FromBody] CreateIngressRequest newIngress,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation = $"{nameof(MatchesController)}.{nameof(IngressAsFixedPosition)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -96,13 +103,15 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         return HandleResult(matchesUsers);
     }
 
-    [HttpDelete("{matchId}/leave/{userId}")]
+    [HttpDelete("{matchId}/leave")]
     public async Task<ActionResult<bool>> LeaveMatch(
         [FromRoute] Guid matchId,
-        [FromRoute] Guid userId,
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUserId(out Guid userId))
+            return Unauthorized();
+
         const string operation = $"{nameof(MatchesController)}.{nameof(LeaveMatch)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object>
@@ -129,6 +138,9 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         CancellationToken cancellationToken = default
     )
     {
+        if (!TryGetCurrentUser(out Guid userId, out bool isAdmin))
+            return Unauthorized();
+
         const string operation = $"{nameof(MatchesController)}.{nameof(UpdateMatchName)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["matchId"] = matchId }
@@ -139,6 +151,8 @@ public class MatchesController(ILogger<MatchesController> logger, IMatchHandler 
         UpdateMatchNameDTO updateMatchNameDTO = new()
         {
             MatchId = matchId,
+            UserId = userId,
+            IsAdmin = isAdmin,
             NewName = updateMatchName.Name,
         };
 

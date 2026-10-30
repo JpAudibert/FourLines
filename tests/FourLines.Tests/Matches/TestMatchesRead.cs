@@ -2,6 +2,7 @@ using FourLines.Application.Interfaces;
 using FourLines.Domain.Results;
 using FourLines.Tests.Shared;
 using FourLines.Domain.Models;
+using FourLines.Tests.Shared.Seed;
 
 namespace FourLines.Tests.Matches;
 
@@ -43,5 +44,19 @@ public class TestMatchesRead(FourLinesFixture fixtures)
 
         // Assert
         Assert.True(result.IsFailure);
+    }
+
+    [Fact]
+    public async Task Should_GetMatchForAnotherUser()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
+        Guid matchId = fixtures.GoalKeeperReservationResult.Value.Match.Id;
+        IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
+
+        Result<Match> result = await handler.GetMatch(matchId);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(matchId, result.Value.Id);
     }
 }

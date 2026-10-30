@@ -13,6 +13,7 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
 {
     private static readonly CreateFacilityScheduleDTO _createFacilityScheduleTest1 = new()
     {
+        OwnerId = UserSeed.Owner.Id,
         FacilityId = FacilitySeed.NoSchedules.Id,
         DayOfWeek = DayOfWeek.Monday,
         OpensAt = new TimeOnly(9, 0),
@@ -139,6 +140,21 @@ public class TestFacilitySchedulesCreate(FourLinesFixture fixtures)
 
         // Assert
         Assert.Null(result.Value);
+        Assert.Equal(FacilitySchedulesErrorResults.CreateFacilitySchedules, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_CreateScheduleForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Create(
+            _createFacilityScheduleTest1 with { OwnerId = UserSeed.Player.Id }
+        );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(FacilitySchedulesErrorResults.CreateFacilitySchedules, result.Error);
     }
 }

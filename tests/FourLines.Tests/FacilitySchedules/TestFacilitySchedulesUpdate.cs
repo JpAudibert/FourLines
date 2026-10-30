@@ -13,6 +13,7 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
 {
     private static readonly UpdateFacilityScheduleDTO _updateFacilityScheduleTest = new()
     {
+        OwnerId = UserSeed.Owner.Id,
         Id = FacilityScheduleSeed.ToBeUpdated.Id,
         FacilityId = FacilitySeed.NoSchedules.Id,
         DayOfWeek = DayOfWeek.Friday,
@@ -90,5 +91,20 @@ public class TestFacilitySchedulesUpdate(FourLinesFixture fixtures)
         // Assert
         Assert.Null(result.Value);
         Assert.Equal(FacilitySchedulesErrorResults.UpdateUnknownSchedules, result.Error);
+    }
+
+    [Fact]
+    public async Task Should_Not_UpdateScheduleForAnotherOwnersFacility()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        IFacilityScheduleHandler facilityScheduleHandler =
+            fixtures.ServiceProvider.GetRequiredService<IFacilityScheduleHandler>();
+
+        Result<FacilitySchedule> result = await facilityScheduleHandler.Update(
+            _updateFacilityScheduleTest with { OwnerId = UserSeed.Player.Id }
+        );
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(FacilitySchedulesErrorResults.UpdateUnknownFacility, result.Error);
     }
 }

@@ -7,8 +7,9 @@ This document is meant to describe the reservation process and its business rule
 
 ### Get All Reservations From User
 ```
-GET - /api/v{version}/Reservations/users/{userId}
+GET - /api/v{version}/Reservations/users/me
 ```
+The user is taken from the authenticated JWT; no user ID is supplied in the route.
 
 ### Get All Reservations From Court
 ```
@@ -17,7 +18,7 @@ GET - /api/v{version}/Reservations/courts/{courtId}
 
 ### Get One Reservations From User
 ```
-GET - /api/v{version}/Reservations/{reservationId}/users/{userId}
+GET - /api/v{version}/Reservations/{reservationId}/users/me
 ```
 
 ### Get Available Times To Play In Court
@@ -56,10 +57,10 @@ Reservations.Where(r =>
 
 ### Create A Reservation For User
 ```
-POST - /api/v{version}/Reservations/users/{userId}
+POST - /api/v{version}/Reservations/users/me
 ```
+The user is taken from the authenticated JWT; no user ID is supplied in the route.
 The request expects:
-* Route params: `userId`
 * Body
 ```json
     {
@@ -113,10 +114,12 @@ Reservations.Where(r =>
 
 ### Update Status From Reservation
 ```
-PATCH - /api/v{version}/Reservations/{reservationId}/users/{userId}
+PATCH - /api/v{version}/Reservations/{reservationId}/users/me
 ```
+The user is taken from the authenticated JWT; no user ID is supplied in the route.
 
 ### Delete  A Reservation From User
 ```
-DELETE - /api/v{version}/Reservations/{reservationId}/users/{userId}
+DELETE - /api/v{version}/Reservations/{reservationId}/users/me
 ```
+The user is taken from the authenticated JWT; no user ID is supplied in the route.

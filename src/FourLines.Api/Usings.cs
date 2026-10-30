@@ -12,6 +12,7 @@ global using FourLines.Application.DTOs.Reservations;
 global using FourLines.Application.Handlers;
 global using FourLines.Domain.Constants;
 global using FourLines.Domain.DependencyInjection;
+global using FourLines.Domain.Interfaces;
 global using FourLines.Domain.Models;
 global using FourLines.Domain.Results;
 global using FourLines.Infrastructure.DependencyInjection;

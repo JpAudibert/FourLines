@@ -26,7 +26,10 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
     )
     {
         int affectedRows = await context
-            .Matches.Where(m => m.Id == updateMatchName.MatchId)
+            .Matches.Where(m =>
+                m.Id == updateMatchName.MatchId
+                && (updateMatchName.IsAdmin || m.Reservation.UserId == updateMatchName.UserId)
+            )
             .ExecuteUpdateAsync(
                 setters => setters.SetProperty(m => m.Name, updateMatchName.NewName),
                 cancellationToken: cancellationToken
@@ -38,7 +41,12 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
         Match updatedMatch = await context
             .Matches.Include(r => r.Reservation)
             .Include(s => s.Sport)
-            .FirstAsync(m => m.Id == updateMatchName.MatchId, cancellationToken: cancellationToken);
+            .FirstAsync(
+                m =>
+                    m.Id == updateMatchName.MatchId
+                    && (updateMatchName.IsAdmin || m.Reservation.UserId == updateMatchName.UserId),
+                cancellationToken: cancellationToken
+            );
 
         updatedMatch.Name = updateMatchName.NewName;
 

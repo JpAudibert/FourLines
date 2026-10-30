@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: {{baseUrl}}/api/v{{apiVersion}}/user/{{userId}}/Reservation/:reservationId
+  url: {{baseUrl}}/api/v{{apiVersion}}/reservations/:reservationId/users/me
   body: json
   auth: inherit
 }

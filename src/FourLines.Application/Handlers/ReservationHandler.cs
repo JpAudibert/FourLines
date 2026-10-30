@@ -197,11 +197,15 @@ public class ReservationHandler(
 
     public async Task<Result<IEnumerable<Reservation>>> GetAllReservationsFromCourt(
         Guid courtId,
+        Guid ownerId,
+        bool isAdmin,
         CancellationToken cancellationToken = default
     )
     {
         IEnumerable<Reservation> reservations = await context
-            .Reservations.Where(r => r.CourtId == courtId)
+            .Reservations.Where(r =>
+                r.CourtId == courtId && (isAdmin || r.Court.Facility.OwnerId == ownerId)
+            )
             .Select(r => new Reservation
             {
                 Id = r.Id,

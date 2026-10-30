@@ -5,13 +5,9 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v{{apiVersion}}/user/:userId/Reservation
+  url: {{baseUrl}}/api/v{{apiVersion}}/reservations/users/me
   body: none
   auth: inherit
-}
-
-params:path {
-  userId: e20819d6-6b28-4125-9608-6d1d1f75302d
 }
 
 headers {

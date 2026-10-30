@@ -8,16 +8,19 @@ namespace FourLines.Api.Controllers;
 [ApiVersion("1")]
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class UsersController(ILogger<UsersController> logger, IUserHandler userHandler)
-    : ApiControllerBase(logger)
+public class UsersController(
+    ILogger<UsersController> logger,
+    IUserHandler userHandler,
+    ICurrentUserProvider currentUserProvider
+) : ApiControllerBase(logger, currentUserProvider)
 {
-    [HttpGet("{id}")]
+    [HttpGet]
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
-    public async Task<ActionResult<UserReadResponse>> GetUser(
-        [FromRoute] Guid id,
-        CancellationToken cancellationToken
-    )
+    public async Task<ActionResult<UserReadResponse>> GetUser(CancellationToken cancellationToken)
     {
+        if (!TryGetCurrentUserId(out Guid id))
+            return Unauthorized();
+
         const string operation = $"{nameof(UsersController)}.{nameof(GetUser)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }
@@ -45,14 +48,16 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
         return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
     public async Task<ActionResult<UserUpdateResponse>> UpdateUser(
-        [FromRoute] Guid id,
         [FromBody] UserUpdateRequest request,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid id))
+            return Unauthorized();
+
         const string operation = $"{nameof(UsersController)}.{nameof(UpdateUser)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }
@@ -91,13 +96,15 @@ public class UsersController(ILogger<UsersController> logger, IUserHandler userH
         return HandleResult(response, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete]
     [Authorize(Roles = "Player, FacilityOwner, Admin")]
     public async Task<ActionResult<bool>> DeleteUser(
-        [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
     {
+        if (!TryGetCurrentUserId(out Guid id))
+            return Unauthorized();
+
         const string operation = $"{nameof(UsersController)}.{nameof(DeleteUser)}";
         using var scope = logger.BeginScope(
             new Dictionary<string, object> { ["operation"] = operation, ["userId"] = id }

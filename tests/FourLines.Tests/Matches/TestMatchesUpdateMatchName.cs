@@ -24,7 +24,12 @@ public class TestMatchesUpdateMatchName(FourLinesFixture fixtures)
 
         // Act
         Result<Match> result = await handler.UpdateMatchName(
-            new UpdateMatchNameDTO { MatchId = matchId, NewName = newMatchName }
+            new UpdateMatchNameDTO
+            {
+                MatchId = matchId,
+                UserId = FourLines.Tests.Shared.Seed.UserSeed.Player.Id,
+                NewName = newMatchName,
+            }
         );
 
         // Assert
@@ -46,12 +51,38 @@ public class TestMatchesUpdateMatchName(FourLinesFixture fixtures)
 
         // Act
         Result<Match> result = await handler.UpdateMatchName(
-            new UpdateMatchNameDTO { MatchId = matchId, NewName = newMatchName }
+            new UpdateMatchNameDTO
+            {
+                MatchId = matchId,
+                UserId = FourLines.Tests.Shared.Seed.UserSeed.Player.Id,
+                NewName = newMatchName,
+            }
         );
 
         // Assert
         Assert.False(result.IsSuccess);
         Assert.NotNull(result.Error);
+        Assert.Equal(MatchesErrorResults.MatchNotFound, result.Error);
+    }
+
+    [Fact]
+    public async Task ShouldNot_UpdateMatchName_WhenCallerDoesNotOwnReservation()
+    {
+        await using var scope = fixtures.CreateAsyncServiceScope();
+        await fixtures.EnsureGoalKeeperReservationCreatedAsync();
+        IMatchHandler handler = fixtures.ServiceProvider.GetRequiredService<IMatchHandler>();
+        Guid matchId = fixtures.GoalKeeperReservationResult.Value.Match.Id;
+
+        Result<Match> result = await handler.UpdateMatchName(
+            new UpdateMatchNameDTO
+            {
+                MatchId = matchId,
+                UserId = FourLines.Tests.Shared.Seed.UserSeed.Player2.Id,
+                NewName = "Unauthorized name",
+            }
+        );
+
+        Assert.True(result.IsFailure);
         Assert.Equal(MatchesErrorResults.MatchNotFound, result.Error);
     }
 }
