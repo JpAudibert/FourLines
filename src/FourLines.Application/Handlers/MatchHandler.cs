@@ -10,12 +10,9 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
     )
     {
         Match? match = await context
-            .Matches            .Include(r => r.Reservation)
+            .Matches.Include(r => r.Reservation)
             .Include(s => s.Sport)
-            .FirstOrDefaultAsync(
-                m => m.Id == matchId,
-                cancellationToken: cancellationToken
-            );
+            .FirstOrDefaultAsync(m => m.Id == matchId, cancellationToken: cancellationToken);
 
         if (match is null)
             return Result<Match>.Failure(MatchesErrorResults.MatchNotFound);
@@ -47,10 +44,7 @@ public class MatchHandler(FourLinesContext context) : IMatchHandler
             .FirstAsync(
                 m =>
                     m.Id == updateMatchName.MatchId
-                    && (
-                        updateMatchName.IsAdmin
-                        || m.Reservation.UserId == updateMatchName.UserId
-                    ),
+                    && (updateMatchName.IsAdmin || m.Reservation.UserId == updateMatchName.UserId),
                 cancellationToken: cancellationToken
             );
 
