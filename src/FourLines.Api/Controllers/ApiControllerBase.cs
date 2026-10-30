@@ -5,6 +5,7 @@ public class ApiControllerBase(ILogger logger, ICurrentUserProvider currentUserP
 {
     private readonly Stopwatch _sw = new();
 
+    [NonAction]
     public virtual bool TryGetCurrentUser(out Guid userId, out bool isAdmin)
     {
         Guid? currentUserId = currentUserProvider.UserId;
