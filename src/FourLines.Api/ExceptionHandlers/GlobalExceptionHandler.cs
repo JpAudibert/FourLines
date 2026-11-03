@@ -23,6 +23,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IPro
         };
 
         _logger.LogError("An error occured: {@error}", problemDetails);
+        httpContext.Response.StatusCode = problemDetails.Status!.Value;
 
         return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {

@@ -2,6 +2,7 @@ using DotNet.Testcontainers.Builders;
 using FourLines.Api;
 using FourLines.Infrastructure.Contexts;
 using FourLines.Tests.Integration.Shared.Seed;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -74,6 +75,16 @@ public class FourLinesFixture : IAsyncLifetime
         Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "IntegrationTests");
 
         _app = Program.CreateApp([], Configuration);
+        _app.MapGet("/_test/exception/{exceptionKind}", (string exceptionKind) =>
+        {
+            throw exceptionKind switch
+            {
+                "validation" => new ValidationException("Validation failed."),
+                "unauthorized" => new UnauthorizedAccessException("Access denied."),
+                "unexpected" => new InvalidOperationException("Unexpected failure."),
+                _ => new ArgumentOutOfRangeException(nameof(exceptionKind), exceptionKind, null),
+            };
+        });
 
         _app.Urls.Add("http://localhost:5211");
         await _app.StartAsync();
