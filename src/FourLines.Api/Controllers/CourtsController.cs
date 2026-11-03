@@ -34,7 +34,7 @@ public class CourtsController(
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpGet("{courtId}")]
@@ -69,7 +69,7 @@ public class CourtsController(
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpPost]
@@ -104,11 +104,18 @@ public class CourtsController(
                 SportId = newCourt.SportId,
                 Name = newCourt.Name,
                 IsActive = newCourt.IsActive,
+                DefaultPrice = newCourt.DefaultPrice,
+                RentingPeriodInMinutes = newCourt.RentingPeriodInMinutes,
+                MaintenancePeriodInMinutes = newCourt.MaintenancePeriodInMinutes,
             },
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(
+            result,
+            succeedingStatusCode: StatusCodes.Status201Created,
+            failingStatusCode: StatusCodes.Status404NotFound
+        );
     }
 
     [HttpPut("{courtId}")]
@@ -146,11 +153,14 @@ public class CourtsController(
                 SportId = updateCourt.SportId,
                 Name = updateCourt.Name,
                 IsActive = updateCourt.IsActive,
+                DefaultPrice = updateCourt.DefaultPrice,
+                RentingPeriodInMinutes = updateCourt.RentingPeriodInMinutes,
+                MaintenancePeriodInMinutes = updateCourt.MaintenancePeriodInMinutes,
             },
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpDelete("{courtId}")]
@@ -188,6 +198,6 @@ public class CourtsController(
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 }
