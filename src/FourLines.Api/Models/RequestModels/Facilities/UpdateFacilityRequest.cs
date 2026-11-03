@@ -21,4 +21,7 @@ public class UpdateFacilityRequest
     [Required(ErrorMessage = "Registration number is required.")]
     [MaxLength(18)]
     public string RegistrationNumber { get; init; } = default!;
+
+    [Required(ErrorMessage = "Time zone ID is required.")]
+    public string TimeZoneId { get; init; } = default!;
 }

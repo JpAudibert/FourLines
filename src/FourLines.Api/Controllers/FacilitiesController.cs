@@ -29,7 +29,7 @@ public class FacilitiesController(
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpGet("mine")]
@@ -55,7 +55,7 @@ public class FacilitiesController(
             isAdmin
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpGet("{facilityId:guid}")]
@@ -88,7 +88,7 @@ public class FacilitiesController(
             isAdmin
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpPost]
@@ -120,11 +120,16 @@ public class FacilitiesController(
                 State = request.State,
                 ZipCode = request.ZipCode,
                 RegistrationNumber = request.RegistrationNumber,
+                TimeZoneId = request.TimeZoneId,
             },
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(
+            result,
+            succeedingStatusCode: StatusCodes.Status201Created,
+            failingStatusCode: StatusCodes.Status404NotFound
+        );
     }
 
     [HttpPut("{facilityId}")]
@@ -163,11 +168,12 @@ public class FacilitiesController(
                 State = facility.State,
                 ZipCode = facility.ZipCode,
                 RegistrationNumber = facility.RegistrationNumber,
+                TimeZoneId = facility.TimeZoneId,
             },
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 
     [HttpDelete("{facilityId}")]
@@ -203,6 +209,6 @@ public class FacilitiesController(
             cancellationToken
         );
 
-        return HandleResult(result);
+        return HandleResult(result, failingStatusCode: StatusCodes.Status404NotFound);
     }
 }
