@@ -1,5 +1,7 @@
+using FourLines.Application.Providers;
 using FourLines.Domain.Models;
 using FourLines.Infrastructure.Contexts;
+using Microsoft.AspNetCore.Identity;
 
 namespace FourLines.Tests.Integration.Shared.Seed;
 
@@ -186,7 +188,9 @@ public static class UserSeed
 
     public static async Task SeedAsync(FourLinesContext context)
     {
-        await context.Users.AddRangeAsync(
+        PasswordHasher<User> passwordHasher = new();
+        List<User> users =
+        [
             Owner,
             Player,
             Player2,
@@ -201,9 +205,16 @@ public static class UserSeed
             PlayerToShuffle8,
             PlayerToBeDeleted,
             PlayerToBeUpdated,
-            DummyAuth
-        );
+            DummyAuth,
+        ];
 
+        users.ForEach(u =>
+        {
+            PasswordHashProvider provider = new(passwordHasher);
+            u.PasswordHash = provider.Hash(u, "123");
+        });
+
+        await context.Users.AddRangeAsync(users);
         await context.SaveChangesAsync();
     }
 }
