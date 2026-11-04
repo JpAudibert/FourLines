@@ -3,10 +3,20 @@ namespace FourLines.Api.Models.RequestModels.Courts;
 public class UpdateCourtRequest
 {
     [Required(ErrorMessage = "Court name is required.")]
-    public string Name { get; init; } = default!;
+    public required string Name { get; init; }
 
     [Required(ErrorMessage = "Sport ID is required.")]
-    public Guid SportId { get; init; } = default!;
+    public required Guid SportId { get; init; }
 
-    public bool IsActive { get; init; } = default!;
+    [Required(ErrorMessage = "Court active status is required.")]
+    public required bool IsActive { get; init; }
+
+    [Required(ErrorMessage = "Court default price is required.")]
+    public required Money DefaultPrice { get; init; }
+
+    [Required(ErrorMessage = "Court renting period is required.")]
+    public required int RentingPeriodInMinutes { get; init; }
+
+    [Required(ErrorMessage = "Court maintenance period is required.")]
+    public required int MaintenancePeriodInMinutes { get; init; }
 }

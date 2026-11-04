@@ -122,6 +122,7 @@ public class ReservationsController(
                 CourtId = newReservation.CourtId,
                 Period = newReservation.Period,
                 Status = newReservation.Status,
+                Price = new Money(newReservation.Price.Amount, newReservation.Price.Currency),
             },
             cancellationToken
         );

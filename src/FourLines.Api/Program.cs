@@ -1,5 +1,6 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using FourLines.Api.ExceptionHandlers;
 
 namespace FourLines.Api;
 
@@ -30,6 +31,7 @@ public partial class Program
         builder.Host.ConfigureSerilog(appName, appVersion, openTelemetryEndpoint);
 
         builder.Services.ConfigureProblemDetails();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.ConfigureOpenTelemtryTracingAndMetrics(openTelemetryEndpoint);
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -66,6 +68,7 @@ public partial class Program
 
         var app = builder.Build();
 
+        app.UseExceptionHandler();
         app.ConfigureSerilogRequestLogging();
 
         // Configure the HTTP request pipeline.
