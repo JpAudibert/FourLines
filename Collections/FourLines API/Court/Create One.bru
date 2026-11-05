@@ -5,9 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v{{apiVersion}}/facilities/{{facilityId}}/courts
+  url: {{baseUrl}}/api/v{{apiVersion}}/facilities/:facilityId/courts
   body: json
   auth: inherit
+}
+
+params:path {
+  facilityId: 3b3b2306-27c2-45e1-8de4-18a0ea4621a9
 }
 
 headers {
@@ -17,9 +21,15 @@ headers {
 
 body:json {
   {
-    "name": "Court 2",
-    "sportId": "28bbad71-802c-421c-9572-90b1ff34a3ca",
-    "isActive": true
+    "name": "Qaudra do jogo da bola",
+    "sportId": "64a10e6d-3648-4fcc-b2e7-6df83a57826c",
+    "isActive": true,
+    "defaultPrice": {
+      "amount": 50.00,
+      "currency": "BRL"
+    },
+    "rentingPeriodInMinutes": 60,
+    "maintenancePeriodInMinutes": 0
   }
 }
 

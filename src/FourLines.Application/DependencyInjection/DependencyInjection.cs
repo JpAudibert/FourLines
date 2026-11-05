@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IReservationHandler, ReservationHandler>();
         services.AddScoped<IAvailabilityHandler, AvailabilityHandler>();
         services.AddScoped<IMatchHandler, MatchHandler>();
+        services.AddScoped<ICourtBookingPresentationHandler, CourtBookingPresentationHandler>();
 
         services.AddScoped<IShuffleHandler, ShuffleHandler>();
 

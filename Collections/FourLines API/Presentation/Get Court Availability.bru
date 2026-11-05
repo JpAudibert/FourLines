@@ -1,0 +1,29 @@
+meta {
+  name: Get Court Availability
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v{{apiVersion}}/presentation/courts/:courtId/selected-date/:selectedDate
+  body: none
+  auth: inherit
+}
+
+params:path {
+  courtId: {{courtId}}
+  selectedDate: 2026-11-06
+}
+
+headers {
+  Content-Type: application/json
+}
+
+script:post-response {
+  test("Status 2xx", () => expect(res.getStatus()).to.be.within(200, 299));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
