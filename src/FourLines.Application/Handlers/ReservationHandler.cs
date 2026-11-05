@@ -250,38 +250,48 @@ public class ReservationHandler(
         CancellationToken cancellationToken = default
     )
     {
-        FacilityTimeSlot facilityTimeSlots = await availabilityHandler.GetTimeSlots(
+        FacilityTimeSlot? facilityTimeSlots = await availabilityHandler.GetTimeSlots(
             courtId,
             selectedDate.DayOfWeek,
             cancellationToken
         );
+
+        if (facilityTimeSlots is null)
+        {
+            bool courtExists = await context.Courts.AnyAsync(
+                c => c.Id == courtId,
+                cancellationToken
+            );
+            if (!courtExists)
+                return Result<CourtAvailability>.Failure(ReservationsErrorResults.CreationUnknownCourt);
+
+            return Result<CourtAvailability>.Success(
+                new CourtAvailability { CourtId = courtId, PlayingDate = selectedDate, TimeSlots = [] }
+            );
+        }
 
         DateTimeOffset now = TimeZoneProvider.ToFacilityTime(
             facilityTimeSlots.TimeZoneId,
             DateTimeOffset.UtcNow
         );
 
-        IQueryable<Reservation> reservationsQuery = context
+        List<Reservation> reservations = await context
             .Reservations.Where(r =>
                 r.CourtId == courtId
                 && DateOnly.FromDateTime(r.Period.Start.DateTime) == selectedDate
                 && r.Status != ReservationStatus.Cancelled
             )
-            .Select(r => new Reservation { Period = r.Period });
+            .Select(r => new Reservation { Period = r.Period })
+            .ToListAsync(cancellationToken);
         List<TimeSlot> availableSlots = [];
 
         foreach (TimeSlot slot in facilityTimeSlots.TimeSlots)
         {
             bool isPast = slot.Start <= TimeOnly.FromDateTime(now.DateTime);
-            bool hasReservation = false;
-
-            if (!isPast)
-            {
-                hasReservation = reservationsQuery.Any(r =>
-                    r.Period.Start.TimeOfDay < slot.Start.ToTimeSpan()
-                    && r.Period.End.TimeOfDay > slot.End.ToTimeSpan()
-                );
-            }
+            bool hasReservation = reservations.Any(r =>
+                r.Period.Start.TimeOfDay < slot.End.ToTimeSpan()
+                && r.Period.End.TimeOfDay > slot.Start.ToTimeSpan()
+            );
 
             availableSlots.Add(
                 new TimeSlot()

@@ -5,7 +5,7 @@ namespace FourLines.Application.Handlers;
 
 public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvailabilityHandler
 {
-    public async Task<FacilityTimeSlot> GetTimeSlots(
+    public async Task<FacilityTimeSlot?> GetTimeSlots(
         Guid courtId,
         DayOfWeek selectedDayOfTheWeek,
         CancellationToken cancellationToken = default
@@ -39,7 +39,7 @@ public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvail
             await connection.QueryFirstOrDefaultAsync<FacilityAvailability>(command);
 
         if (facilityAvailability is null)
-            return default!;
+            return null;
 
         int reservationSlot =
             facilityAvailability.MaintenancePeriodInMinutes
@@ -53,9 +53,6 @@ public class AvailabilityHandler(ConnectionProvider connectionProvider) : IAvail
             TimeOnly slotEnd = current.AddMinutes(reservationSlot);
             if (slotEnd <= current || slotEnd > facilityAvailability.ClosesAt)
                 break;
-
-            if (slotEnd > facilityAvailability.ClosesAt)
-                return default!;
 
             timeSlots.Add(
                 new TimeSlot()
