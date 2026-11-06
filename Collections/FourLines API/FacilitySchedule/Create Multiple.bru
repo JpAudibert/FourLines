@@ -5,9 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v{{apiVersion}}/facilities/{{facilityId}}/schedules/multiple
+  url: {{baseUrl}}/api/v{{apiVersion}}/facilities/:facilityId/schedules/multiple
   body: json
   auth: inherit
+}
+
+params:path {
+  facilityId: 84bdc5b7-8f77-406d-8c9f-d962e3dd61df
 }
 
 headers {

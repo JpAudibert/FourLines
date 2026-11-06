@@ -80,6 +80,7 @@ public partial class Program
             );
         }
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
